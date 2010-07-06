@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<urlrewrite default-match-type="wildcard">
+	<rule>
+		<from>/res/images/**</from>
+		<to>/res/images/$1</to>
+	</rule>
+	<rule>
+		<from>/res/scripts/**</from>
+		<to>/res/scripts/$1</to>
+	</rule>
+	<rule>
+		<from>/res/styles/**</from>
+		<to>/res/styles/$1</to>
+	</rule>
+	<rule>
+		<from>/**</from>
+		<to>/app/$1</to>
+	</rule>
+	<outbound-rule>
+		<from>/app/**</from>
+		<to>/$1</to>
+	</outbound-rule>
+</urlrewrite>

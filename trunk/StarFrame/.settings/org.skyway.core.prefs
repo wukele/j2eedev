@@ -1,0 +1,5 @@
+#org.skyway.core settings
+#Tue Jul 06 14:21:10 CST 2010
+version=7.0.0.201006141411
+models.folder.name=.springDSL
+hide.dsl=false
