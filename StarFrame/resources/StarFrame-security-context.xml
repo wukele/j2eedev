@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+
+
+	<bean id="springSecurityFilterChain" class="org.springframework.security.web.FilterChainProxy">
+  		<sec:filter-chain-map path-type="ant">
+     		<sec:filter-chain pattern="/**" filters="
+           		securityContextPersistenceFilter,
+           		logoutFilter,
+           		usernamePasswordAuthenticationFilter,
+           		securityContextHolderAwareRequestFilte,
+           		rememberMeFilter,
+           		sessionManagementFilter,
+           		anonymousProcessingFilter,
+           		exceptionTranslationFilter,
+           		filterSecurityInterceptor" />
+  		</sec:filter-chain-map>
+	</bean>
+	
+    <bean id="securityContextRepository" class="org.springframework.security.web.context.HttpSessionSecurityContextRepository" />
+	<bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
+		<property name="securityContextRepository" ref="securityContextRepository"/>
+	</bean>
+  
+  	<bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+		<constructor-arg value="/login"/>
+		<constructor-arg>
+			<list>
+				<ref local="rememberMeServices"/>
+				<bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"></bean>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="usernamePasswordAuthenticationFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+		<property name="authenticationManager" ref="authenticationManager"/>
+		<property name="authenticationFailureHandler" ref="failureHandler" />
+		<property name="authenticationSuccessHandler" ref="successHandler" />
+	  	<property name="rememberMeServices" ref="rememberMeServices"/>
+	</bean>
+	<bean id="successHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler" >
+		<property name="defaultTargetUrl" value="/security/loginSuccess.json" />
+		<property name="alwaysUseDefaultTargetUrl" value="true" />
+	</bean>
+	<bean id="failureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler" >
+		<property name="defaultFailureUrl" value="/security/loginFailure.json" />
+	</bean>
+	
+	<bean name="securityContextHolderAwareRequestFilte" class="org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter"></bean>
+    
+    <bean id="rememberMeFilter" class="org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter">
+		<property name="authenticationManager" ref="authenticationManager"/>
+		<property name="rememberMeServices" ref="rememberMeServices"/>
+	</bean>
+	
+	<bean id="rememberMeServices" class="org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
+		<property name="userDetailsService" ref="userDetailsService"/>
+		<property name="key" value="springRocks"/>
+		<property name="alwaysRemember" value="false"/>
+	</bean>
+	
+	<bean id="rememberMeAuthenticationProvider"
+		class="org.springframework.security.authentication.RememberMeAuthenticationProvider">
+  		<property name="key" value="springRocks"/>
+	</bean>
+	
+	<bean name="sessionManagementFilter" class="org.springframework.security.web.session.SessionManagementFilter">
+		<constructor-arg name="securityContextRepository" ref="securityContextRepository"/>
+		<property name="invalidSessionUrl" value="/login"></property>
+	</bean>
+    
+    <bean id="anonymousProcessingFilter" class="org.springframework.security.web.authentication.AnonymousAuthenticationFilter">
+		<property name="key" value="changeThis"/>
+		<property name="userAttribute" value="anonymousUser,ROLE_ANONYMOUS"/>
+	</bean>   
+
+	<bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+		<property name="authenticationEntryPoint">   
+            <bean class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">   
+                <property name="loginFormUrl" value="/login"/>   
+            </bean>   
+        </property>   
+        <property name="accessDeniedHandler">   
+            <bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl">   
+                <property name="errorPage" value="/resources/page/login.jsp?login_error=2"/>
+            </bean>   
+        </property>   
+	</bean>
+	
+	<bean id="securityMetadataSource" class="com.starit.core.spring.security.HibernateFilterInvocationSecurityMetadataSource">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="filterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+		<property name="authenticationManager" ref="authenticationManager"/>
+		<property name="accessDecisionManager" ref="accessDecisionManager"/>
+		<property name="securityMetadataSource">
+			<ref bean="securityMetadataSource"/>
+			<!--  
+    		<sec:filter-security-metadata-source>
+    			<sec:intercept-url pattern="/login" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+    			<sec:intercept-url pattern="/security/loginFailure.json" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+    			<sec:intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+      			<sec:intercept-url pattern="/**" access="ROLE_USER,ROLE_ADMIN"/>
+    		</sec:filter-security-metadata-source>
+    		-->
+  		</property>
+	</bean>
+	
+	<bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+		<property name="allowIfAllAbstainDecisions" value="false"/>
+		<property name="decisionVoters">
+			<list>
+				<bean class="org.springframework.security.access.vote.RoleVoter"/>
+				<bean class="org.springframework.security.access.vote.AuthenticatedVoter"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="authenticationManager" class="org.springframework.security.authentication.ProviderManager">
+		<property name="providers">
+			<list>
+				<ref local="daoAuthenticationProvider"/>
+				<ref local="rememberMeAuthenticationProvider" />  
+			</list>
+		</property>
+	</bean>
+
+	<bean id="daoAuthenticationProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+		<property name="userDetailsService" ref="userDetailsService"/>
+	</bean>
+
+	<bean id="userDetailsService" class="com.starit.core.spring.security.HibernateUserDetailsServiceImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<!--
+	<bean id="userDetailsService" class="org.springframework.security.core.userdetails.memory.InMemoryDaoImpl">
+		<property name="userMap">
+			<value>
+				admin=000000,ROLE_ADMIN
+				user=000000,ROLE_USER
+			</value>
+		</property>
+	</bean>
+	-->
+
+	<!--  
+	<bean id="authenticationLoggerListener" class="org.springframework.security.authentication.event.LoggerListener"/>
+	-->
+	<bean id="authorizationLoggerListener" class="org.springframework.security.access.event.LoggerListener"/>
+	
+</beans>

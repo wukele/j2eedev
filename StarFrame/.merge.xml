@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<merge:options 
+  indent="  "  
+  braceStyle="matching"  
+  redirect="Gen"
+  block="\s*@\s*generated\s*NOT\s*(?:\n\r?|\r\n?)"
+  noImport="\s*//\s*import\s+([\w.*]*)\s*;\s*(?:\n\r?|\r\n?)"
+  xmlns:merge="http://www.eclipse.org/org/eclipse/emf/codegen/jmerge/Options">
+
+<!--  dictionary pattern for @generated -->
+ <merge:dictionaryPattern 
+    name="generatedUnmodifiableMembers" 
+    select="Member/getComment" 
+    match="@\s*(gen)erated\s*(This field/method[^\n]*)*\n"/> 
+
+<!--  dictionary pattern for @ModelReference-->
+  <merge:dictionaryPattern 
+    name="modelReferences" 
+    select="Member/getComment" 
+    match="@\s*(ModelReference)\s*\[" />
+   
+<!--  dictionary pattern for @ModelCoreReference-->
+  <merge:dictionaryPattern 
+    name="modelCoreReferences" 
+    select="Member/getComment" 
+    match="@\s*(ModelCoreReference)\s*\[" />
+    
+<!--  not sure if we need the match and the dictionary -->
+  <merge:match 
+    markup="^ModelReference$" 
+    get="Member/getComment" 
+    signature="\s*@\s*ModelReference\s*(?:NOT\s*)*(\S*)\s*\n"/>
+   
+  <!-- Sweep annotations from all generated content, Skyway JMerger will only clear Annotations added by Skyway -->
+  <!-- See ManagedAnnotationsExtensionPointReader for the extension point def -->
+  <merge:sweep parentMarkup="^gen$|^ModelReference$|^ModelCoreReference$"  select="Annotation"/>
+  
+   <!--  Assume this clears previously generated content -->
+  <merge:sweep markup="^gen$|^ModelReference$|^ModelCoreReference$" select="Member"/>
+  
+   <!-- This rule will sweep any stale Skyway imports. -->
+  <merge:sweep markup="^org.skyway.*$|^com.skyway.*$" select="Import"/>
+  
+  <!-- This rule will sweep any stale Spring imports. -->
+  <merge:sweep markup="^org.springframework.*$" select="Import"/>
+  
+  <!-- Sets the content of annotations if the parent is marked with gen --> 
+  <merge:pull 
+      sourceGet="Annotation/getContents"
+      targetParentMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+      targetPut="Annotation/setContents"/>
+  
+  <!-- Push Annotations for all generated content -->
+  <merge:push targetParentMarkup="^gen$|^ModelReference$|^ModelCoreReference$" select="Annotation"/>
+  
+  <!-- Copy all generated content -->
+  <merge:pull 
+    sourceMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    sourceGet="Member/getComment"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="Member/setComment"/>
+    
+  <merge:pull 
+    sourceGet="Member/getFlags"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    equals="Member/getName"
+    targetPut="Member/setFlags"/>
+    
+   <merge:pull 
+    sourceMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    sourceGet="AbstractType/getComment"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="AbstractType/setComment"/>
+    
+  <merge:pull 
+    sourceGet="Type/getTypeParameters"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="Type/setTypeParameters"/>
+    
+  <merge:pull 
+    sourceGet="Type/getSuperclass"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="Type/setSuperclass"/>
+    
+  <merge:pull 
+    sourceGet="Type/getSuperInterfaces"
+    sourceTransfer="(\s*@\s*extends|\s*@\s*implements)(.*?)(?:&lt;!--|(?:\n\r?|\r\n?))"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="Type/addSuperInterface"/>
+    
+  <merge:pull 
+    sourceGet="Enum/getSuperInterfaces"
+    sourceTransfer="(\s*@\s*extends|\s*@\s*implements)(.*?)(?:&lt;!--|(?:\n\r?|\r\n?))"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="Enum/addSuperInterface"/>
+ 
+  <merge:pull 
+    sourceGet="EnumConstant/getArguments"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="EnumConstant/setArguments"/>
+    
+  <merge:pull 
+    sourceGet="EnumConstant/getBody"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="EnumConstant/setBody"/>
+ 
+  <merge:pull 
+    sourceGet="Member/getFlags"
+    targetPut="Member/setFlags"/>
+ 
+  <merge:pull 
+    sourceGet="Initializer/getBody"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="Initializer/setBody"/>
+
+  <merge:pull 
+    sourceGet="Field/getType"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="Field/setType"/>
+    
+  <merge:pull 
+    sourceGet="Field/getInitializer"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="Field/setInitializer"/>
+
+  <merge:pull 
+    sourceGet="Method/getTypeParameters"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="Method/setTypeParameters"/>
+    
+  <merge:pull 
+    sourceGet="Method/getReturnType"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="Method/setReturnType"/>
+    
+  <merge:pull 
+    sourceGet="Method/getParameters"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="Method/setParameters"/>
+    
+   <merge:pull 
+    sourceGet="Method/getBody"
+    targetMarkup="gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="Method/setBody"/>
+    
+  <merge:pull 
+    sourceGet="Method/getExceptions"
+    targetMarkup="^gen$|^ModelReference$|^ModelCoreReference$"
+    targetPut="Method/setExceptions"/>
+ 
+</merge:options>
