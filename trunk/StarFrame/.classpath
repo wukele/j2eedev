@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="resources"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/spring-security-core-3.0.3.RELEASE.jar" sourcepath="E:/开发软件/spring/spring-security-3.0.2.RELEASE/dist/spring-security-core-3.0.2.RELEASE-sources.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/spring-security-web-3.0.3.RELEASE.jar" sourcepath="E:/开发软件/spring/spring-security-3.0.2.RELEASE/dist/spring-security-web-3.0.2.RELEASE-sources.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/aopalliance-1.0.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/aspectjrt-1.6.8.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/aspectjweaver-1.6.8.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/mysql-connector-java-5.1.6-bin.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jcl-over-slf4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/validation-api-1.0.0.GA.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/hibernate-validator-4.1.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.aop-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.asm-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.aspects-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.beans-3.0.4.CI-749.jar" sourcepath="E:/开发软件/spring/spring-framework-3.0.4.CI-749/src/org.springframework.beans-sources-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.context-3.0.4.CI-749.jar" sourcepath="E:/开发软件/spring/spring-framework-3.0.4.CI-749/src/org.springframework.context-sources-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.context.support-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.core-3.0.4.CI-749.jar" sourcepath="E:/开发软件/spring/spring-framework-3.0.4.CI-749/src/org.springframework.core-sources-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.expression-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.jdbc-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.jms-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.orm-3.0.4.CI-749.jar" sourcepath="E:/开发软件/spring/spring-framework-3.0.4.CI-749/src/org.springframework.orm-sources-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.oxm-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.test-3.0.4.CI-749.jar" sourcepath="E:/开发软件/spring/spring-framework-3.0.4.CI-749/src/org.springframework.test-sources-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.transaction-3.0.4.CI-749.jar" sourcepath="E:/开发软件/spring/spring-framework-3.0.4.CI-749/src/org.springframework.transaction-sources-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.web-3.0.4.CI-749.jar" sourcepath="E:/开发软件/spring/spring-framework-3.0.4.CI-749/src/org.springframework.web-sources-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/org.springframework.web.servlet-3.0.4.CI-749.jar" sourcepath="E:/开发软件/spring/spring-framework-3.0.4.CI-749/src/org.springframework.web.servlet-sources-3.0.4.CI-749.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/spring-security-config-3.0.2.RELEASE.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_21"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/junit-4.8.2.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-dbcp.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-fileupload.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-pool.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-lang.jar" sourcepath="F:/maven/repository/commons-lang/commons-lang/2.2/commons-lang-2.2-sources.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/hibernate3.5.3.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/javassist-3.9.0.GA.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jta-1.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/hibernate-jpa-2.0-api-1.0.0.Final.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/slf4j-log4j12-1.6.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jstl-1.2.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-beanutils.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jackson-core-asl-1.5.3.jar" sourcepath="F:/maven/repository/org/codehaus/jackson/jackson-core-asl/1.5.3/jackson-core-asl-1.5.3-sources.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jackson-mapper-asl-1.5.3.jar" sourcepath="F:/maven/repository/org/codehaus/jackson/jackson-mapper-asl/1.5.3/jackson-mapper-asl-1.5.3-sources.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/cglib-2.2.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/asm-all-3.1.jar"/>
+	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
+</classpath>
