@@ -1,11 +1,5 @@
 package com.starit;
 
-import java.util.Map;
-
-import ognl.Ognl;
-import ognl.OgnlException;
-
-import org.apache.log4j.Logger;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -20,10 +14,6 @@ import org.w3c.dom.Node;
  *
  */
 public class OGNLUtils {
-	private static Logger logger = Logger.getLogger(OGNLUtils.class);
-    public static final String JBOSSESB_SOAP_NS = "http://jbossesb.jboss.org/soap";
-    public static final String JBOSSESB_SOAP_NS_PREFIX = "jbossesb-soap:";
-    public static final String OGNL_ATTRIB = "ognl";
     public static final String IS_COLLECTION_ATTRIB = "is-collection";
 
     private enum SOAPNameSpaces {
@@ -40,27 +30,6 @@ public class OGNLUtils {
 			return nameSpace;
 		}
 	}
-
-    public static Object getParameter(String ognl, Map params) {
-        Object param;
-
-        // Try getting the parameter from the params Map using the
-        // raw OGNL expression as the key...
-        param = params.get(ognl);
-        if(param == null) {
-            // And if that didn't work, try using the OGNL expression to extract the param
-            // from an Object Graph using the OGNL toolkit...
-            try {
-                param = Ognl.getValue(ognl, params);
-            } catch (OgnlException e) {
-                if(logger.isDebugEnabled()) {
-                    logger.debug("OGNL Error. Could not retrieve parameter value for " + ognl);
-                }
-            }
-        }
-
-        return (param != null?param:"");
-    }
 
     public static String getOGNLExpression(Element element) {
         StringBuffer ognlExpression = new StringBuffer();
@@ -79,14 +48,8 @@ public class OGNLUtils {
                 break;
             }
 
-            String preassignedOgnl = parentElement.getAttributeNS(JBOSSESB_SOAP_NS, OGNL_ATTRIB);
-            if(preassignedOgnl != null && !preassignedOgnl.equals("")) {
-                ognlExpression.insert(0, "." + preassignedOgnl);
-                isInBody = true;
-                break;
-            } else {
-                ognlExpression.insert(0, getOGNLToken(parentElement));
-            }
+
+            ognlExpression.insert(0, getOGNLToken(parentElement));
             parent = parent.getParentNode();
         }
 
@@ -118,15 +81,8 @@ public class OGNLUtils {
 				break;
 			}
 
-			String preassignedOgnl = parentElement.getAttributeNS(
-					JBOSSESB_SOAP_NS, OGNL_ATTRIB);
-			if (preassignedOgnl != null && !preassignedOgnl.equals("")) {
-				ognlExpression.insert(0, "." + preassignedOgnl);
-				isInBody = true;
-				break;
-			} else {
-				ognlExpression.insert(0, getOGNLToken(parentElement));
-			}
+
+			ognlExpression.insert(0, getOGNLToken(parentElement));
 			parent = parent.getParentNode();
 		}
 
@@ -179,11 +135,6 @@ public class OGNLUtils {
     }
 
     private static boolean assertIsCollection(Element element) {
-        if(element.getAttributeNS(JBOSSESB_SOAP_NS, IS_COLLECTION_ATTRIB).equals("true")) {
-            // It's already been attributed... no need to check for the soapui comment...
-            return true;
-        }
-
         Comment firstComment = (Comment) DOMUtil.getFirstChildByType(element, Node.COMMENT_NODE);
 
         // TODO: Get Ole (soapUI) to add an attribute to the collection element - better than looking for this comment.
