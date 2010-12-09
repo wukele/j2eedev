@@ -10,8 +10,6 @@ import org.w3c.dom.Node;
  * 
  * Thanks to Tom Fennelly from Jboss Group
  * 
- * @author wilson
- *
  */
 public class OGNLUtils {
     public static final String IS_COLLECTION_ATTRIB = "is-collection";

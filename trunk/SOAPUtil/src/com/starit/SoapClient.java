@@ -6,7 +6,6 @@ import java.io.StringReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.naming.ConfigurationException;
 import javax.xml.parsers.DocumentBuilder;

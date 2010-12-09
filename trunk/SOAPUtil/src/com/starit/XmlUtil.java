@@ -33,7 +33,6 @@ import org.w3c.dom.NodeList;
 /**
  * XMl utility methods.
  *
- * @author Tom Fennelly
  */
 
 public class XmlUtil {
