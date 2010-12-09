@@ -32,5 +32,16 @@ public class Test {
 		//params.put("dumpSOAP", "true");
 		result = client.sendRequest("sayHi", params, wsdlUrl);
 		System.out.println(result);
+		
+		//微软
+		//输入参数：theType = 汇率类型：A = 全部汇率；B = 基本汇率；C = 交叉汇率，默认为 A； 
+		//返回数据：DataSet，Item(Code) = 代码、Item(Currency) = 名称、Item(ClosePrice) = 最新价、Item(DiffPercent) = 涨跌%、Item(DiffAmount) = 涨跌金额、Item(OpenPrice) = 开盘价、Item(HighPrice) = 最高价、Item(LowPrice) = 最低价、Item(Range) = 震幅%、Item(BuyPrice) = 买入价、Item(SellPrice) = 卖出价、Item(ChangeColor) = 涨跌颜色、Item(DataTime) = 数据时间。
+		System.out.println("--------------------------------------------------------");
+		wsdlUrl = "http://www.webxml.com.cn/WebServices/ExchangeRateWebService.asmx?wsdl";
+		client = new SoapClient();
+		params.clear();
+		params.put("theType", "A");
+		result = client.sendRequest("getExchangeRate", params, wsdlUrl);
+		System.out.println(result);
 	}
 } 
