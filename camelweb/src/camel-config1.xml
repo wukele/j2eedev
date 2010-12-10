@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.5.0.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf-2.5.0.xsd
+       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+
+	<cxf:cxfEndpoint id="helloWorld"
+                     address="/helloworld"
+                     endpointName="s:HelloWorldPort"
+                     serviceName="s:HelloWorldService"
+                     wsdlURL="helloWorld.wsdl"
+                     xmlns:s="http://demo.cxf.starit.com/"/>                  
+                     
+	 <!-- a bean to enrich the input -->
+    <bean id="enrichBean" class="com.starit.EnrichBean"/>
+
+	<bean id="mySlip" class="com.starit.DynamicRouterTest"/>
+	
+	<bean id="camelTracer" class="org.apache.camel.processor.interceptor.Tracer">
+		<property name="traceOutExchanges" value="true" />
+	</bean>
+	
+	<bean id="traceFormatter" class="org.apache.camel.processor.interceptor.DefaultTraceFormatter">
+		<property name="showOutHeaders" value="true" />
+		<property name="showOutBody" value="true" />
+	  	<property name="showOutBodyType" value="true" />
+	</bean>
+	
+    <!-- this is the camel route which proxy the web service and forward it to the real web service -->
+    <camelContext id="camel" trace="false" xmlns="http://camel.apache.org/schema/spring">
+    	<!-- interceptFrom>
+	    	<to uri="log:received"/>
+	    </interceptFrom -->
+	    <onException>
+		   <exception>java.lang.Exception</exception>
+		   <continued><constant>true</constant></continued>
+		   <to uri="log:input"/>
+		</onException>
+        <route id="routetest">
+            <!-- cxf consumer using MESSAGE format -->
+            <from uri="cxf:bean:helloWorld?dataFormat=MESSAGE"/>
+            <!-- enrich the input by ensure the incidentId parameter is set -->
+            <to uri="bean:enrichBean"/>
+            <!-- 负载均衡配置 -->
+            <loadBalance>
+            	<weighted distributionRatio="2 1" roundRobin="true"/>
+            	<!--  
+	          	<failover roundRobin="true">
+	              	<exception>java.io.IOException</exception>
+	          	</failover>
+	          	-->
+	          	<to uri="http://localhost:9000/helloWorld"/>
+	          	<to uri="http://localhost:9001/helloWorld"/>
+	      	</loadBalance>
+            <!-- send proxied request to real web service
+            <dynamicRouter>
+            	<method ref="mySlip" method="slip"/>
+            </dynamicRouter>
+            -->
+            <to uri="log:exception"/>
+        </route>
+    </camelContext>
+    
+    <bean class="com.starit.MyInterceptor"/>
+</beans>

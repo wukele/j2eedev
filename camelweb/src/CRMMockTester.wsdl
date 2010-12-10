@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://mock.csb.starit.com.cn" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://mock.csb.starit.com.cn" xmlns:intf="http://mock.csb.starit.com.cn" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://mock.csb.starit.com.cn" xmlns="http://www.w3.org/2001/XMLSchema">
+   <element name="businessService">
+    <complexType>
+     <sequence>
+      <element name="custOrderConditionInfo" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="businessServiceResponse">
+    <complexType>
+     <sequence>
+      <element name="businessServiceReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="queryService">
+    <complexType>
+     <sequence>
+      <element name="queryConditionInfo" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="queryServiceResponse">
+    <complexType>
+     <sequence>
+      <element name="queryServiceReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="businessServiceRequest">
+
+      <wsdl:part element="impl:businessService" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="queryServiceResponse">
+
+      <wsdl:part element="impl:queryServiceResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="queryServiceRequest">
+
+      <wsdl:part element="impl:queryService" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="businessServiceResponse">
+
+      <wsdl:part element="impl:businessServiceResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="CRMMockTester">
+
+      <wsdl:operation name="businessService">
+
+         <wsdl:input message="impl:businessServiceRequest" name="businessServiceRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:businessServiceResponse" name="businessServiceResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="queryService">
+
+         <wsdl:input message="impl:queryServiceRequest" name="queryServiceRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:queryServiceResponse" name="queryServiceResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="CRMMockTesterSoapBinding" type="impl:CRMMockTester">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="businessService">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="businessServiceRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="businessServiceResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="queryService">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="queryServiceRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="queryServiceResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="CRMMockTesterService">
+
+      <wsdl:port binding="impl:CRMMockTesterSoapBinding" name="CRMMockTester">
+
+         <wsdlsoap:address location="http://192.168.20.140:9080/ws/services/CRMMockTester"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>
