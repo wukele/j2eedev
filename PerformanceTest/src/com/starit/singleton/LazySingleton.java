@@ -1,4 +1,4 @@
-package com.starit.concurrent;
+package com.starit.singleton;
 
 /**
  * DCL 减少锁的次数
@@ -14,7 +14,7 @@ public class LazySingleton {
             synchronized (LazySingleton.class) {   
                 if (instance == null) {   
                     instance = new LazySingleton();   
-                }   
+                }
             }   
         }   
         return instance;   
