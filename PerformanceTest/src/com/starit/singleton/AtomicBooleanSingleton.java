@@ -12,7 +12,7 @@ public class AtomicBooleanSingleton {
     }
 	
 	private static void checkInitialized() {
-		if(initialized.compareAndSet(false, true)) {
+		if(instance == null && initialized.compareAndSet(false, true)) {
 			instance = new AtomicBooleanSingleton();
 		}
 	}
