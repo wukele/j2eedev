@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="melibrary.com.genuitec.eclipse.j2eedt.core.MYECLIPSE_JAVAEE_5_CONTAINER"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/commons-management-1.0.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/camel-core-2.5.0.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/camel-jms-2.5.0.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-activemq-5.3.1/activemq-all-5.3.1.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/camel-cxf-2.5.0.jar" sourcepath="C:/Documents and Settings/Administrator/.m2/repository/org/apache/camel/camel-cxf/2.5.0/camel-cxf-2.5.0-sources.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/camel-spring-2.5.0.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-cxf-2.3.0/lib/cxf-2.3.0.jar" sourcepath="C:/Documents and Settings/Administrator/.m2/repository/org/apache/cxf/cxf-bundle/2.3.0/cxf-bundle-2.3.0-sources.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-cxf-2.3.0/lib/jsr311-api-1.1.1.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-cxf-2.3.0/lib/geronimo-servlet_3.0_spec-1.0.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/spring/spring-framework/lib/jakarta-commons/commons-codec.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/camel-servlet-2.5.0.jar" sourcepath="C:/Documents and Settings/Administrator/.m2/repository/org/apache/camel/camel-servlet/2.5.0/camel-servlet-2.5.0-sources.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/spring/spring-web-3.0.4.RELEASE.jar" sourcepath="C:/Documents and Settings/Administrator/.m2/repository/org/springframework/spring-web/3.0.4.RELEASE/spring-web-3.0.4.RELEASE-sources.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/spring/spring-aop-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/spring/spring-asm-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/spring/spring-beans-3.0.4.RELEASE.jar" sourcepath="C:/Documents and Settings/Administrator/.m2/repository/org/springframework/spring-beans/3.0.4.RELEASE/spring-beans-3.0.4.RELEASE-sources.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/spring/spring-context-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/spring/spring-context-support-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/spring/spring-core-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/spring/spring-expression-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/spring/spring-jdbc-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/spring/spring-jms-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/spring/spring-orm-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/spring/spring-test-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/spring/spring-tx-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-cxf-2.3.0/lib/wsdl4j-1.6.2.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-cxf-2.3.0/lib/XmlSchema-1.4.7.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/optional/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/optional/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/optional/slf4j-log4j12-1.6.1.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/camel-http-2.5.0.jar" sourcepath="C:/Documents and Settings/Administrator/.m2/repository/org/apache/camel/camel-http/2.5.0/camel-http-2.5.0-sources.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/spring/spring-framework/lib/jakarta-commons/commons-httpclient.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-cxf-2.3.0/lib/wss4j-1.5.9.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-cxf-2.3.0/lib/xmlsec-1.4.3.jar"/>
+	<classpathentry kind="lib" path="F:/code/opensource/StarFrame/WebRoot/WEB-INF/lib/jrobin-1.5.9.1.jar"/>
+	<classpathentry kind="lib" path="F:/code/opensource/StarFrame/WebRoot/WEB-INF/lib/javamelody.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/httpcomponents-client-4.0.3/lib/httpclient-4.0.3.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/httpcomponents-core-4.1/lib/httpcore-nio-4.1.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/camel-http4-2.5.0.jar" sourcepath="C:/Documents and Settings/Administrator/.m2/repository/org/apache/camel/camel-http4/2.5.0/camel-http4-2.5.0-sources.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/httpcomponents-core-4.1/lib/httpcore-4.1.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-cxf-2.3.0/lib/neethi-2.0.4.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Sun JDK 1.6.0_13"/>
+	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
+</classpath>

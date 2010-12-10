@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.5.0.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd">
+    
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>   
+	<cxf:cxfEndpoint id="crmmocktest"
+                     address="/camel/crmmocktest"
+                     wsdlURL="CRMMockTester.wsdl"
+                     endpointName="s:CRMMockTester"
+                     serviceName="s:CRMMockTesterService"
+                     xmlns:s="http://mock.csb.starit.com.cn">
+    </cxf:cxfEndpoint>
+
+	<bean id="cxfHeaderFilterStrategy" class="com.starit.patch.CxfHeaderFilterStrategy"></bean>
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <route>
+            <from uri="cxf:bean:crmmocktest?dataFormat=MESSAGE&amp;headerFilterStrategy=#cxfHeaderFilterStrategy"/>
+            <to uri="log:input"/>
+            <to uri="http://192.168.20.140:9080/ws/services/CRMMockTester"/>
+            <to uri="log:output"/>
+        </route>
+    </camelContext>
+
+     
+	<bean id="http" class="org.apache.camel.component.http.HttpComponent">
+	    <property name="camelContext" ref="camel"/>
+	    <property name="httpConnectionManager" ref="myHttpConnectionManager"/>
+	</bean>
+	
+	<bean id="myHttpConnectionManager" class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
+	    <property name="params" ref="myHttpConnectionManagerParams"/>
+	</bean>
+	
+	<bean id="myHttpConnectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
+	    <property name="defaultMaxConnectionsPerHost" value="20"/>
+	    <property name="soTimeout" value="1000" />
+	    <property name="connectionTimeout" value="1000" />
+	</bean>
+</beans>

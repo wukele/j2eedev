@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+    
+    <jaxws:endpoint id="helloworld1"
+	  implementor="com.starit.cxf.service.HelloWorldImpl" 
+	  address="/cxf/helloworld">
+		<jaxws:inInterceptors>
+       		<ref bean="WSS4JInInterceptor" />
+      	</jaxws:inInterceptors>
+	</jaxws:endpoint>
+
+	<bean id="WSS4JInInterceptor" class="org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor">
+		<constructor-arg>
+			<map>
+				<entry key="action" value="UsernameToken" />
+				<entry key="passwordType" value="PasswordText" />
+				<entry key="passwordCallbackClass"
+					value="com.starit.security.ServerPasswordCallback" />
+			</map>
+		</constructor-arg>
+	</bean>
+	<cxf:cxfEndpoint id="helloWorld"
+                     address="/camel/helloworld"
+                     endpointName="s:HelloWorldPort"
+                     serviceName="s:HelloWorldService"
+                     wsdlURL="helloWorld.wsdl"
+                     xmlns:s="http://demo.cxf.starit.com/">
+    </cxf:cxfEndpoint>
+                     
+	 <!-- a bean to enrich the input -->
+    <bean id="enrichBean" class="com.starit.EnrichBean"/>
+
+    <!-- this is the camel route which proxy the web service and forward it to the real web service -->
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <route>
+            <!-- cxf consumer using MESSAGE format -->
+            <from uri="cxf:bean:helloWorld?dataFormat=MESSAGE"/>
+            <!-- log input received -->
+            <to uri="log:input"/>
+            <!-- enrich the input by ensure the incidentId parameter is set -->
+            <to uri="bean:enrichBean"/>
+            <!-- send proxied request to real web service -->
+            <to uri="http://localhost:8080/camelweb/webservices/cxf/helloworld"/>
+            <!-- log answer from real web service -->
+            <to uri="log:output"/>
+        </route>
+    </camelContext>
+
+     
+	<bean id="http" class="org.apache.camel.component.http.HttpComponent">
+	    <property name="camelContext" ref="camel"/>
+	    <property name="httpConnectionManager" ref="myHttpConnectionManager"/>
+	</bean>
+	
+	<bean id="myHttpConnectionManager" class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
+	    <property name="params" ref="myHttpConnectionManagerParams"/>
+	</bean>
+	
+	<bean id="myHttpConnectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
+	    <property name="defaultMaxConnectionsPerHost" value="5"/>
+	</bean>
+</beans>
