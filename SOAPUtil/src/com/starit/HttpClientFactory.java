@@ -27,4 +27,24 @@ public class HttpClientFactory {
 
 		return answer;
 	}
+	
+//	public static HttpClient createHttpClient() {
+//		HttpClient answer;
+//		
+//		if(ApplicationContextHolder.containsBean(HTTP_CLIENT_PARAMS_BEAN)) {
+//			HttpClientParams clientParams = 
+//				(HttpClientParams)ApplicationContextHolder.getBean(HTTP_CLIENT_PARAMS_BEAN);
+//			answer = new HttpClient(clientParams);
+//		} else {
+//			answer = new HttpClient();
+//		}
+//		
+//		if(ApplicationContextHolder.containsBean(HTTP_CONNECTION_MANAGER_BEAN)) {
+//			HttpConnectionManager httpConnectionManager = 
+//				(HttpConnectionManager)ApplicationContextHolder.getBean(HTTP_CONNECTION_MANAGER_BEAN);
+//			answer.setHttpConnectionManager(httpConnectionManager);
+//		}
+//
+//		return answer;
+//	}
 }

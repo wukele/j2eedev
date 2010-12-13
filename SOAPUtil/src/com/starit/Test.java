@@ -3,6 +3,12 @@ package com.starit;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * ≤‚ ‘
+ * 
+ * @author Administrator
+ *
+ */
 public class Test {
 	public static void main(String[] args) throws Exception {
 		//axis2
