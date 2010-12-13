@@ -14,13 +14,13 @@ public class Test {
 		System.out.println(result);
 		
 		//jax-ws
-		System.out.println("--------------------------------------------------------");
-		wsdlUrl = "http://192.168.20.140:9081/ws/HelloWorldPort?wsdl";
-		client = new SoapClient();
-		params.clear();
-		params.put("arg0", "melin");
-		result = client.sendRequest("sayHello", params, wsdlUrl);
-		System.out.println(result);
+//		System.out.println("--------------------------------------------------------");
+//		wsdlUrl = "http://192.168.20.140:9081/ws/HelloWorldPort?wsdl";
+//		client = new SoapClient();
+//		params.clear();
+//		params.put("arg0", "melin");
+//		result = client.sendRequest("sayHello", params, wsdlUrl);
+//		System.out.println(result);
 		
 		//cxf
 		System.out.println("--------------------------------------------------------");

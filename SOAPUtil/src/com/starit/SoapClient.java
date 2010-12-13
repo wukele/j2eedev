@@ -60,7 +60,7 @@ public class SoapClient {
     	String responseBodyAsString;
 		PostMethod postMethod = new PostMethod(address);
 		try {
-			HttpClient client = new HttpClient();
+			HttpClient client = HttpClientFactory.createHttpClient();
 			postMethod.setRequestHeader("SOAPAction", action);
 			postMethod.setRequestEntity(new InputStreamRequestEntity(
 					new ByteArrayInputStream(message.getBytes("UTF-8")),
