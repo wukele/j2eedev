@@ -34,10 +34,12 @@ public class SoapClient {
 	
 	private DocumentBuilderFactory docBuilderFactory ;
 	private Map<String, WsdlInterface[]> wsdls = new LRULinkedHashMap<String, WsdlInterface[]>(256);
+	private HttpClient client;
 	
 	public SoapClient() {
         docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilderFactory.setNamespaceAware(true);
+        client = HttpClientFactory.createHttpClient();
 	}
 	
 	public Map<String, String> sendRequest(String operation, Map<String, Object> params, String wsdlUrl) throws Exception{
@@ -60,11 +62,9 @@ public class SoapClient {
     	String responseBodyAsString;
 		PostMethod postMethod = new PostMethod(address);
 		try {
-			HttpClient client = HttpClientFactory.createHttpClient();
 			postMethod.setRequestHeader("SOAPAction", action);
 			postMethod.setRequestEntity(new InputStreamRequestEntity(
-					new ByteArrayInputStream(message.getBytes("UTF-8")),
-					"text/xml")
+					new ByteArrayInputStream(message.getBytes("UTF-8")), "text/xml")
 
 			);
 			client.executeMethod(postMethod);

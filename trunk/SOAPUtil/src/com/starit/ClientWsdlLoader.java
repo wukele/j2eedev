@@ -62,8 +62,6 @@ public class ClientWsdlLoader extends WsdlLoader{
         return isAborted;
     }
 
-    public void close() {
-        
+    public void close() {  
     }
-
 }
