@@ -33,6 +33,8 @@ public class ParserWsdl {
             	String requestTemplate = operationInst.getRequestAt(0).getRequestContent();
             	//System.out.println("Action: "+operationInst.getAction());
             	System.out.println(operationInst.getName());
+            	System.out.println(requestTemplate);
+            	System.out.println(operationInst);;
             }
         }
 	}
