@@ -6,7 +6,6 @@
 	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/camel-core-2.5.0.jar"/>
 	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/camel-jms-2.5.0.jar"/>
 	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="E:/开发软件/apache-activemq-5.3.1/activemq-all-5.3.1.jar"/>
 	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/camel-cxf-2.5.0.jar" sourcepath="C:/Documents and Settings/Administrator/.m2/repository/org/apache/camel/camel-cxf/2.5.0/camel-cxf-2.5.0-sources.jar"/>
 	<classpathentry kind="lib" path="E:/开发软件/apache-camel-2.5.0/lib/camel-spring-2.5.0.jar"/>
 	<classpathentry kind="lib" path="E:/开发软件/apache-cxf-2.3.0/lib/cxf-2.3.0.jar" sourcepath="C:/Documents and Settings/Administrator/.m2/repository/org/apache/cxf/cxf-bundle/2.3.0/cxf-bundle-2.3.0-sources.jar"/>
@@ -45,5 +44,6 @@
 	<classpathentry kind="lib" path="E:/开发软件/httpcomponents-core-4.1/lib/httpcore-4.1.jar"/>
 	<classpathentry kind="lib" path="E:/开发软件/apache-cxf-2.3.0/lib/neethi-2.0.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Sun JDK 1.6.0_13"/>
+	<classpathentry kind="lib" path="E:/开发软件/apache-activemq-5.4.2/activemq-all-5.4.2.jar"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>
