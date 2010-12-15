@@ -36,8 +36,12 @@
 	  	<property name="showOutBodyType" value="true" />
 	</bean>
 	
+	<bean id="cxfHeaderFilterStrategy" class="com.starit.patch.CxfHeaderFilterStrategy"></bean>
     <!-- this is the camel route which proxy the web service and forward it to the real web service -->
     <camelContext id="camel" trace="false" xmlns="http://camel.apache.org/schema/spring">
+    	<camel:dataFormats>
+    		<camel:string charset="UTF-8"/>
+    	</camel:dataFormats>
     	<!-- interceptFrom>
 	    	<to uri="log:received"/>
 	    </interceptFrom -->
@@ -48,21 +52,23 @@
 		</onException>
         <route id="routetest">
             <!-- cxf consumer using MESSAGE format -->
-            <from uri="cxf:bean:helloWorld?dataFormat=MESSAGE"/>
+            <from uri="cxf:bean:helloWorld?dataFormat=MESSAGE&amp;headerFilterStrategy=#cxfHeaderFilterStrategy"/>
             <!-- enrich the input by ensure the incidentId parameter is set -->
+            <to uri="log:input"/>
             <to uri="bean:enrichBean"/>
-            <!-- 负载均衡配置 -->
+            <convertBodyTo type="String" charset="UTF-8" />
+	        <to uri="http://localhost:9000/helloWorld"/>
+            <!-- 负载均衡配置
             <loadBalance>
             	<weighted distributionRatio="2 1" roundRobin="true"/>
-            	<!--  
 	          	<failover roundRobin="true">
 	              	<exception>java.io.IOException</exception>
 	          	</failover>
-	          	-->
 	          	<to uri="http://localhost:9000/helloWorld"/>
 	          	<to uri="http://localhost:9001/helloWorld"/>
 	      	</loadBalance>
-            <!-- send proxied request to real web service
+	      	 -->
+            <!--
             <dynamicRouter>
             	<method ref="mySlip" method="slip"/>
             </dynamicRouter>

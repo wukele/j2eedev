@@ -34,10 +34,12 @@ public class EnrichBean {
 
     public Document enrich(Exchange exchange, Document document) {
     	
-    	Node node = document.getElementsByTagName("arg0").item(0);
+    	//exchange.setProperty(Exchange.CHARSET_NAME, "UTF-8");
+    	Node node = document.getElementsByTagName("name").item(0);
         String arg0 = node.getTextContent();
-        node.setTextContent("456");
-        System.out.println("arg0 was " + arg0 + ", changed to 456");
+        System.out.println(arg0);
+        node.setTextContent("张三");
+//        System.out.println("arg0 was " + arg0 + ", changed to 456");
     	
 
         return document;
