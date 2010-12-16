@@ -9,34 +9,23 @@ import java.util.Map;
  * @author Administrator
  *
  */
-public class Test {
+public class CompatibilityTest {
 	public static void main(String[] args) throws Exception {
 		//axis2
 		String wsdlUrl = "http://192.168.20.14:8080/camelweb/webservices/camel/crmmocktest?wsdl";
 		SoapClient client = new SoapClient();
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("custOrderConditionInfo", "1234");
+		params.put("businessService.custOrderConditionInfo", "1234");
 		Map<String, String> result = client.sendRequest("businessService", params, wsdlUrl);
 		System.out.println(result);
 		
 		//jax-ws
-//		System.out.println("--------------------------------------------------------");
-//		wsdlUrl = "http://192.168.20.140:9081/ws/HelloWorldPort?wsdl";
-//		client = new SoapClient();
-//		params.clear();
-//		params.put("arg0", "melin");
-//		result = client.sendRequest("sayHello", params, wsdlUrl);
-//		System.out.println(result);
-		
-		//cxf
 		System.out.println("--------------------------------------------------------");
-		wsdlUrl = "http://192.168.20.14:8080/camelweb/webservices/camel/helloworld?wsdl";
+		wsdlUrl = "http://192.168.20.140:9081/ws/HelloWorldPort?wsdl";
 		client = new SoapClient();
 		params.clear();
-		params.put("greet", "hello");
-		params.put("name", "melin");
-		//params.put("dumpSOAP", "true");
-		result = client.sendRequest("sayHi", params, wsdlUrl);
+		params.put("sayHello.arg0", "melin");
+		result = client.sendRequest("sayHello", params, wsdlUrl);
 		System.out.println(result);
 		
 		//Œ¢»Ì
@@ -47,7 +36,7 @@ public class Test {
 		client = new SoapClient();
 		params.clear();
 		params.put("theType", "A");
-		result = client.sendRequest("getExchangeRate", params, wsdlUrl);
+		result = client.sendRequest("theType.getExchangeRate", params, wsdlUrl);
 		System.out.println(result);
 	}
 } 

@@ -178,8 +178,8 @@ public class SoapClient {
 
             if (childCount == 1 && node.getNodeType() == Node.TEXT_NODE) {
                 if (node.getNodeValue().equals("?")) {
-                    //String ognl = OGNLUtils.getOGNLExpression(element, soapNs);
-                    Object param = params.get(DOMUtil.getName(element));
+                    String ognl = OGNLUtils.getOGNLExpression(element, soapNs);
+                    Object param = params.get(ognl);
 
                     //param = OGNLUtils.getParameter(ognl, params);
 
@@ -219,7 +219,7 @@ public class SoapClient {
         if(childCount == 1) {
             Node childNode = children.item(0);
             if(childNode.getNodeType() == Node.TEXT_NODE) {
-                String ognl = DOMUtil.getName(element); //OGNLUtils.getOGNLExpression(element);
+                String ognl = OGNLUtils.getOGNLExpression(element);
                 map.put(ognl, childNode.getNodeValue());
                 return;
             }
