@@ -16,10 +16,6 @@
  */
 package com.starit;
 
-import java.util.List;
-
-import javax.xml.soap.SOAPMessage;
-
 import org.apache.camel.Exchange;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -33,15 +29,16 @@ import org.w3c.dom.Node;
 public class EnrichBean {
 
     public Document enrich(Exchange exchange, Document document) {
-    	
-    	//exchange.setProperty(Exchange.CHARSET_NAME, "UTF-8");
-    	Node node = document.getElementsByTagName("name").item(0);
-        String arg0 = node.getTextContent();
-        System.out.println(arg0);
-        node.setTextContent("张三");
+//    	System.out.println(exchange.getIn().getHeader("host"));
+//    	//exchange.setProperty(Exchange.CHARSET_NAME, "UTF-8");
+//    	Node node = document.getElementsByTagName("name").item(0);
+//        String arg0 = node.getTextContent();
+//        System.out.println(arg0);
+//        node.setTextContent("张三");
 //        System.out.println("arg0 was " + arg0 + ", changed to 456");
     	
-
+        exchange.getIn().removeHeader("CamelHttpUri");
+        //exchange.getIn().removeHeader("CamelHttpUrl");
         return document;
         //http://camel.apache.org/advanced-configuration-of-camelcontext-using-spring.html
     }
