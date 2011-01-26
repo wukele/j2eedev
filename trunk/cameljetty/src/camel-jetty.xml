@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.5.0.xsd">
+
+	<bean id="enrichBean" class="com.starit.EnrichBean"/>
+	
+	<bean id="jetty" class="org.apache.camel.component.jetty.JettyHttpComponent">
+		<property name="threadPool">
+			<!-- corePoolSize, maximumPoolSize, keepAliveTime -->
+			<bean class="org.eclipse.jetty.util.thread.ExecutorThreadPool">
+				<constructor-arg index="0" value="100" />
+				<constructor-arg index="1" value="100" />
+				<constructor-arg index="2" value="60" />
+			</bean>
+		</property>
+		<property name="httpClientThreadPool">
+			<bean class="org.eclipse.jetty.util.thread.ExecutorThreadPool">
+				<constructor-arg index="0" value="50" />
+				<constructor-arg index="1" value="50" />
+				<constructor-arg index="2" value="60" />
+			</bean>
+		</property>
+		<property name="socketConnectors">
+			<map>
+				<entry key="8090">
+					<bean class="org.eclipse.jetty.server.nio.SelectChannelConnector">
+						<property name="acceptors" value="2" />
+						<property name="lowResourcesConnections" value="20000"/>
+						<property name="lowResourcesMaxIdleTime" value="5000"/>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+    <camelContext id="camel" trace="false" xmlns="http://camel.apache.org/schema/spring">
+    	<jmxAgent id="agent" createConnector="true" serviceUrlPath="/jmxrmi/camel" connectorPort="1099"/>
+    	
+        <route id="routetest">
+            <from uri="jetty:http://0.0.0.0:8090/jetty" />
+            <to uri="bean:enrichBean?method=enrich1"/>
+            <wireTap uri="seda:start"/> 
+            <convertBodyTo type="String" charset="UTF-8" />
+	        <to uri="http://localhost:9000/helloWorld"/>
+        </route>
+        <route>
+        	<from uri="seda:start?concurrentConsumers=50" />
+	        <to uri="bean:enrichBean?method=enrich" />
+        </route>
+        <!-- 
+        <route id="routetest">
+            <from uri="jetty:http://0.0.0.0:8090/jetty" />
+            <to uri="bean:enrichBean?method=enrich"/>
+            <to uri="bean:enrichBean?method=enrich1"/>
+            <convertBodyTo type="String" charset="UTF-8" />
+            <to uri="log:input?showAll=true"/>
+	        <to uri="http://localhost:9000/helloWorld"/>
+        </route>
+        -->
+    </camelContext>
+    
+    <bean id="http" class="org.apache.camel.component.http.HttpComponent">
+	    <property name="camelContext" ref="camel"/>
+	    <property name="httpConnectionManager" ref="myHttpConnectionManager"/>
+	</bean>
+	
+	<bean id="myHttpConnectionManager" class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
+	    <property name="params" ref="myHttpConnectionManagerParams"/>
+	</bean>
+	
+	<bean id="myHttpConnectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
+	    <property name="defaultMaxConnectionsPerHost" value="20"/>
+	    <property name="soTimeout" value="1000" />
+	    <property name="connectionTimeout" value="1000" />
+	</bean>
+</beans>
