@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:http-conf="http://cxf.apache.org/transports/http/configuration"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+       http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+
+	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="tcp://localhost:61616" />
+	</bean>
+
+	<bean id="jms" class="org.apache.camel.component.jms.JmsComponent">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="useMessageIDAsCorrelationID" value="true" />
+	</bean>
+
+	<bean class="org.apache.camel.component.cxf.transport.CamelTransportFactory">
+		<property name="bus" ref="cxf" />
+		<property name="camelContext" ref="camelContext" />
+		<property name="transportIds">
+			<list>
+				<value>http://cxf.apache.org/transports/camel</value>
+			</list>
+		</property>
+	</bean>
+
+	<client id="CustomerService" 
+		xmlns="http://cxf.apache.org/jaxws" 
+		xmlns:s="http://demo.cxf.starit.com/"
+		endpointName="s:HelloWorldPort"
+        serviceName="s:HelloWorldService"
+		address="camel://direct:CustomerService" 
+		serviceClass="com.starit.cxf.demo.HelloWorld">
+		<features>
+			<!-- Enables logging of SOAP messages. -->
+			<logging xmlns="http://cxf.apache.org/core" />
+		</features>
+	</client>
+	
+	<!-- This context defines a route for each endpoint. For client endpoints you route from
+		the cxf endpoint to the jms queue or topic. For servers you route from the jms queue or 
+		topic to the cxf endpoint -->
+	<camelContext id="camelContext" xmlns="http://camel.apache.org/schema/spring">
+		<route>
+			<from uri="direct:CustomerService" />
+			<to uri="jms://queue:CustomerService" />
+		</route>
+	</camelContext>
+
+</beans>
