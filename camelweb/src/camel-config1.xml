@@ -39,24 +39,16 @@
 	<bean id="cxfHeaderFilterStrategy" class="com.starit.patch.CxfHeaderFilterStrategy"></bean>
     <!-- this is the camel route which proxy the web service and forward it to the real web service -->
     <camelContext id="camel" trace="false" xmlns="http://camel.apache.org/schema/spring">
-    	<camel:dataFormats>
-    		<camel:string charset="UTF-8"/>
-    	</camel:dataFormats>
     	<!-- interceptFrom>
 	    	<to uri="log:received"/>
 	    </interceptFrom -->
-	    <onException>
-		   <exception>java.lang.Exception</exception>
-		   <continued><constant>true</constant></continued>
-		   <to uri="log:input"/>
-		</onException>
+
         <route id="routetest">
-            <!-- cxf consumer using MESSAGE format -->
-            <from uri="cxf:bean:helloWorld?dataFormat=MESSAGE&amp;headerFilterStrategy=#cxfHeaderFilterStrategy"/>
-            <!-- enrich the input by ensure the incidentId parameter is set -->
-            <to uri="log:input"/>
+            <!--from uri="cxf:bean:helloWorld?dataFormat=MESSAGE&amp;headerFilterStrategy=#cxfHeaderFilterStrategy"/-->
+            <from uri="servlet:///helloWorld" />
             <to uri="bean:enrichBean"/>
             <convertBodyTo type="String" charset="UTF-8" />
+            <to uri="log:input?showAll=true"/>
 	        <to uri="http://localhost:9000/helloWorld"/>
             <!-- 负载均衡配置
             <loadBalance>

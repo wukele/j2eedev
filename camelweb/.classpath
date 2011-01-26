@@ -45,5 +45,6 @@
 	<classpathentry kind="lib" path="E:/开发软件/apache-cxf-2.3.0/lib/neethi-2.0.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Sun JDK 1.6.0_13"/>
 	<classpathentry kind="lib" path="E:/开发软件/apache-activemq-5.4.2/activemq-all-5.4.2.jar"/>
+	<classpathentry kind="lib" path="E:/开发软件/spring/spring-framework-3.0.5.RELEASE/dist/org.springframework.web.servlet-3.0.5.RELEASE.jar"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>
