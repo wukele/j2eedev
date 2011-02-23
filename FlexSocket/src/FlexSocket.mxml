@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   creationComplete="initApp()">
+	
+	<fx:Script>
+		<![CDATA[
+			private var __socket:Socket;
+			private var __ip:String;
+			private var __port:String;
+			public function __connectSocket(ip:String, port:String):void {
+				__ip = ip;
+				__port = port;
+				if(__socket==null) {
+					Security.allowDomain("*");
+					Security.allowInsecureDomain("*");
+					//Security.loadPolicyFile("F:/code/opensource/FlexSocket/src/crossdomain.xml")
+					__socket = new Socket();   
+					__socket.addEventListener(Event.CONNECT, __onConnect)
+					__socket.addEventListener(Event.CLOSE, __onClose)
+					__socket.addEventListener(ProgressEvent.SOCKET_DATA, __receiveMsgHandler)   
+					__socket.connect(__ip, int(__port));
+				}
+			}
+			
+			public function __onConnect(event:Event):void {   
+				trace("Connection sucess");   
+			}
+			
+			public function __onClose(event:Event):void {   
+				trace("Socket close");   
+			}   
+			
+			/**发送消息*/
+			public function __sendMsgHandler(message:String):void {
+				__socket.writeUTFBytes(message+"\n");
+				__socket.flush();   
+			}   
+			
+			/**接受消息*/   
+			public function __receiveMsgHandler(event:ProgressEvent):void {
+				var message:String = __socket.readUTFBytes(__socket.bytesAvailable);
+				trace("receive message: " + message);
+				var result:String = ExternalInterface.call("receiveMsgHandler", message);
+			}
+			
+			public function initApp():void {
+				ExternalInterface.addCallback("connectSocket",__connectSocket);
+				ExternalInterface.addCallback("sendMsgHandler",__sendMsgHandler);
+			}
+		]]>
+	</fx:Script> 
+</s:Application>
