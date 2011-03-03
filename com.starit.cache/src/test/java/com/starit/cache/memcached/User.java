@@ -1,5 +1,7 @@
 package com.starit.cache.memcached;
 
+import java.io.Serializable;
+
 import com.starit.cache.annotation.CacheKey;
 
 /**
@@ -9,7 +11,7 @@ import com.starit.cache.annotation.CacheKey;
  * @version 
  */
 @CacheKey("user-${id}")
-public class User {
+public class User implements Serializable {
 	private Long id;
 	private String name;
 	private String address;
