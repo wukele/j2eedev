@@ -12,10 +12,19 @@ import com.starit.cache.annotation.CacheKey;
  */
 @CacheKey("user-${id}")
 public class User implements Serializable {
+	//private static final long serialVersionUID = 918825037296130599L;
 	private Long id;
 	private String name;
 	private String address;
-	
+	private String sdf;
+	public String getSdf() {
+		return sdf;
+	}
+
+	public void setSdf(String sdf) {
+		this.sdf = sdf;
+	}
+
 	public User() {}
 	
 	public User(Long id, String name, String address) {
