@@ -1,6 +1,5 @@
 package com.starit.cache.support;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +14,6 @@ import com.starit.cache.Cache;
 import com.starit.cache.CacheException;
 import com.starit.cache.JsonTranscoder;
 import com.starit.cache.annotation.CacheKey;
-import com.starit.cache.annotation.NotNull;
 
 /**
  * 
@@ -41,27 +39,6 @@ public abstract class AbstractCache implements Cache {
 			throw new CacheException("json transcoder error", e);
 		}
 	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> T entityFieldNotNull(Class clazz, T value) {
-		Method[] methods = clazz.getMethods();
-		for(Method method : methods) {
-			NotNull ann = AnnotationUtils.findAnnotation(method, NotNull.class);
-			if(ann != null) {
-				try {
-					Object obj = method.invoke(value);
-					//TODO
-				} catch (IllegalArgumentException e) {
-					throw new CacheException("", e);
-				} catch (IllegalAccessException e) {
-					throw new CacheException("", e);
-				} catch (InvocationTargetException e) {
-					throw new CacheException("", e);
-				}
-			}
-		}
-		return value;
-	}
 
 	@Override
 	public <T> void putItem(T entity) {
@@ -69,6 +46,29 @@ public abstract class AbstractCache implements Cache {
 		try {
 			String value = transcoder.serialize(entity);
 			putItem(key, value);
+		} catch (Exception e) {
+			throw new CacheException("json transcoder error", e);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> Object removeItem(T entity) {
+		String key = createKey(entity);
+		try {
+			String json = (String)removeItem(key);
+			T value = (T)transcoder.deserialize(json, entity.getClass());
+			return value;
+		} catch (Exception e) {
+			throw new CacheException("json transcoder error", e);
+		}
+	}
+	
+	@Override
+	public <T> void cleanItem(T entity) {
+		String key = createKey(entity);
+		try {
+			cleanItem(key);
 		} catch (Exception e) {
 			throw new CacheException("json transcoder error", e);
 		}
