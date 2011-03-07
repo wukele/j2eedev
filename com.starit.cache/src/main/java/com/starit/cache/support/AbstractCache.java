@@ -1,5 +1,6 @@
 package com.starit.cache.support;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,6 +15,7 @@ import com.starit.cache.Cache;
 import com.starit.cache.CacheException;
 import com.starit.cache.JsonTranscoder;
 import com.starit.cache.annotation.CacheKey;
+import com.starit.cache.annotation.NotNull;
 
 /**
  * 
@@ -33,11 +35,43 @@ public abstract class AbstractCache implements Cache {
 		String key = createKey(entity);
 		String json = (String) getItem(key);
 		try {
-			T value = (T)transcoder.deserialize(json, entity.getClass());
-			return value;
+			entity = (T)transcoder.deserialize(json, entity.getClass());
+			entity = entityFieldNotNull(entity);
+			return entity;
 		} catch (Exception e) {
 			throw new CacheException("json transcoder error", e);
 		}
+	}
+	
+	/**
+	 * 查找entity字段对应get方法包含@NotNull注解的方法，invoke调用返回值为null，查询缓存结果值直接返回null。
+	 * 
+	 * @param <T>
+	 * @param clazz
+	 * @param entity
+	 * @return
+	 */
+	private <T> T entityFieldNotNull(T entity) {
+		Method[] methods = entity.getClass().getMethods();
+		for(Method method : methods) {
+			NotNull ann = AnnotationUtils.findAnnotation(method, NotNull.class);
+			if(ann != null) {
+				try {
+					Object value = method.invoke(entity);
+					if(value == null) {
+						entity = null;
+						break;
+					}
+				} catch (IllegalArgumentException e) {
+					throw new CacheException("", e);
+				} catch (IllegalAccessException e) {
+					throw new CacheException("", e);
+				} catch (InvocationTargetException e) {
+					throw new CacheException("", e);
+				}
+			}
+		}
+		return entity;
 	}
 
 	@Override
