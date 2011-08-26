@@ -1,0 +1,72 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="userTarget" class="com.iteye.melin.aop.chapter3.ProxyFactoryBean.UserImpl">
+		<property name="name" value="james" />
+		<property name="surname" value="bond" />
+	</bean>
+	<bean id="personUserTarget" class="com.iteye.melin.aop.chapter3.ProxyFactoryBean.PersonUser">
+		<property name="user" ref="userTarget" />
+	</bean>
+	<bean id="commandTarget" class="com.iteye.melin.aop.chapter3.ProxyFactoryBean.CommandImpl" />
+
+	<bean id="methodLoggerInterceptor" class="com.iteye.melin.aop.chapter3.ProxyFactoryBean.MethodLoggerInterceptor" />
+	<bean id="timeExecutionInterceptor" class="com.iteye.melin.aop.chapter3.ProxyFactoryBean.TimeExecutionInterceptor" />
+	<bean id="consoleAdvice" class="com.iteye.melin.aop.chapter3.ProxyFactoryBean.ConsoleAdvice" />
+
+	<!-- Advisor -->
+	<bean id="consoleAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+		<property name="pointcut" ref="methodNamePointcut" />
+		<property name="advice" ref="consoleAdvice" />
+	</bean>
+	<!-- Pointcut -->
+	<bean id="methodNamePointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+		<property name="mappedName" value="execute" />
+	</bean>
+
+	<bean id="user" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces" value="com.iteye.melin.aop.chapter3.ProxyFactoryBean.User" />
+		<property name="target">
+			<ref local="userTarget" />
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>methodLoggerInterceptor</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="personUser" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyTargetClass" value="true" />
+		<property name="target">
+			<bean class="com.iteye.melin.aop.chapter3.ProxyFactoryBean.PersonUser">
+				<property name="user">
+					<bean class="com.iteye.melin.aop.chapter3.ProxyFactoryBean.UserImpl">
+						<property name="name" value="jack" />
+						<property name="surname" value="folla" />
+					</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>methodLoggerInterceptor</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="command" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces" value="com.iteye.melin.aop.chapter3.ProxyFactoryBean.Command" />
+		<property name="target">
+			<ref local="commandTarget" />
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>timeExecutionInterceptor</value>
+				<value>consoleAdvisor</value>
+			</list>
+		</property>
+	</bean>
+</beans>
