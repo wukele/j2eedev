@@ -1,0 +1,38 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:
+	p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd 
+http://www.springframework.org/schema/aop 
+http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<bean id="hello" class="org.springaop.target.Hello" p:label="writer" />
+	
+	<aop:config>
+		<aop:aspect ref="before">
+			<aop:before method="beforeGreeting" pointcut="execution(* greeting(..))" />
+		</aop:aspect>
+	</aop:config>
+	<bean id="before" class="org.springaop.aspects.schema.SpringAopAspectBeforeExample" />
+
+	<aop:config>
+		<aop:aspect ref="after">
+			<aop:after method="afterGreeting" pointcut="execution(* greeting(..))" />
+		</aop:aspect>
+	</aop:config>
+	<bean id="after" class="org.springaop.aspects.schema.SpringAopAspectAfterExample" /> 
+	
+	<aop:config> 
+        <aop:aspect ref="afterReturning"> 
+			<aop:after-returning method="afterGreeting" pointcut="execution(* greeting(..))" /> 
+        </aop:aspect> 
+    </aop:config> 
+    <bean id="afterReturning" class="org.springaop.aspects.schema.SpringAopAspectAfterReturningExample"/>
+
+	<aop:config>
+		<aop:aspect ref="afterThrowing">
+			<aop:after-throwing method="afterErrorMethod" pointcut="execution(* errorMethod(..)) throws Exception" />
+		</aop:aspect>
+	</aop:config>
+	<bean id="afterThrowing" class="org.springaop.aspects.schema.SpringAopAspectAfterThrowingExample" /> 
+</beans> 
