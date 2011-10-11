@@ -1,0 +1,200 @@
+.nav {
+    background-image:url(../images/icons/nav.png);
+}
+
+.x-tree-node img.flow{
+   background-image: url("../images/icons/flow.gif"); 
+}
+
+.x-tree-node img.subflow {
+	background-image: url("../images/icons/subflow.gif"); 
+}
+
+.x-tree-node img.version {
+	background-image: url("../images/icons/version.gif"); 
+}
+
+.x-tree-node img.leaf {
+	background-image: url("../images/icons/leaf.gif"); 
+}
+
+.icon-loading { 
+  background-image: url("../images/icons/loading.gif");
+}
+
+.columnCfg {
+	background-image: url("../images/icons/columnCfg.gif"); 
+}
+.conditionCfg {
+	background-image: url("../images/icons/conditionCfg.png"); 
+}
+.tree-context-refresh {
+	background-image: url("../images/icons/refresh.gif"); 
+}
+.tree-context-startquery {
+	background-image: url("../images/icons/search.gif"); 
+}
+.tree-context-pickup{
+	background-image: url("../images/icons/pickup.gif"); 
+}
+.home {
+    background-image:url(../images/icons/home.png);
+}
+
+.btn-logout {
+	background-image:url("../images/icons/logout.png") !important;
+}
+
+.btn-onlineUser {
+	background-image:url("../images/icons/eyes.png") !important;
+}
+
+.tipsTile {
+	background-image:url("../images/icons/tips.jpg") !important;
+}
+
+.btn-expand {
+	background-image:url("../images/icons/btn-expand.png") !important;
+}
+
+.add {
+	background-image:url("../images/icons/add.png") !important;
+}
+
+.delete {
+	background-image:url("../images/icons/delete.png") !important;
+}
+
+.edit {
+	background-image:url("../images/icons/edit.png") !important;
+}
+
+.save {
+	background-image:url("../images/icons/save.png") !important;
+}
+
+.redo {
+	background-image:url("../images/icons/redo.png") !important;
+}
+
+.query {
+	background-image:url("../images/icons/query.png") !important;
+}
+
+.authorization {
+	background-image:url("../images/icons/authorization.png") !important;
+}
+
+.bind {
+	background-image:url("../images/icons/bind.png") !important;
+}
+
+.unbind {
+	background-image:url("../images/icons/unbind.png") !important;
+}
+
+.refresh {
+	background-image:url("../images/icons/refresh.png") !important;
+}
+
+.expand {
+	background-image:url("../images/icons/expand.png") !important;
+}
+
+.collapse {
+	background-image:url("../images/icons/collapse.png") !important;
+}
+
+.excel {
+	background-image:url("../images/icons/excel.png") !important;
+}
+
+.word {
+	background-image:url("../images/icons/word.png") !important;
+}
+
+.print {
+	background-image:url("../images/icons/print.gif") !important;
+}
+
+.pdf {
+	background-image:url("../images/icons/pdf.gif") !important;
+}
+
+.office {
+	background-image:url("../images/icons/office.png") !important;
+}
+
+.book {
+	background-image:url("../images/icons/book.png") !important;
+}
+
+.setting {
+	background-image:url("../images/icons/setting.png") !important;
+}
+
+.setting {
+	background-image:url("../images/icons/setting.png") !important;
+}
+
+.cursor {
+	background-image:url("../images/icons/cursor.png") !important;
+}
+
+.tick {
+	background-image:url("../images/icons/tick.png") !important;
+}
+
+.prev {
+	background-image:url("../images/icons/prev.png") !important;
+}
+
+.next {
+	background-image:url("../images/icons/next.png") !important;
+}
+
+.applicationIcon {
+	background-image:url("../images/icons/application.png") !important;
+}
+.application_doubleIcon {
+	background-image:url("../images/icons/application_double.png") !important;
+}
+.application_cascadeIcon {
+	background-image:url("../images/icons/application_cascade.png") !important;
+}
+
+.db-icn-world {
+	background-image:url("../images/icons/world.png") !important;
+}
+
+.db-icn-back {
+	background-image:url("../images/icons/back.png") !important;
+}
+.db-icn-cut {
+    background-image: url( ../images/icons/cut.png) !important;
+}
+.db-icn-copy {
+    background-image: url( ../images/icons/copy.png) !important;
+}
+.db-icn-paste {
+    background-image: url( ../images/icons/paste.png) !important;
+}
+.db-icn-upload {
+    background-image: url( ../images/icons/upload.gif) !important;
+}
+.db-icn-download {
+    background-image: url( ../images/icons/download.gif) !important;
+}
+.db-icn-folder-new {
+    background-image: url( ../images/icons/folder_new.gif) !important;
+}
+.db-icn-folder-zip {
+    background-image: url( ../images/icons/folder_zip.gif) !important;
+}
+.db-icn-rename {
+    background-image: url( ../images/icons/rename.gif) !important;
+}
+
+.ux-select-selected {
+	background-color:#00ff00;
+}
