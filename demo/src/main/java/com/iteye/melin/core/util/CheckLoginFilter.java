@@ -67,5 +67,6 @@ public class CheckLoginFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
     	notCheckURLList.add("/login");
     	notCheckURLList.add("/resources");
+    	notCheckURLList.add("/user/login.json");
     }   
 }   
