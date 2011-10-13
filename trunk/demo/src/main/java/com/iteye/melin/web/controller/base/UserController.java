@@ -2,6 +2,9 @@ package com.iteye.melin.web.controller.base;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -99,6 +102,16 @@ public class UserController extends BaseController {
 	@ResponseBody
 	public ResponseData deleteUser(Long id) {
 		userService.deleteEntity(id);
+		return ResponseData.SUCCESS_NO_DATA;
+	}
+	
+	@RequestMapping("/login") 
+	@ResponseBody
+	public ResponseData login(HttpServletRequest request) {
+		User user = new User();
+		user.setUserName("admin");
+		HttpSession session = request.getSession();
+		session.setAttribute("__SESSIONKEY__", user);
 		return ResponseData.SUCCESS_NO_DATA;
 	}
 }
