@@ -269,10 +269,12 @@
 					<webAppConfig>
 						<contextPath>/demo</contextPath>
 					</webAppConfig>
-					<classesDirectory>${project.basedir}\target\classes</classesDirectory>
+					<classesDirectories>
+						<classesDirecty>${project.basedir}\target\classes</classesDirecty>
+					</classesDirectories>
 					<connectors>
 						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-							<port>8181</port>
+							<port>8080</port>
 							<maxIdleTime>30000</maxIdleTime>
 						</connector>
 					</connectors>
