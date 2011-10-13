@@ -43,7 +43,8 @@ public class CheckLoginFilter implements Filter {
         }   
         if ((!checkRequestURIIntNotFilterList(request))   
                 && session.getAttribute(sessionKey) == null) {   
-            response.sendRedirect(request.getContextPath() + redirectURL);   
+        	request.getSession();
+            response.sendRedirect("http://localhost:8080/demo/login");   
             return;   
         }   
         filterChain.doFilter(servletRequest, servletResponse);   
@@ -55,11 +56,16 @@ public class CheckLoginFilter implements Filter {
    
     private boolean checkRequestURIIntNotFilterList(HttpServletRequest request) {   
         String uri = request.getServletPath()   
-                + (request.getPathInfo() == null ? "" : request.getPathInfo());   
-        return notCheckURLList.contains(uri);   
+                + (request.getPathInfo() == null ? "" : request.getPathInfo()); 
+        for(String path : notCheckURLList) {
+        	if(uri.startsWith(path))
+        		return true;
+        }
+        return false;   
     }   
    
     public void init(FilterConfig filterConfig) throws ServletException {
     	notCheckURLList.add("/login");
+    	notCheckURLList.add("/resources");
     }   
 }   
