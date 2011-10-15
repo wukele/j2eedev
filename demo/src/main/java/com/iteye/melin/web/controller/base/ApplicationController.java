@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.iteye.melin.core.page.Page;
 import com.iteye.melin.core.page.PageRequest;
+import com.iteye.melin.core.util.DictionaryHolder;
 import com.iteye.melin.core.util.ResponseData;
 import com.iteye.melin.core.web.controller.BaseController;
 import com.iteye.melin.web.model.base.Application;
@@ -52,6 +53,7 @@ public class ApplicationController extends BaseController {
 //			pageRequest.getFilters().put("userCode", user.getUserCode());
 
 		Page<Application> page = applicationService.findAllForPage(pageRequest);
+		DictionaryHolder.transfercoder(page.getResult(), 10009L, "getAppState");
 		return page;
 	}
 	

@@ -1,9 +1,12 @@
 package com.iteye.melin.web.controller.base;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.iteye.melin.core.page.Page;
 import com.iteye.melin.core.page.PageRequest;
@@ -35,6 +39,7 @@ public class RecommendController extends BaseController {
 	//~ Instance fields ================================================================================================
 	@Autowired
 	private RecommendService recommendService;
+	private String rootpath = "C:/images/";
 	
 	//~ Methods ========================================================================================================
 	@RequestMapping("/index")
@@ -73,8 +78,14 @@ public class RecommendController extends BaseController {
 	
 	@RequestMapping(value="/insertRecommend", method=RequestMethod.POST)
 	@ResponseBody
-	public ResponseData insertRecommend(Recommend recommend) {
+	public ResponseData insertRecommend(@RequestParam MultipartFile file, Recommend recommend) throws IOException {
 		recommend.setCreateTime(new Date());
+		
+		if(!file.isEmpty()) {
+			String path = rootpath + file.getOriginalFilename();
+			FileUtils.copyInputStreamToFile(file.getInputStream(), new File(path));
+			recommend.setPosterUrl(path);
+		}
         recommendService.insertEntity(recommend);
 		return ResponseData.SUCCESS_NO_DATA;
 	}
@@ -87,9 +98,18 @@ public class RecommendController extends BaseController {
 	
 	@RequestMapping(value="/updateRecommend", method=RequestMethod.POST)
 	@ResponseBody
-	public ResponseData updateRecommend(Recommend recommend) {
-		recommend.setUpdateTime(new Date());
-		recommendService.updateEntity(recommend);
+	public ResponseData updateRecommend(@RequestParam MultipartFile file, Recommend recommend) throws IOException {
+		Recommend tmp = recommendService.findEntity(recommend.getId());
+		tmp.setUpdateTime(new Date());
+		tmp.setLinkUrl(recommend.getLinkUrl());
+		
+		if(!file.isEmpty()) {
+			String path = rootpath + file.getOriginalFilename();
+			FileUtils.copyInputStreamToFile(file.getInputStream(), new File(path));
+			tmp.setPosterUrl(path);
+		}
+		
+		recommendService.updateEntity(tmp);
 		return ResponseData.SUCCESS_NO_DATA;
 	}
 
