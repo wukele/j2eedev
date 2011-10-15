@@ -36,15 +36,11 @@ public class CheckLoginFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;   
         HttpServletResponse response = (HttpServletResponse) servletResponse;   
    
-        HttpSession session = request.getSession();   
-        if (sessionKey == null) {   
-            filterChain.doFilter(request, response);   
-            return;   
-        }   
+        HttpSession session = request.getSession();
+        session.getAttribute(sessionKey);
         if ((!checkRequestURIIntNotFilterList(request))   
                 && session.getAttribute(sessionKey) == null) {   
-        	request.getSession();
-            response.sendRedirect("http://localhost:8080/demo/login");   
+            response.sendRedirect(request.getContextPath() + redirectURL);   
             return;   
         }   
         filterChain.doFilter(servletRequest, servletResponse);   
