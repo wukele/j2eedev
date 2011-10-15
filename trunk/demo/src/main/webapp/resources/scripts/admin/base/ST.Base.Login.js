@@ -58,7 +58,7 @@ Ext.ux.LoginWindow = function(config) {
                     xtype : 'textfield',
                     id : this.usernameId,
                     name : "j_username",
-                    fieldLabel : "Username",
+                    fieldLabel : "用户名",
                     vtype : "alphanum",
                     validateOnBlur : false,
                     allowBlank : false
@@ -67,15 +67,11 @@ Ext.ux.LoginWindow = function(config) {
                     inputType : 'password',
                     id : this.passwordId,
                     name : "j_password",
-                    fieldLabel : "Password",
+                    fieldLabel : "密码",
                     vtype : "alphanum",
                     validateOnBlur : false,
                     allowBlank : false
-                }, {
-	                xtype: 'checkbox',
-	                name: '_spring_security_remember_me',
-	                boxLabel: 'Remember me'
-	            }
+                }
             ]
     });
     var buttons = [ {
@@ -190,6 +186,7 @@ Ext.extend(Ext.ux.LoginWindow, Ext.util.Observable, {
     },
 
     onFailure : function(form, action) { // enable buttons
+    	console.info(action)
         Ext.getCmp(this._loginButtonId).enable();
         if (Ext.getCmp(this._resetButtonId)) {
             Ext.getCmp(this._resetButtonId).enable();
@@ -203,7 +200,7 @@ Ext.extend(Ext.ux.LoginWindow, Ext.util.Observable, {
         }
         var html = '<div id="errorMsg" style="text-align:center;padding-top:10px;color:red;">'+action.result.message+'</div>';
         Ext.select('.x-form-clear-left').each(function(o,g,i){
-            if (i==3)
+            if (i==1)
             	o.insertSibling(html,'after');
         });
     }
@@ -217,7 +214,7 @@ Ext.onReady( function() {
         //formBgcolor:'#f0edce',
         basePath : './resources/images/core/login',
         winBanner : 'login.png',
-        url : 'j_spring_security_check',
+        url : 'user/login.json',
         locationUrl : 'main.action'
     });
     LoginWindow.show();
