@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -16,7 +17,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "app_e_app")
 public class Application {
-	private Long appId;
+	private Long id;
 	private String appName;
 	private String appVer;
 	private Integer typeId;
@@ -33,6 +34,7 @@ public class Application {
 	private String appDesc;
 	private Short softLevel;
 	private Short appState;
+	private String appState_Name;
 	private Integer downTimes;
 	private Integer commentTimes;
 	private Long iconFileId;
@@ -48,12 +50,12 @@ public class Application {
 	@Id
 	@GeneratedValue(generator = "generator")
 	@Column(name = "APP_ID")
-	public Long getAppId() {
-		return this.appId;
+	public Long getId() {
+		return this.id;
 	}
 
-	public void setAppId(Long appId) {
-		this.appId = appId;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Column(name = "APP_NAME")
@@ -280,5 +282,15 @@ public class Application {
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
 	}
+
+	@Transient
+	public String getAppState_Name() {
+		return appState_Name;
+	}
+
+	public void setAppState_Name(String appState_Name) {
+		this.appState_Name = appState_Name;
+	}
+	
 
 }
