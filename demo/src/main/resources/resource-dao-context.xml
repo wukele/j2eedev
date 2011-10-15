@@ -49,7 +49,7 @@
 		<property name="lobHandler" ref="lobHandler" />
 		<property name="packagesToScan">
 			<list> 
-				<value>com.sumilux.doce.web.model</value> 
+				<value>com.iteye.melin.web.model</value> 
 			</list>
 		</property>
 		<property name="hibernateProperties">
