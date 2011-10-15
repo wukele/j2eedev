@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -17,7 +18,7 @@ public class User {
 	@Column(name="USER_ID")
     @GeneratedValue(generator = "tableGenerator")     
 	@GenericGenerator(name = "tableGenerator", strategy="increment")
-	private Long userId;
+	private Long id;
 	
 	@Column(name="USER_NAME")
 	private String userName;
@@ -27,6 +28,8 @@ public class User {
 	
 	@Column(name="DEL_FLAG")
 	private String delFlag;
+	@Transient
+	private String delFlag_Name;
 	
 	@Column(name="PWD_UPD_LST_TME")
 	private Date pwdUpdLstTme;
@@ -55,12 +58,12 @@ public class User {
 	@Column(name="LINK_TEL2")
 	private String linkTel2;
 
-	public Long getUserId() {
-		return userId;
+	public Long getId() {
+		return id;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getUserName() {
@@ -85,6 +88,14 @@ public class User {
 
 	public void setDelFlag(String delFlag) {
 		this.delFlag = delFlag;
+	}
+
+	public String getDelFlag_Name() {
+		return delFlag_Name;
+	}
+
+	public void setDelFlag_Name(String delFlag_Name) {
+		this.delFlag_Name = delFlag_Name;
 	}
 
 	public Date getPwdUpdLstTme() {

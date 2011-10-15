@@ -1,8 +1,11 @@
 package com.iteye.melin.web.controller.base;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.iteye.melin.core.page.Page;
 import com.iteye.melin.core.page.PageRequest;
+import com.iteye.melin.core.util.DictionaryHolder;
 import com.iteye.melin.core.util.ResponseData;
 import com.iteye.melin.core.web.controller.BaseController;
 import com.iteye.melin.web.model.base.User;
@@ -63,6 +67,7 @@ public class UserController extends BaseController {
 //			pageRequest.getFilters().put("userCode", user.getUserCode());
 
 		Page<User> page = userService.findAllForPage(pageRequest);
+		DictionaryHolder.transfercoder(page.getResult(), 10007L, "getDelFlag");
 		return page;
 	}
 	
@@ -93,6 +98,22 @@ public class UserController extends BaseController {
 	}
 	
 	/**
+	 * 更新用户, 只接受POST请求
+	 * 
+	 * @param user
+	 * @return ResponseData
+	 */
+	@RequestMapping(value="/updateUser", method=RequestMethod.POST)
+	@ResponseBody
+	public ResponseData updateUser(User user) {
+		User oldUser = userService.findEntity(user.getId());
+		oldUser.setUserName(user.getUserName());
+		oldUser.setDelFlag(user.getDelFlag());
+		userService.updateEntity(oldUser);
+		return ResponseData.SUCCESS_NO_DATA;
+	}
+	
+	/**
 	 * 删除用户, 只接受POST请求
 	 * 
 	 * @param id
@@ -109,9 +130,27 @@ public class UserController extends BaseController {
 	@ResponseBody
 	public ResponseData login(HttpServletRequest request) {
 		User user = new User();
-		user.setUserName("admin");
-		HttpSession session = request.getSession();
-		session.setAttribute("__SESSIONKEY__", user);
-		return ResponseData.SUCCESS_NO_DATA;
+		String userName = request.getParameter("j_username");
+		String password = request.getParameter("j_password");
+		
+		List<User> list  =userService.findByProperty("userName", userName);
+		
+		if(list.size() == 0) {
+			return new ResponseData(false, "UsernameNotFound", "用户【" + userName + "】不存在.");
+		} else if(!password.equals(list.get(0).getPassword())) {
+			return new ResponseData(false, "BadCredentials", "密码不正确，请重新输入.");
+		} else {
+			user.setUserName("admin");
+			HttpSession session = request.getSession();
+			session.setAttribute("__SESSIONKEY__", user);
+			return ResponseData.SUCCESS_NO_DATA;
+		}
+	}
+	
+	@RequestMapping("/logout") 
+	public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		request.getSession().invalidate();
+		
+		response.sendRedirect(request.getContextPath() + "/login");   
 	}
 }
