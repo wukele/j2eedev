@@ -15,15 +15,17 @@ ST.base.recommendView = Ext.extend(ST.ux.ViewGrid, {
 	addTitle: "增加推荐",
     editTitle: "更新推荐",
     gridTitle: "推荐数据",
-    autoExpandColumn: 6,
+    isFileUpload: true,
+    autoExpandColumn: 4,
 	girdColumns: [
 				{header: 'ID', width: 60, dataIndex: 'id', hideGrid: true, hideForm: 'add', readOnly: true},
-	            {header: '推荐名称', width: 150, dataIndex: 'name', allowBlank:false},
-	            {header: '推荐类型', width: 50, hideGrid: true, dataIndex: 'type', hiddenName: 'type',dictTypeId: '10008', allowBlank:false, fieldtype:'recommendTypeField'},
-	            {header: '推荐类型', width: 80, dataIndex: 'type_Name', hideForm: 'all'},
+	            {header: '链接地址', width: 180, dataIndex: 'linkUrl', allowBlank:false},
+	            {header: '图片类型', width: 180, hideGrid: true, dataIndex: 'type', hiddenName: 'type',dictTypeId: '10008', allowBlank:false, fieldtype:'recommendTypeField'},
+	            {header: '图片类型', width: 180, dataIndex: 'type_Name', hideForm: 'all'},
+	            {header: '图片', width: 300, dataIndex: 'file', allowBlank:true, inputType:"file", hideGrid: true},
+	            {header: '图片地址', width: 300, dataIndex: 'posterUrl', hideForm: 'all'},
 	            {header: '创建时间', width: 130, dataIndex: 'createTime', hideForm: 'all', allowBlank:false},
-	            {header: '创建时间', width: 130, dataIndex: 'updateTime', hideForm: 'all', allowBlank:false},
-	            {header: '推荐描述', width: 80, dataIndex: 'desc'},
+	            {header: '创建时间', width: 130, dataIndex: 'updateTime', hideForm: 'all', allowBlank:false}
 	        ],
 	
 	queryFormItms: [{ 
@@ -32,8 +34,7 @@ ST.base.recommendView = Ext.extend(ST.ux.ViewGrid, {
 	           		columns: 3,
 	            	columnWidths: [0.33, 0.33, 0.33]
 	            },           
-		        items:[{xtype:'textfield',  fieldLabel: '推荐名称', name: 'name', id: 'name', anchor:'80%' },
-		               {xtype:'recommendTypeField',hiddenName: 'type',dictTypeId: '10008', fieldLabel: '推荐类型',anchor:'80%', allowBlank:true }]
+		        items:[{xtype:'recommendTypeField',hiddenName: 'type',dictTypeId: '10008', fieldLabel: '图片类型',anchor:'80%', allowBlank:true }]
 		    }],
     
 	constructor: function() {
