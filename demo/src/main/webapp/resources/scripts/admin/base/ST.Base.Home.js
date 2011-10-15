@@ -4,23 +4,15 @@ Ext.namespace('Home');
 Home.Logout = function() {
 	Ext.MessageBox.confirm('退出系统', "您确认退出系统吗？", function(a,b,c){
 		if(a == 'yes')
-			window.location.href = "./j_spring_security_logout";
+			window.location.href = "./user/logout";
 	});
 };
-Home.ClickNode = function(node) {
-	if (!node.leaf) {
-		return;
-	}
-	Home.ClickTopTab(node);
-};
+
 Home.ClickTopTab = function(node) {
 	var b = Ext.getCmp("centerTabPanel");
 	var panelId = "HomePanel_" + node.id;
 	var d = b.getItem(panelId);
-	var src = node.attributes.resource.action;
-	
-	if(node.attributes.resource.module=='test')
-		src = "http://localhost:8080/TestFrame" + src;
+	var src = node.attributes.action;
 	
 	if (d == null) {
 		var MIF = new Ext.ux.ManagedIFrame.Panel({id:panelId, defaultSrc: src,
@@ -42,19 +34,51 @@ var HomePage = Ext.extend(Ext.Viewport, {
         id: "north-Panel"
     }),
 	center: null,
-	west: new Ext.ux.AccordionPanel({
-		region: 'west',
-        id : 'west-panel', 
-        title: 'Navigator',
-        split: true,
+	west: new Ext.tree.TreePanel({
+		title: "导航菜单",
+		layout: "fit",
+		region: "west",
+		split: true,
         animate: true,
         width: 200,
         minSize: 175,
         maxSize: 400,
         collapsible: true,
-		plugins: [Ext.ux.PanelCollapsedTitle],
-        margins: '0 0 0 2',
-        items: []
+		border: false,
+		expandable:true,
+		margins: '0 0 0 2',
+		autoScroll: true,
+		root: new Ext.tree.AsyncTreeNode({
+            children : [{
+                text : "APP管理",  
+                action: "./application/index",
+                leaf : true
+            },{  
+                text : "公告管理",  
+                action: "./notice/index",
+                leaf : true 
+            },{  
+                text : "推荐管理",  
+                action: "./recommend/index",
+                leaf : true 
+            },{  
+                text : "评论管理",  
+                action: "./comment/index",
+                leaf : true 
+            },{  
+                text : "用户管理",  
+                action: "./user/index",
+                leaf : true 
+            },{  
+                text : "静态数据管理",  
+                action: "./dict/index",
+                leaf : true 
+            }]  
+        }),  
+		listeners: {
+			"click": Home.ClickTopTab
+		},
+		rootVisible: false
 	}),
 	south: new Ext.Panel({
 		region: "south",
@@ -62,17 +86,10 @@ var HomePage = Ext.extend(Ext.Viewport, {
 		border: false,
 		margins: '0 0 0 2',
 		bbar: [{
-			text: "Logout",
+			text: "退出",
 			iconCls: "btn-logout",
 			handler: function() {
 				Home.Logout();
-			}
-		}, "-", {
-			text: "Personal Settings",
-			id: "personConfig",
-			iconCls: "setting",
-			handler: function() {
-				ST.base.PersonConfig.showWin("personConfig");
 			}
 		}]
 	}),
@@ -102,46 +119,6 @@ var HomePage = Ext.extend(Ext.Viewport, {
 			layout: "border",
 			layoutConfig:{animate:true},
 			items: [this.north, this.west, this.center, this.south]
-		});
-		this.afterPropertySet();
-		this.loadWestMenu();
-	},
-	afterPropertySet: function() {
-		//
-	},
-	loadWestMenu: function() {
-		var westPanel = Ext.getCmp("west-panel");
-		Ext.Ajax.request({
-			url: "./menu/queryMenus4User.json",
-			success: function(response, options) {
-				var arr = eval(response.responseText);
-				for (var i = 0; i < arr.length; i++) {
-					var root = arr[i];
-					var panel = new Ext.tree.TreePanel({
-						id: root.id,
-						title: root.text,
-						iconCls: root.iconCls,
-						layout: "fit",
-						animate: true,
-						border: false,
-						expandable:true,
-						autoScroll: true,
-						loader: new Ext.tree.TreeLoader({
-					    	url:"./menu/queryMenus4User.json"
-					    }),
-						root: new Ext.tree.AsyncTreeNode({
-							id: root.id,
-							hidden: true
-						}),
-						listeners: {
-							"click": Home.ClickNode
-						},
-						rootVisible: false
-					});
-					westPanel.add(panel);
-				}
-				westPanel.doLayout();
-			}
 		});
 	}
 });

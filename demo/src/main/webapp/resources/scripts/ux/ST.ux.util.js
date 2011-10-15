@@ -104,20 +104,7 @@ ST.util.genWindow = function(c){
  */
 var __OPERATIONIDS = null;
 ST.util.isAuthOperation = function(code) {
-	if(__OPERATIONIDS == null) {
-		var doc = parent;
-		var i = 0;
-		while(doc.__OPERATIONIDS == null && i<10) {
-			doc = doc.parent;
-			i++;
-		}
-		__OPERATIONIDS = doc.__OPERATIONIDS;
-	}
-	for(var i=0, len=__OPERATIONIDS.length; i<len; i++) {
-		if(__OPERATIONIDS[i] == code) 
-			return true;
-	}
-	return false;
+	return true;
 };
 
 ST.util.setFormValues = function(formId, obj) {
