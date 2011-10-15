@@ -11,18 +11,19 @@
     
 	<link rel="stylesheet" type="text/css" href="./../resources/styles/icons.css" />
 	<link rel="stylesheet" type="text/css" href="./../resources/styles/index.css" />
-	<script type="text/javascript" src="./../resources/scripts/ux/ST.ux.util.js"></script>
+	<link rel="stylesheet" type="text/css" href="./../resources/styles/DateTimePicker.css" />
 	<script type="text/javascript" src="./../resources/scripts/ux/Ext.ux.TreeCombo.js"></script>
+	<script type="text/javascript" src="./../resources/scripts/ux/ST.ux.util.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/ux/ST.ux.ExtField.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/ux/Ext.ux.PagePlugins.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/ux/ST.ux.PlainGrid.js"></script>
-	<script type="text/javascript" src="./../resources/scripts/ux/ST.ux.PlainTree.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/ux/ST.ux.ViewGrid.js"></script>
+	<script type="text/javascript" src="./../resources/scripts/ux/DateTimePicker.js"></script>
 	
-	<script type="text/javascript" src="./../resources/scripts/admin/base/ST.Base.Dict.js"></script>
+	<script type="text/javascript" src="./../resources/scripts/admin/base/ST.Base.Comment.js"></script>
 	<script type="text/javascript">
 		Ext.onReady(function(){
-		    new ST.base.dictView();
+		    new ST.base.commentView();
 		});
 	</script>
   </head>
