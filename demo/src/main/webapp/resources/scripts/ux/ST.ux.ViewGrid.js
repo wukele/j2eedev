@@ -14,8 +14,11 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
     addTitle: "增加数据",
     editTitle: "更新数据",
     gridTitle: "数据列表",
+    formTitle: '查询条件',
     displayEast: false,
     autoExpandColumn: "descn",
+    displayHeader : true,
+    enablebbar : true,
     dialogLabelWidth: 70,
     addButtonOnToolbar: function(toolbar, index){},
     //加载combobox的时候对选项进行选择
@@ -27,11 +30,13 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
     displayButton: true,
     //增加、更新表单是否支持上传文件
     isFileUpload: false,
-    queryFormHeight: 92,
+    queryFormHeight: 105,
     //操作按钮权限值
     authOperations: [!ST.util.isAuthOperation('core.add'),
                      !ST.util.isAuthOperation('core.update'),
-                     !ST.util.isAuthOperation('core.remove')],
+                     !ST.util.isAuthOperation('core.remove'),
+                     !ST.util.isAuthOperation('core.distibute'),
+                     !ST.util.isAuthOperation('core.recommand')],
     
     eastWidth: 250,
     eastGridTitle: '',
@@ -43,13 +48,14 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
 	createForm : function() {
 		this.queryForm = new Ext.form.FormPanel({ 
 			region: 'north',
-		    title: "查询条件", 
+		    title: this.formTitle, 
 		    id: "form-panel",
 		    frame : true,
-		    collapsible: true,
+		    collapsible: false,
 		    buttonAlign: 'center',
 		    height:this.queryFormHeight, 
-		    bodyStyle:'padding:0 0 0 2', 
+		    labelWidth :65,  ///缩小文本与text field间距
+		    bodyStyle:'padding:0 0 0 1', 
 		    items: this.queryFormItms, 
 		    plugins: [Ext.ux.PanelCollapsedTitle],
 		    scope: this,
@@ -59,15 +65,17 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
 				id:'login', 
 				iconCls:'query',
 				handler: this.queryData,
-				scope: this
-			},{ 
+				scope: this,
+				margin:'20px auto'
+			},{html : '<pre>     </pre>'},{   //距离感调整
 				text: '重置', 
 				type:'reset', 
 				id:'clear', 
 				iconCls:'redo',
 				handler: this.reset,
-				scope: this
-			}]
+				scope: this,
+				margin:'20px auto'
+			},{html : '<pre>           </pre>'}]  //距离感调整
 		});
 	},
 	// 初始化ColumnModel
@@ -81,10 +89,10 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
 
         for (var i = 0; i < this.girdColumns.length; i++) {
             var col = this.girdColumns[i];
-            if (col.hideGrid === true) {
+            if (col.hideGrid) {
                 continue;
             }
-            col.renderer = this[col.renderer];
+            //col.renderer = this[col.renderer];
             if(col.fontColor)
             	col.renderer = this.columnColorRenderer.createDelegate(this);
             this.columnHeaders.push(col);
@@ -186,22 +194,34 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
 	        stripeRows: true,
 	        autoExpandColumn: this.autoExpandColumn,
 	        loadMask:"正在加载表格数据,请稍等...",
+	        header : this.displayHeader,  
 	        title: this.gridTitle,
 	        bbar: paging,
+	        tbar: {},
 	        scope:this
 	    });
 	    var index = 11;
 	    
 	    this.grid.getBottomToolbar().insertButton(index++,'-');
-	    	this.grid.getBottomToolbar().insertButton(index++, pageSizeCombo);
-
-	    if(this.displayButton) {
+	    this.grid.getBottomToolbar().insertButton(index++, pageSizeCombo);
+        //激活bbar
+	    if(this.displayButton&& this.enablebbar) {	   
 	    	this.grid.getBottomToolbar().insertButton(index++,'-');
 	    	this.grid.getBottomToolbar().insertButton(index++,new Ext.Button({text:"添加",iconCls: 'add', id:'addEntity', disabled: this.authOperations[0]}));
-	    	this.grid.getBottomToolbar().insertButton(index++,new Ext.Button({text:"更新",iconCls: 'edit', id:'editEntity', disabled: this.authOperations[1]}));
+	    	this.grid.getBottomToolbar().insertButton(index++,new Ext.Button({text:"修改",iconCls: 'edit', id:'editEntity', disabled: this.authOperations[1]}));
 	    	this.grid.getBottomToolbar().insertButton(index++,new Ext.Button({text:"删除",iconCls: 'delete', id:'delEntity', disabled: this.authOperations[2]}));
+		    this.addButtonOnToolbar(this.grid.getBottomToolbar(), index);
 	    }
-	    this.addButtonOnToolbar(this.grid.getBottomToolbar(), index);
+	    //激活tbar
+	    if(this.displayButton && !this.enablebbar){
+	    	this.grid.getTopToolbar().insertButton(index++,new Ext.Button({text:"添加",iconCls: 'add', id:'addEntity', disabled: this.authOperations[0]}));
+	    	this.grid.getTopToolbar().insertButton(index++,'-');
+	    	this.grid.getTopToolbar().insertButton(index++,new Ext.Button({text:"修改",iconCls: 'edit', id:'editEntity', disabled: this.authOperations[1]}));
+	    	this.grid.getTopToolbar().insertButton(index++,'-');
+	    	this.grid.getTopToolbar().insertButton(index++,new Ext.Button({text:"删除",iconCls: 'delete', id:'delEntity', disabled: this.authOperations[2]}));
+	    	this.grid.getTopToolbar().insertButton(index++,'-');
+		    this.addButtonOnToolbar(this.grid.getTopToolbar(), index);
+	    }
 	    
 	    this.grid.addListener(this.clickType, this.rowclickFn, this);
 	    this.store.on("beforeload", function(){
@@ -305,13 +325,13 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
             frame: true,
             id: "addFormPanelID",
             autoScroll: true,
-            buttonAlign: 'center',
+            buttonAlign: 'left',
             url: this.urlAdd,
             items: this.buildItems("add"),
             fileUpload: this.isFileUpload,
             scope: this,
-            buttons: [{
-                text: '确定',
+            buttons: [{html : '<pre>          </pre>'},
+              { text: '确定',
                 scope: this,
                 handler: function() {
                     if (this.addFormPanel.getForm().isValid()) {
@@ -395,7 +415,6 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
         });
         
         this.editDialog = new Ext.Window({
-            //layout: 'fit',
             title: this.editTitle,
             modal: true,
             width: this.dlgWidth,
@@ -441,7 +460,7 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
 	        store: estore,
 	        region: 'east',
        		width: this.eastWidth,
-       		collapsible: true,
+       		collapsible: false,
 	        columns: this.eastGridColumn,
 	        stripeRows: true,
 	        loadMask:"正在加载......",

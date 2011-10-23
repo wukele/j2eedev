@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * AppEApp entity. @author MyEclipse Persistence Tools
@@ -17,39 +18,73 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "app_e_app")
 public class Application {
-	private Long id;
-	private String appName;
-	private String appVer;
-	private Integer typeId;
-	private String typeSeq;
-	private String minSdkVer;
-	private String appPackage;
-	private Float fileSize;
-	private Integer authorId;
-	private String authorName;
-	private String appWebsite;
-	private String supportEmail;
-	private String keyWords;
-	private String appSummary;
-	private String appDesc;
-	private Short softLevel;
-	private Short appState;
-	private String appState_Name;
-	private Integer downTimes;
-	private Integer commentTimes;
-	private Long iconFileId;
-	private String iconUrl;
-	private Long fileId;
-	private Long globalMark;
-	private Integer verMark;
-	private Date createTime;
-	private Date updateTime;
-
 	// Property accessors
 	@GenericGenerator(name = "generator", strategy = "increment")
 	@Id
 	@GeneratedValue(generator = "generator")
 	@Column(name = "APP_ID")
+	private Long id;
+	@Column(name = "APP_NAME")
+	private String appName;
+	@Column(name = "APP_VER")
+	private String appVer;
+	@Column(name = "TYPE_ID")
+	private Integer typeId;
+	@Transient
+	private String typeId_Name;
+	@Transient
+	private String appState_Name;
+	@Transient
+	private String dlClient;
+	@Column(name = "TYPE_SEQ")
+	private String typeSeq;
+	@Column(name = "MIN_SDK_VER")
+	private String minSdkVer;
+	@Column(name = "APP_PACKAGE")
+	private String appPackage;
+	@Column(name = "FILE_SIZE")
+	private Float fileSize;
+	@Column(name = "AUTHOR_ID")
+	private Integer authorId;
+	@Column(name = "AUTHOR_NAME")
+	private String authorName;
+	@Column(name = "APP_WEBSITE")
+	private String appWebsite;
+	@Column(name = "SUPPORT_EMAIL")
+	private String supportEmail;
+	@Column(name = "KEY_WORDS")
+	private String keyWords;
+	@Column(name = "APP_SUMMARY")
+	private String appSummary;
+	@Column(name = "APP_DESC")
+	private String appDesc;
+	@Column(name = "SOFT_LEVEL")
+	private Short softLevel;
+	@Column(name = "APP_STATE")
+	private Short appState;
+	@Column(name = "DOWN_TIMES")
+	private Integer downTimes;
+	@Column(name = "COMMENT_TIMES")
+	private Integer commentTimes;
+	@Column(name = "ICON_FILE_ID")
+	private Long iconFileId;
+	@Column(name = "ICON_URL", length = 128)
+	private String iconUrl;
+	@Column(name = "FILE_ID")
+	private Long fileId;
+	@Column(name = "GLOBAL_MARK")
+	private Long globalMark;
+	@Column(name = "VER_MARK")
+	private Integer verMark;
+
+	@Column(name = "CREATE_TIME")
+	private Date createTime;
+	
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@Column(name = "UPDATE_TIME")
+	private Date updateTime;
+
+
 	public Long getId() {
 		return this.id;
 	}
@@ -58,7 +93,7 @@ public class Application {
 		this.id = id;
 	}
 
-	@Column(name = "APP_NAME")
+
 	public String getAppName() {
 		return this.appName;
 	}
@@ -67,7 +102,6 @@ public class Application {
 		this.appName = appName;
 	}
 
-	@Column(name = "APP_VER")
 	public String getAppVer() {
 		return this.appVer;
 	}
@@ -76,7 +110,6 @@ public class Application {
 		this.appVer = appVer;
 	}
 
-	@Column(name = "TYPE_ID")
 	public Integer getTypeId() {
 		return this.typeId;
 	}
@@ -85,7 +118,6 @@ public class Application {
 		this.typeId = typeId;
 	}
 
-	@Column(name = "TYPE_SEQ")
 	public String getTypeSeq() {
 		return this.typeSeq;
 	}
@@ -94,7 +126,6 @@ public class Application {
 		this.typeSeq = typeSeq;
 	}
 
-	@Column(name = "MIN_SDK_VER")
 	public String getMinSdkVer() {
 		return this.minSdkVer;
 	}
@@ -103,7 +134,6 @@ public class Application {
 		this.minSdkVer = minSdkVer;
 	}
 
-	@Column(name = "APP_PACKAGE")
 	public String getAppPackage() {
 		return this.appPackage;
 	}
@@ -112,7 +142,6 @@ public class Application {
 		this.appPackage = appPackage;
 	}
 
-	@Column(name = "FILE_SIZE")
 	public Float getFileSize() {
 		return this.fileSize;
 	}
@@ -121,7 +150,6 @@ public class Application {
 		this.fileSize = fileSize;
 	}
 
-	@Column(name = "AUTHOR_ID")
 	public Integer getAuthorId() {
 		return this.authorId;
 	}
@@ -130,7 +158,6 @@ public class Application {
 		this.authorId = authorId;
 	}
 
-	@Column(name = "AUTHOR_NAME")
 	public String getAuthorName() {
 		return this.authorName;
 	}
@@ -139,7 +166,6 @@ public class Application {
 		this.authorName = authorName;
 	}
 
-	@Column(name = "APP_WEBSITE")
 	public String getAppWebsite() {
 		return this.appWebsite;
 	}
@@ -148,7 +174,6 @@ public class Application {
 		this.appWebsite = appWebsite;
 	}
 
-	@Column(name = "SUPPORT_EMAIL")
 	public String getSupportEmail() {
 		return this.supportEmail;
 	}
@@ -157,7 +182,6 @@ public class Application {
 		this.supportEmail = supportEmail;
 	}
 
-	@Column(name = "KEY_WORDS")
 	public String getKeyWords() {
 		return this.keyWords;
 	}
@@ -166,7 +190,6 @@ public class Application {
 		this.keyWords = keyWords;
 	}
 
-	@Column(name = "APP_SUMMARY")
 	public String getAppSummary() {
 		return this.appSummary;
 	}
@@ -175,7 +198,6 @@ public class Application {
 		this.appSummary = appSummary;
 	}
 
-	@Column(name = "APP_DESC")
 	public String getAppDesc() {
 		return this.appDesc;
 	}
@@ -184,7 +206,6 @@ public class Application {
 		this.appDesc = appDesc;
 	}
 
-	@Column(name = "SOFT_LEVEL")
 	public Short getSoftLevel() {
 		return this.softLevel;
 	}
@@ -193,7 +214,6 @@ public class Application {
 		this.softLevel = softLevel;
 	}
 
-	@Column(name = "APP_STATE")
 	public Short getAppState() {
 		return this.appState;
 	}
@@ -202,7 +222,6 @@ public class Application {
 		this.appState = appState;
 	}
 
-	@Column(name = "DOWN_TIMES")
 	public Integer getDownTimes() {
 		return this.downTimes;
 	}
@@ -211,7 +230,6 @@ public class Application {
 		this.downTimes = downTimes;
 	}
 
-	@Column(name = "COMMENT_TIMES")
 	public Integer getCommentTimes() {
 		return this.commentTimes;
 	}
@@ -220,7 +238,6 @@ public class Application {
 		this.commentTimes = commentTimes;
 	}
 
-	@Column(name = "ICON_FILE_ID")
 	public Long getIconFileId() {
 		return this.iconFileId;
 	}
@@ -229,7 +246,6 @@ public class Application {
 		this.iconFileId = iconFileId;
 	}
 
-	@Column(name = "ICON_URL", length = 128)
 	public String getIconUrl() {
 		return this.iconUrl;
 	}
@@ -238,7 +254,6 @@ public class Application {
 		this.iconUrl = iconUrl;
 	}
 
-	@Column(name = "FILE_ID")
 	public Long getFileId() {
 		return this.fileId;
 	}
@@ -247,7 +262,6 @@ public class Application {
 		this.fileId = fileId;
 	}
 
-	@Column(name = "GLOBAL_MARK")
 	public Long getGlobalMark() {
 		return this.globalMark;
 	}
@@ -256,7 +270,6 @@ public class Application {
 		this.globalMark = globalMark;
 	}
 
-	@Column(name = "VER_MARK")
 	public Integer getVerMark() {
 		return this.verMark;
 	}
@@ -265,7 +278,6 @@ public class Application {
 		this.verMark = verMark;
 	}
 
-	@Column(name = "CREATE_TIME")
 	public Date getCreateTime() {
 		return this.createTime;
 	}
@@ -274,7 +286,6 @@ public class Application {
 		this.createTime = createTime;
 	}
 
-	@Column(name = "UPDATE_TIME")
 	public Date getUpdateTime() {
 		return this.updateTime;
 	}
@@ -283,7 +294,6 @@ public class Application {
 		this.updateTime = updateTime;
 	}
 
-	@Transient
 	public String getAppState_Name() {
 		return appState_Name;
 	}
@@ -291,6 +301,21 @@ public class Application {
 	public void setAppState_Name(String appState_Name) {
 		this.appState_Name = appState_Name;
 	}
-	
 
+	public void setTypeId_Name(String typeId_Name) {
+		this.typeId_Name = typeId_Name;
+	}
+
+	public String getTypeId_Name() {
+		return typeId_Name;
+	}
+
+	public void setDlClient(String dlClient) {
+		this.dlClient = dlClient;
+	}
+
+	public String getDlClient() {
+		return dlClient;
+	}
+	
 }

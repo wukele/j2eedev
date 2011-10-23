@@ -186,7 +186,7 @@ Ext.extend(Ext.ux.LoginWindow, Ext.util.Observable, {
     },
 
     onFailure : function(form, action) { // enable buttons
-    	console.info(action)
+    	console.info(action);
         Ext.getCmp(this._loginButtonId).enable();
         if (Ext.getCmp(this._resetButtonId)) {
             Ext.getCmp(this._resetButtonId).enable();

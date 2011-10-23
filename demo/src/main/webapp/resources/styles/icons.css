@@ -194,7 +194,9 @@
 .db-icn-rename {
     background-image: url( ../images/icons/rename.gif) !important;
 }
-
 .ux-select-selected {
 	background-color:#00ff00;
+}
+.oper {
+	background-image: url("../images/icons/oper.png"); 
 }

@@ -1,0 +1,1 @@
+java -jar AXMLPrinter2.jar d:/AndroidManifest.xml > d:/cmdAfter.xml

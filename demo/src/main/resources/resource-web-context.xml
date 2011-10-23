@@ -24,12 +24,10 @@
 	        <bean class="com.iteye.melin.core.spring.converter.MappingFastJsonHttpMessageConverter" />
 	    </mvc:message-converters>
 	</mvc:annotation-driven>
-
 	<mvc:view-controller path="/" view-name="index" />
 	<mvc:view-controller path="/login" view-name="login" />
 	
 	<context:component-scan base-package="com.iteye.melin.web.controller" />
-
 	<mvc:resources location="/resources/" mapping="/resources/**" cache-period="3600"/>
 
 	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
@@ -58,6 +56,9 @@
 			</list>
 		</property>
 	</bean>
-	
-	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+	<!-- 
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+       	<property name="maxUploadSize" value="500000"/>
+    </bean>
+     -->
 </beans>
