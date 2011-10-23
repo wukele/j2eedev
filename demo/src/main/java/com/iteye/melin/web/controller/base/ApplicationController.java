@@ -233,6 +233,7 @@ public class ApplicationController extends BaseController {
 		newApp.setAppState(Short.valueOf(appState));
 		newApp.setTypeId(Integer.valueOf(typeId));
 		newApp.setKeyWords(keyWords);
+		newApp.setDownTimes(0);
 		newApp.setIconUrl("/resources/apk/images/"+filename_icon+"."+fileext_icon);
 		newApp.setFileId(fileId);
 		newApp.setAppPackage(appPackage);
