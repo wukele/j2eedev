@@ -11,6 +11,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 /**
  * AppEApp entity. @author MyEclipse Persistence Tools
@@ -77,10 +78,11 @@ public class Application {
 	@Column(name = "VER_MARK")
 	private Integer verMark;
 
-	@Column(name = "CREATE_TIME")
+	@DateTimeFormat(iso=ISO.DATE) 
+	@Column(name="CREATE_TIME",updatable=false)
 	private Date createTime;
 	
-	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@DateTimeFormat(iso=ISO.DATE)
 	@Column(name = "UPDATE_TIME")
 	private Date updateTime;
 
