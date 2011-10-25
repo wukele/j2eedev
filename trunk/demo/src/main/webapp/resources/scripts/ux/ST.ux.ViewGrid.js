@@ -341,6 +341,7 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
             buttons: [{html : '<pre>          </pre>'},
               { text: '确定',
                 scope: this,
+                iconCls:'save',
                 handler: function() {
                     if (this.addFormPanel.getForm().isValid()) {
                         this.addFormPanel.getForm().submit({
@@ -382,6 +383,12 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
     	var items = this.buildItems("edit");
     	var reader = new Ext.data.JsonReader({}, items);
         this.editFormPanel = new Ext.form.FormPanel({
+        	layout: 'tableform',
+            layoutConfig: {
+           		columns: 2,
+            	columnWidths: [.5,.5], 
+            	bodyStyle:'padding:90px'
+            },    
             defaultType: 'textfield',
             labelAlign: 'right',
             labelWidth: 70,
