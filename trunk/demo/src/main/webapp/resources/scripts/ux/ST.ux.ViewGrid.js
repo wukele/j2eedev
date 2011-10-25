@@ -319,6 +319,14 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
     buildAddDialog : function() {
     	this.flag = "add";
         this.addFormPanel = new Ext.form.FormPanel({
+        	//form layout
+        	layout: 'tableform',
+            layoutConfig: {
+           		columns: 2,
+            	columnWidths: [.5,.5], 
+            	bodyStyle:'padding:90px'
+            },    
+        	//form layout
             defaultType: 'textfield',
             labelAlign: 'right',
             labelWidth: this.dialogLabelWidth,
@@ -348,7 +356,7 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
                         });
                     }
                 }
-            },{
+            },{html : '<pre>   </pre>'},{
                 text: '取消',
                 scope: this,
                 handler: function() {

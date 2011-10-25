@@ -37,7 +37,7 @@ function dlClientfunc(value, p, record){
 }
 ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
 	id : 'id_app_Grid',
-	dlgWidth: 400,
+	dlgWidth: 672,
 	dlgHeight: 400,
 	//资源列表查询URL
 	urlGridQuery: 'pageQueryApplications.json',
@@ -45,8 +45,8 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
 	urlEdit : 'updateApplication.json',
 	urlLoadData: 'loadApplication.json',
 	urlRemove: 'deleteApplication.json',
-	addTitle : "增加App应用",
-    editTitle: "更新App应用",
+	addTitle : "增加应用",
+    editTitle: "更新应用",
     gridTitle: "App应用数据",
     formTitle: "应用查询",
     isFileUpload: true,   // 开启form upload
@@ -73,8 +73,11 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
 	            {header: '下载次数', width: 120,  dataIndex: 'downTimes', hideForm: 'all'},
 	            {header: '创建时间', width: 120,  dataIndex: 'createTime',  hideForm:"all",allowBlank:false/**,renderer: Ext.util.Format.dateRenderer('m/d/Y')*/},	    
 	            {header: "客户端下载", width: 140,dataIndex: 'dlClient', hideForm:'all',renderer: dlClientfunc}, 
-	            {header: '关键字',     width: 120,    dataIndex: 'keyWords', hideGrid: true ,allowBlank:false , name:'keyWords'},
-	            {header: 'ICON上传', width:120, hideGrid: true, id:'id_app_icon', inputType:'file',width:100,allowBlank:false, name:'fIcon',
+	            {header: '关键字',     width: 120,  dataIndex: 'keyWords', hideGrid: true ,allowBlank:false , name:'keyWords'},
+	            {header: '最低版本',width: 120,  dataIndex: 'minSdkVer', name:'minSdkVer'},
+	            {header: '作者',  width: 120,   dataIndex: 'authorName',name:'authorName'},
+	            //icon
+	            {header: '图标上传', width:120, hideGrid: true, id:'id_app_icon', inputType:'file',width:100,allowBlank:false, name:'fIcon',
 	            	listeners : {
 	            		'render':function(){
 	            			var img_reg = /\.([jJ][pP][gG]){1}$|\.([jJ][pP][eE][gG]){1}$|\.([gG][iI][fF]){1}$|\.([pP][nN][gG]){1}$|\.([bB][mM][pP]){1}$/;
@@ -99,7 +102,34 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
             	         }
 	            	}
 	            },
-            	{header: '图片预览', width: 50, hideGrid:true ,fieldtype:'box',
+	            //-----snap
+	            {header: '截图上传', width:120, hideGrid: true, id:'id_app_snap', inputType:'file',width:100,allowBlank:false, name:'fsnap',
+	            	listeners : {
+	            		'render':function(){
+	            			var img_reg = /\.([jJ][pP][gG]){1}$|\.([jJ][pP][eE][gG]){1}$|\.([gG][iI][fF]){1}$|\.([pP][nN][gG]){1}$|\.([bB][mM][pP]){1}$/;
+	            			var iconFileCmp = Ext.get('id_app_snap');
+	            			iconFileCmp.on('change',function(field,newValue,oldValue){
+	            			         var picPath = iconFileCmp.getValue();
+	            			         var url = 'file:///' + picPath;
+	            			         if(img_reg.test(url)){  //格式验证
+	            			        	  if(Ext.isIE){
+	    	                                  var image = Ext.get('id_app_slot').dom;  
+		            				          image.src = Ext.BLANK_IMAGE_URL;
+		            				          image.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = url; 
+		            			         }else{
+		            				          //仅支持ff7.0+
+		            			        	  Ext.get('id_app_slot').dom.src = window.URL.createObjectURL(Ext.get('id_app_snap').dom.files.item(0));
+		            			         }
+	            			         }else{
+	            			        	 console.info(field);
+	            			        	 Ext.MessageBox.alert('提示','文件格式只能是.jpg|.jpeg|.png|.bmp|.gif');
+	            			         }
+            		        },this);
+            	         }
+	            	}
+	            },
+	            //-----icon
+            	{header: '图标预览', width: 50, hideGrid:true ,fieldtype:'box',
 	            	id : 'id_app_pic',
 	            	height : 120,
 	            	boxMaxWidth: 125,
@@ -108,7 +138,19 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
 	            	    src : Ext.BLANK_IMAGE_URL,  
 	            	    style : 'filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale);'
             	}},
-            	{header: 'apk上传', width:120, hideGrid: true, hideForm:'edit', hideGrid:true, inputType:'file', id:'id_app_apk',width:100, allowBlank:false,name:'fApk',
+            	//--- snap
+            	{header: '截图预览', width: 50, hideGrid:true ,fieldtype:'box',
+	            	id : 'id_app_slot',
+	            	height : 120,
+	            	boxMaxWidth: 125,
+	            	autoEl : {
+	            	    tag : 'img',
+	            	    src : Ext.BLANK_IMAGE_URL,  
+	            	    style : 'filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale);'
+            	}},
+            	{header: '应用摘要',  width: 120,   dataIndex: 'appSummary',name:'appSummary',autoScroll:true ,fieldtype:'textarea'},
+            	{header: '应用描述',  width: 120,   dataIndex: 'appDesc',name:'appDesc',autoScroll:true ,fieldtype:'textarea'},
+            	{header: 'apk上传', width:120, hideGrid: true, hideForm:'edit', hideGrid:true, inputType:'file', id:'id_app_apk',width:100, allowBlank:false,name:'fApk', fieldtype:'field',
             		listeners : {
             			'render':function(){
             				var apk_reg = /\.([aA][pP][kK]){1}$/;
@@ -117,12 +159,12 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
             					 var apkPath = apkFileCmp.getValue();
             			         var url = 'file:///' + apkPath;
             					if(!apk_reg.test(url)){
-            						Ext.MessageBox.alert('提示','文件格式只能是.apk|.APK');
-            						//field.setValue(oldValue);
+            						Ext.MessageBox.alert('提示','文件格式只能是.apk|.APK');       						
             					}
             				},this);
             			}
             		}
+            	//regex:/\.([aA][pP][kK]){1}$/
             	},
 	        ],
 	

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,9 +33,11 @@ import com.iteye.melin.core.util.ResponseData;
 import com.iteye.melin.core.web.controller.BaseController;
 import com.iteye.melin.web.model.base.Application;
 import com.iteye.melin.web.model.support.AppFile;
+import com.iteye.melin.web.model.support.AppSnap;
 import com.iteye.melin.web.model.support.AppType;
 import com.iteye.melin.web.service.base.ApplicationService;
 import com.iteye.melin.web.service.support.AppFileService;
+import com.iteye.melin.web.service.support.AppSnapService;
 import com.iteye.melin.web.service.support.AppTypeService;
 
 /**
@@ -54,6 +57,8 @@ public class ApplicationController extends BaseController {
 	private AppTypeService appTypeService;
 	@Autowired
 	private AppFileService appFileService;
+	@Autowired
+	private AppSnapService appSnapService;
 	// ~ Methods
 	// ========================================================================================================
 	@RequestMapping("/index")
@@ -128,14 +133,16 @@ public class ApplicationController extends BaseController {
 		DiskFileItemFactory fac = new DiskFileItemFactory();
 		ServletFileUpload upload = new ServletFileUpload(fac);
 		upload.setHeaderEncoding("utf-8");
-	    File savefile_apk = null  , savefile_icon =null;
+	    File savefile_apk = null  , savefile_icon =null , savefile_snap =null;
 		String appName /*名称*/ , appState /*状态*/, keyWords /*关键字*/, typeId /*分类*/,appPackage /*包名*/ = "",verMark = null,/*版本*/
-		filename_apk /*apk路径 */,fileext_apk /*扩展名*/,filename_icon /*icon路径 */,fileext_icon ;/*扩展名*/
+		filename_apk /*apk路径 */,fileext_apk /*扩展名*/,filename_icon /*icon路径 */,fileext_icon ,/*扩展名*/filename_snap/*apk截图*/,fileext_snap/*扩展名*/
+		,app_sdk_ver /*sdk版本*/,app_author /*作者*/,app_summary /*摘要*/,app_desc/*描述*/ ;
 		long filesize_app ;/*app大小*/;
 		/*定义文件数组*/
 		List<File> files = new ArrayList<File>();
 		files.add(savefile_apk);
 		files.add(savefile_icon);
+		files.add(savefile_snap);
 		try {
 			List<FileItem> items = upload.parseRequest(request);
 			Map<String, Serializable> fields = new HashMap<String, Serializable>();
@@ -154,53 +161,76 @@ public class ApplicationController extends BaseController {
 					+ File.separator;
 			String dir_img = folder + File.separator + "resources\\apk\\images"
 					+ File.separator;
+			String dir_snap = folder + File.separator + "resources\\apk\\snap"
+					+ File.separator;
 			File f1 = new File(dir_apk);
 			File f2 = new File(dir_img);
+			File f3 = new File(dir_snap);
 			if (!f1.exists()) {
 				f1.mkdirs();
 			}
 			if (!f2.exists()) {
 				f2.mkdirs();
 			}
+			if (!f3.exists()) {
+				f3.mkdirs();
+			}
 			/* 抽取表单基本属性 */
 			appName = (String)fields.get("appName");
 			appState = (String)fields.get("appState");
 			keyWords = (String)fields.get("keyWords");
 			typeId	= (String)fields.get("typeId");
+			/*非必填扩展信息*/
+			app_sdk_ver =(String)fields.get("minSdkVer");
+			app_author=(String)fields.get("authorName");
+			app_summary = (String)fields.get("appSummary");
+			app_desc = (String)fields.get("appDesc");
 			/* 获取表单的上传文件 */
 			FileItem uploadFile_apk = (FileItem) fields.get("id_app_apk");
 			FileItem uploadFile_icon = (FileItem) fields.get("id_app_icon");
+			FileItem uploadFile_snap = (FileItem) fields.get("id_app_snap");
 			/* 获取文件上传路径名称 */
 			String fileName_apk = uploadFile_apk.getName();
 			String fileName_icon = uploadFile_icon.getName();
+			String fileName_snap = uploadFile_snap.getName();
 			/* 获取文件扩展名 */
 		    fileext_apk = fileName_apk.substring(fileName_apk
 					.lastIndexOf(".") + 1);
 			fileext_icon = fileName_icon.substring(fileName_icon
+					.lastIndexOf(".") + 1);
+			fileext_snap = fileName_snap.substring(fileName_snap
 					.lastIndexOf(".") + 1);
 			/* 文件校检 */
 			String checkresult_apk = applicationService.fileVertify(
 					fileext_apk, uploadFile_apk);
 			String checkresult_icon = applicationService.fileVertify(
 					fileext_icon, uploadFile_icon);
+//			String checkresult_snap = applicationService.fileVertify(
+//					fileext_snap, uploadFile_snap);
 			/* 返回异常信息 */
 			if (!checkresult_apk.equals("pass") || !checkresult_icon.equals("pass")) {
-				return checkresult_apk.equals("pass") ? "{success:false ,err:"
-						+ checkresult_icon + "}" : "{success:false ,err:"
-						+ checkresult_apk + "}";
+//				return checkresult_apk.equals("pass") ? "{success:false ,err:"
+//						+ checkresult_icon + "}" :(checkresult_icon.equals("pass") ?"{success:false, err:"+checkresult_snap: "{success:false ,err:"
+//							+ checkresult_apk + "}");
+				return "{success:false , err: '异常'}";
 			}
 			/* 重命名文件 */
 			filename_apk = UUID.randomUUID().toString();
 			filename_icon = UUID.randomUUID().toString();
+			filename_snap = UUID.randomUUID().toString();
 			savefile_apk = new File(dir_apk + filename_apk + "."
 					+ fileext_apk);
 			savefile_icon = new File(dir_img + filename_icon + "."
 					+ fileext_icon);
+			savefile_snap = new  File(dir_img + filename_snap + "."
+					+ fileext_snap);
 			/* 获取文件大 小*/
 			filesize_app = uploadFile_apk.getSize();
 			/* 存储上传文件 */
 			uploadFile_apk.write(savefile_apk);
 			uploadFile_icon.write(savefile_icon);
+			uploadFile_snap.write(savefile_snap);
+
 		} catch (Exception ex) {
 			/* 清理垃圾文件 */
 			applicationService.clear(files);
@@ -229,6 +259,12 @@ public class ApplicationController extends BaseController {
 		}
 		/*新建应用包*/
 		Application newApp = new Application();
+		//*sdk版本*/,app_author /*作者*/,app_summary /*摘要*/,app_desc/*描述*/ 
+		newApp.setMinSdkVer(app_sdk_ver);
+		newApp.setAuthorName(app_author);
+		newApp.setAppSummary(app_summary);
+		newApp.setAppDesc(app_desc);
+		newApp.setFileSize(new Float(filesize_app));
 		newApp.setAppName(appName);
 		newApp.setAppState(Short.valueOf(appState));
 		newApp.setTypeId(Integer.valueOf(typeId));
@@ -238,6 +274,11 @@ public class ApplicationController extends BaseController {
 		newApp.setFileId(fileId);
 		newApp.setAppPackage(appPackage);
 		newApp.setGlobalMark(UUID.randomUUID().getLeastSignificantBits());  //yy全局标识
+		newApp.setCommentTimes(0);
+		newApp.setSoftLevel((short)0);
+		Date d = new Date();
+		newApp.setCreateTime(d);
+		newApp.setUpdateTime(d);
 		if(verMark!=null){
 			newApp.setVerMark(Integer.parseInt(verMark));	
 		}
@@ -250,6 +291,21 @@ public class ApplicationController extends BaseController {
 			/* 撤销文件记录*/
 			appFileService.deleteEntity(fileId);
 			return  "{success:false ,err:apk应用信息保存失败";
+		}
+		//新建截图
+		AppSnap newSnap = new AppSnap();
+		newSnap.setAppId(appId);
+		newSnap.setFileId(fileId);
+		newSnap.setSnapUrl("/resources/apk/snap/"+filename_snap+"."+fileext_snap);
+		appSnapService.insertEntity(newSnap);
+		Long snapId = newSnap.getId();
+		if(snapId == null){
+			logger.error("截图保存失败");
+			/* 清理垃圾文件 */
+			applicationService.clear(files);
+			/* 撤销文件记录*/
+			appFileService.deleteEntity(fileId);
+			return  "{success:false ,err:'截图保存失败'";
 		}
 		//return ResponseData.SUCCESS_NO_DATA.toString();
 		return "{success:true}";
