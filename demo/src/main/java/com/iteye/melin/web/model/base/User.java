@@ -12,7 +12,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name="usr_e_user", schema="user_app")
+@Table(name="usr_e_user", schema="demo")
 public class User {
 	@Id
 	@Column(name="USER_ID")

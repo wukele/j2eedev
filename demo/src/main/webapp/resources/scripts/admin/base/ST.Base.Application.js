@@ -1,5 +1,5 @@
 Ext.BLANK_IMAGE_URL = "./../resources/scripts/ext/resources/images/default/s.gif";
-
+Ext.BLANK_AVATER_URL = "./../resources/images/icons/default_icon.png";
 Ext.namespace("ST.base");
 Ext.reg('appStateField', ST.ux.ExtField.ComboBox);
 
@@ -54,7 +54,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
     enablebbar : false,   // 激活top bar
     autoExpandColumn: 2,
 	girdColumns: [
-				{header: 'ID', width: 60, dataIndex: 'id', hideGrid: true, hideForm: 'add', readOnly: true ,hidden : true},
+				{header: 'ID', width: 60, dataIndex: 'id', hideGrid: true, hideForm: 'add', readOnly: true ,hidden : true, colspan:2},
 	            {header: '应用名称', width: 110, dataIndex: 'appName', allowBlank:false , name:'appName'},
 	            {header: "ICON图标", width: 140, dataIndex: 'iconUrl', hideForm:'all',renderer: appIconfunc }, 
 	            {header: '应用分类', width: 120, dataIndex: 'typeId' , hiddenName: 'typeId', allowBlank:false, fieldtype:'appStateField', hideGrid:true,name:'typeId',
@@ -135,7 +135,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
 	            	boxMaxWidth: 125,
 	            	autoEl : {
 	            	    tag : 'img',
-	            	    src : Ext.BLANK_IMAGE_URL,  
+	            	    src : Ext.BLANK_AVATER_URL,  
 	            	    style : 'filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale);'
             	}},
             	//--- snap
@@ -145,7 +145,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
 	            	boxMaxWidth: 125,
 	            	autoEl : {
 	            	    tag : 'img',
-	            	    src : Ext.BLANK_IMAGE_URL,  
+	            	    src : Ext.BLANK_AVATER_URL,  
 	            	    style : 'filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale);'
             	}},
             	{header: '应用摘要',  width: 120,   dataIndex: 'appSummary',name:'appSummary',autoScroll:true ,fieldtype:'textarea'},
