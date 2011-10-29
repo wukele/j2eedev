@@ -188,7 +188,7 @@ public class ApplicationController extends BaseController {
 			/* 获取表单的上传文件 */
 			FileItem uploadFile_apk = (FileItem) fields.get("id_app_apk");
 			FileItem uploadFile_icon = (FileItem) fields.get("id_app_icon");
-			FileItem uploadFile_snap = (FileItem) fields.get("id_app_snap");
+			FileItem uploadFile_snap = (FileItem) fields.get("id_app_snap1");
 			/* 获取文件上传路径名称 */
 			String fileName_apk = uploadFile_apk.getName();
 			String fileName_icon = uploadFile_icon.getName();
