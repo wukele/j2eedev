@@ -322,9 +322,9 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
         	//form layout
         	layout: 'tableform',
             layoutConfig: {
-           		columns: 2,
-            	columnWidths: [.5,.5], 
-            	bodyStyle:'padding:90px'
+           		columns: 4,
+            	columnWidths: [.25,.25,.25,.25], 
+            	bodyStyle:'padding:50px'
             },    
         	//form layout
             defaultType: 'textfield',
@@ -333,7 +333,7 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
             frame: true,
             id: "addFormPanelID",
             autoScroll: true,
-            buttonAlign: 'left',
+            buttonAlign: 'center',
             url: this.urlAdd,
             items: this.buildItems("add"),
             fileUpload: this.isFileUpload,
@@ -491,6 +491,8 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
         g.getSelectionModel().selectRow(rowIndex, false);
         g.contextMenu.showAt(e.getXY());
     },
+    
+    
     
     constructor: function() {
 		this.createForm();
