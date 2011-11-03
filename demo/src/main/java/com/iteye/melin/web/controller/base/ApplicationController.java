@@ -133,16 +133,22 @@ public class ApplicationController extends BaseController {
 		DiskFileItemFactory fac = new DiskFileItemFactory();
 		ServletFileUpload upload = new ServletFileUpload(fac);
 		upload.setHeaderEncoding("utf-8");
-	    File savefile_apk = null  , savefile_icon =null , savefile_snap =null;
+	    File savefile_apk = null  , savefile_icon =null;
 		String appName /*名称*/ , appState /*状态*/, keyWords /*关键字*/, typeId /*分类*/,appPackage /*包名*/ = "",verMark = null,/*版本*/
-		filename_apk /*apk路径 */,fileext_apk /*扩展名*/,filename_icon /*icon路径 */,fileext_icon ,/*扩展名*/filename_snap/*apk截图*/,fileext_snap/*扩展名*/
-		,app_sdk_ver /*sdk版本*/,app_author /*作者*/,app_summary /*摘要*/,app_desc/*描述*/ ;
-		long filesize_app ;/*app大小*/;
+		filename_apk /*apk路径 */,fileext_apk /*扩展名*/,filename_icon /*icon路径 */,fileext_icon ,/*扩展名*/
+		app_sdk_ver /*sdk版本*/,app_author /*作者*/,app_summary /*摘要*/,app_desc/*描述*/;
+		int snapIndex =0;/*默认截图*/
+		String[] filename_snap = new String[5];	//截图保存后的名称
+		String[] fileext_snap  = new String[5]; //获取截图扩展名
+		File[] savefile_snap = new File[5];  	//保存后文件的路径名
+		long filesize_app ; //文件大小
 		/*定义文件数组*/
 		List<File> files = new ArrayList<File>();
 		files.add(savefile_apk);
 		files.add(savefile_icon);
-		files.add(savefile_snap);
+		for(int i=0;i<savefile_snap.length;i++){
+			files.add(savefile_snap[i]);	
+		}
 		try {
 			List<FileItem> items = upload.parseRequest(request);
 			Map<String, Serializable> fields = new HashMap<String, Serializable>();
@@ -175,12 +181,13 @@ public class ApplicationController extends BaseController {
 			if (!f3.exists()) {
 				f3.mkdirs();
 			}
-			/* 抽取表单基本属性 */
+			/*抽取表单必填信息 */
 			appName = (String)fields.get("appName");
 			appState = (String)fields.get("appState");
 			keyWords = (String)fields.get("keyWords");
 			typeId	= (String)fields.get("typeId");
-			/*非必填扩展信息*/
+			snapIndex = Integer.parseInt((String)fields.get("snapIndex")); //获取默认截图索引
+			/*非必填信息*/
 			app_sdk_ver =(String)fields.get("minSdkVer");
 			app_author=(String)fields.get("authorName");
 			app_summary = (String)fields.get("appSummary");
@@ -188,17 +195,29 @@ public class ApplicationController extends BaseController {
 			/* 获取表单的上传文件 */
 			FileItem uploadFile_apk = (FileItem) fields.get("id_app_apk");
 			FileItem uploadFile_icon = (FileItem) fields.get("id_app_icon");
-			FileItem uploadFile_snap = (FileItem) fields.get("id_app_snap1");
-			/* 获取文件上传路径名称 */
+			/*********保存截图******/
+			FileItem[] uploadFile_snap =new FileItem[5]; 	//获取截图文件
+			String[] fileName_snap = new String[5]; 		//获取截图路径名
+			for(int i=0;i<5 ;i++){
+				if(fields.get("id_app_snap"+i)==null){  
+					continue;
+				}
+				uploadFile_snap[i] = (FileItem)fields.get("id_app_snap"+i);
+				fileName_snap[i] = uploadFile_snap[i].getName();
+				fileext_snap[i] = fileName_snap[i].substring(fileName_snap[i].lastIndexOf(".")+1);				
+				filename_snap[i] = UUID.randomUUID().toString();
+				savefile_snap[i]=new File(dir_snap + filename_snap[i] + "."
+						+ fileext_snap[i]);
+				uploadFile_snap[i].write(savefile_snap[i]);
+			}
+			/************************/
+			/* 获取文件上传的路径名称*/
 			String fileName_apk = uploadFile_apk.getName();
 			String fileName_icon = uploadFile_icon.getName();
-			String fileName_snap = uploadFile_snap.getName();
 			/* 获取文件扩展名 */
 		    fileext_apk = fileName_apk.substring(fileName_apk
 					.lastIndexOf(".") + 1);
 			fileext_icon = fileName_icon.substring(fileName_icon
-					.lastIndexOf(".") + 1);
-			fileext_snap = fileName_snap.substring(fileName_snap
 					.lastIndexOf(".") + 1);
 			/* 文件校检 */
 			String checkresult_apk = applicationService.fileVertify(
@@ -207,7 +226,6 @@ public class ApplicationController extends BaseController {
 					fileext_icon, uploadFile_icon);
 //			String checkresult_snap = applicationService.fileVertify(
 //					fileext_snap, uploadFile_snap);
-			/* 返回异常信息 */
 			if (!checkresult_apk.equals("pass") || !checkresult_icon.equals("pass")) {
 //				return checkresult_apk.equals("pass") ? "{success:false ,err:"
 //						+ checkresult_icon + "}" :(checkresult_icon.equals("pass") ?"{success:false, err:"+checkresult_snap: "{success:false ,err:"
@@ -217,20 +235,15 @@ public class ApplicationController extends BaseController {
 			/* 重命名文件 */
 			filename_apk = UUID.randomUUID().toString();
 			filename_icon = UUID.randomUUID().toString();
-			filename_snap = UUID.randomUUID().toString();
 			savefile_apk = new File(dir_apk + filename_apk + "."
 					+ fileext_apk);
 			savefile_icon = new File(dir_img + filename_icon + "."
 					+ fileext_icon);
-			savefile_snap = new  File(dir_img + filename_snap + "."
-					+ fileext_snap);
 			/* 获取文件大 小*/
 			filesize_app = uploadFile_apk.getSize();
 			/* 存储上传文件 */
 			uploadFile_apk.write(savefile_apk);
 			uploadFile_icon.write(savefile_icon);
-			uploadFile_snap.write(savefile_snap);
-
 		} catch (Exception ex) {
 			/* 清理垃圾文件 */
 			applicationService.clear(files);
@@ -296,7 +309,7 @@ public class ApplicationController extends BaseController {
 		AppSnap newSnap = new AppSnap();
 		newSnap.setAppId(appId);
 		newSnap.setFileId(fileId);
-		newSnap.setSnapUrl("/resources/apk/snap/"+filename_snap+"."+fileext_snap);
+		newSnap.setSnapUrl("/resources/apk/snap/"+filename_snap[snapIndex]+"."+fileext_snap[snapIndex]);//保存设为默认的图片
 		appSnapService.insertEntity(newSnap);
 		Long snapId = newSnap.getId();
 		if(snapId == null){
@@ -330,7 +343,8 @@ public class ApplicationController extends BaseController {
 		applicationService.deleteEntity(id);
 		return ResponseData.SUCCESS_NO_DATA;
 	}
-
+	
+	//下载次数累计
 	@RequestMapping(value = "/updateAppDownTimes", method = RequestMethod.POST)
 	@ResponseBody
 	public String updateAppDownTimes(Long appId) {
@@ -339,4 +353,15 @@ public class ApplicationController extends BaseController {
 		applicationService.createOrUpdate(app);
 		return ResponseData.SUCCESS_NO_DATA.toString();
 	}
+	 
+	//发布状态变更
+	@RequestMapping(value = "/distApp", method = RequestMethod.POST)
+	@ResponseBody
+	public String distApp(Long appId) {
+		Application app = applicationService.findEntity(appId);
+		app.setAppState((short)1);
+		applicationService.createOrUpdate(app);
+		return ResponseData.SUCCESS_NO_DATA.toString();
+	}
+	
 }
