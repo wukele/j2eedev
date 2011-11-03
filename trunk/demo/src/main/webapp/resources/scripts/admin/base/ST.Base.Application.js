@@ -110,9 +110,9 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
             	//regex:/\.([aA][pP][kK]){1}$/
             	},
 	            //0
-            	{header: '预览' ,width: 40 ,hideGrid:true , id : 'id_app_slot0' ,colspan:5 ,fieldtype:'slotfield'},
+            	{header: '预览' ,width: 40 ,hideGrid:true , id : 'id_app_slot0' ,colspan:5 ,fieldtype:'slotfield'}, 
             	//后台默认截图 value =1/2/3/4/5
-            	{header:'默认图索引',colspan:5,value:0,name:'snapIndex' ,id:'snapIndex',hidden : true},// 隐藏域---记录默认截图的索引，传送给后台
+            	{header:'默认截图索引',colspan:5,value:0,name:'snapIndex' ,id:'snapIndex',hidden : true},// 隐藏域，记录默认截图的索引，传送给后台
 	            //1--- snapshot
 	            {header: '上传截图',hideGrid: true, id_slot:'id_app_slot1',id:'id_app_snap0',fieldtype:'snapfield',colspan:2},
 	            //2
@@ -134,7 +134,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
             	//5
             	{header: '预览', hideGrid:true ,id : 'id_app_slot5' ,fieldtype:'slotfield',colspan:2},
             	//clear && setDefault
-            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true, pressed:true,iconCls:'accept',
+            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true, pressed:true,iconCls:'accept', id:'default_img',
             		toggleHandler: function(btn, pressed){
             			setDefaultImage(0); 
             		}},
@@ -212,6 +212,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
     	bar.insertButton(index++,{iconCls: 'oper', menu: menu,disabled: this.authOperations[4] ,scope: this});
     },
     
+    //发布状态变更
     onRowClickFn : function(grid,rowIndex,event){
     	var rec = grid.getSelectionModel().getSelected();  
     	if(rec == undefined || rec.data.appState == 1){   //已发布
@@ -219,6 +220,30 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
     	}else{
     		Ext.getCmp('distEntity').enable();
     	}
+    },
+    
+    //修改编辑时的图片预览
+    loadEditFormSucHandler:function(form , action){
+    	var img_reg = /\.([jJ][pP][gG]){1}$|\.([jJ][pP][eE][gG]){1}$|\.([gG][iI][fF]){1}$|\.([pP][nN][gG]){1}$|\.([bB][mM][pP]){1}$/;
+    	//处理图标预览
+    	var info = Ext.decode(action.response.responseText);
+    	 Ext.get('id_app_slot0').dom.src = '..'+info.iconUrl;
+    	//处理多截图的预览（见/loadApplication）
+    	//默认截图放在第一个位置
+    	 Ext.get('id_app_slot1').dom.src = '..'+info.snapUrl;//默认
+    	 if(info.snapUrl_1!=undefined && img_reg.test(info.snapUrl_1)){
+    		 Ext.get('id_app_slot2').dom.src = '..'+info.snapUrl_1;
+    	 }
+    	 if(info.snapUrl_1!=undefined && img_reg.test(info.snapUrl_2)){
+    		 Ext.get('id_app_slot3').dom.src = '..'+info.snapUrl_2;
+    	 }
+    	 if(info.snapUrl_1!=undefined && img_reg.test(info.snapUrl_3)){
+    		 Ext.get('id_app_slot4').dom.src = '..'+info.snapUrl_3;
+    	 }
+    	 if(info.snapUrl_1!=undefined && img_reg.test(info.snapUrl_4)){
+    		 Ext.get('id_app_slot5').dom.src = '..'+info.snapUrl_4;
+    	 }
+    	 
     },
     
    //发布
@@ -229,11 +254,13 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
 			success : function(response,options){
 				Ext.getCmp('distEntity').disable();
 				Ext.getCmp('id_app_Grid').store.reload();
+				this.grid.getSelectionModel().selectRecords([rec]);
 			},
 			failure : function(response,options){
 				console.info('error msg:',response);
 			},
-			params:{appId:rec.data.id}
+			params:{appId:rec.data.id},
+			scope:this
 		});	 
    },
    
