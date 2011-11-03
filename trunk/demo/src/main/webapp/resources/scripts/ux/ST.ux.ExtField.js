@@ -78,7 +78,7 @@ ST.ux.ScreenCutUploadField = Ext.extend(Ext.form.Field,{
 			         if(img_reg.test(url)){  //格式验证
 			        	  if(Ext.isIE){
                               var image = Ext.get(this.id_slot).dom;  
-    				          image.src = Ext.BLANK_AVATER_URL;
+    				          //image.src = Ext.BLANK_AVATER_URL;
     				          image.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = url; 
     			         }else{
     				          //仅支持ff7.0+
