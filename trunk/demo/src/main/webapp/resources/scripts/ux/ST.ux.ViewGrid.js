@@ -25,6 +25,7 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
     loadEditFormSucHandler: function() {},
     clickType: 'rowdblclick',
     rowclickFn: function(){},
+    onRowClickFn :function(){},
     addMenuItem: function(items) {},
     //是否显示增删改按钮
     displayButton: true,
@@ -308,8 +309,9 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
         
         Ext.each(items, function(item) {
             Ext.applyIf(item, {
+            	labelSeparator:'',
             	allowBlank: true,
-                anchor: '90%'
+                anchor: '180%' //间距
             });
         });
         return items;
@@ -322,11 +324,10 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
         	//form layout
         	layout: 'tableform',
             layoutConfig: {
-           		columns: 4,
-            	columnWidths: [.25,.25,.25,.25], 
-            	bodyStyle:'padding:50px'
+           		columns: 10,
+            	columnWidths: [.1,.1,.1,.1,.1,.1,.1,.1,.1,.1], 
+            	bodyStyle:'padding:10px'
             },    
-        	//form layout
             defaultType: 'textfield',
             labelAlign: 'right',
             labelWidth: this.dialogLabelWidth,
@@ -338,10 +339,10 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
             items: this.buildItems("add"),
             fileUpload: this.isFileUpload,
             scope: this,
-            buttons: [{html : '<pre>          </pre>'},
+            buttons: [
               { text: '确定',
                 scope: this,
-                iconCls:'save',
+                iconCls:'tick',
                 handler: function() {
                     if (this.addFormPanel.getForm().isValid()) {
                         this.addFormPanel.getForm().submit({
@@ -357,9 +358,10 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
                         });
                     }
                 }
-            },{html : '<pre>   </pre>'},{
+            },{
                 text: '取消',
                 scope: this,
+                iconCls:'redo',
                 handler: function() {
 			    	this.addDialog.close();
                 }
@@ -385,8 +387,8 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
         this.editFormPanel = new Ext.form.FormPanel({
         	layout: 'tableform',
             layoutConfig: {
-           		columns: 2,
-            	columnWidths: [.5,.5], 
+            	columns: 10,
+            	columnWidths: [.1,.1,.1,.1,.1,.1,.1,.1,.1,.1], 
             	bodyStyle:'padding:90px'
             },    
             defaultType: 'textfield',
@@ -405,6 +407,7 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
             buttons: [{
                 text: '确定',
                 scope: this,
+                iconCls:'tick',
                 handler: function() {
                     if (this.editFormPanel.getForm().isValid()) {
                         this.editFormPanel.getForm().submit({
@@ -423,6 +426,7 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
             },{
                 text: '取消',
                 scope: this,
+                iconCls:'redo',
                 handler: function() {
 			    	this.editDialog.close();
                 }
@@ -539,6 +543,8 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
 	            id    : 'copyCtx',
 	            items : items
 	        });
+			this.grid.on('rowclick',this.onRowClickFn,this);
+			
 			
 		}
 	}

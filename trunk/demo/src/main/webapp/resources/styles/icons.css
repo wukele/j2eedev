@@ -77,6 +77,14 @@
 	background-image:url("../images/icons/redo.png") !important;
 }
 
+.accept {
+	background-image:url("../images/icons/accept.png") !important;
+}
+
+.cancel {
+	background-image:url("../images/icons/cancel.png") !important;
+}
+
 .query {
 	background-image:url("../images/icons/query.png") !important;
 }

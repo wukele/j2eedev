@@ -4,15 +4,15 @@
  * licensing@sencha.com
  * http://www.sencha.com/license
  */
-Ext.ns('Ext.ux');
+Ext.ns('Ext.ux.form');
 
 /**
- * @class Ext.ux.FileUploadField
+ * @class Ext.ux.form.FileUploadField
  * @extends Ext.form.TextField
  * Creates a file upload field.
  * @xtype fileuploadfield
  */
-Ext.ux.FileUploadField = Ext.extend(Ext.form.TextField,  {
+Ext.ux.form.FileUploadField = Ext.extend(Ext.form.TextField,  {
     /**
      * @cfg {String} buttonText The button text to display on the upload button (defaults to
      * 'Browse...').  Note that if you supply a value for {@link #buttonCfg}, the buttonCfg.text
@@ -44,14 +44,14 @@ Ext.ux.FileUploadField = Ext.extend(Ext.form.TextField,  {
 
     // private
     initComponent: function(){
-        Ext.ux.FileUploadField.superclass.initComponent.call(this);
+        Ext.ux.form.FileUploadField.superclass.initComponent.call(this);
 
         this.addEvents(
             /**
              * @event fileselected
              * Fires when the underlying file input field's value has changed from the user
              * selecting a new file from the system file selection dialog.
-             * @param {Ext.ux.FileUploadField} this
+             * @param {Ext.ux.form.FileUploadField} this
              * @param {String} value The file value returned by the underlying file input field
              */
             'fileselected'
@@ -60,7 +60,7 @@ Ext.ux.FileUploadField = Ext.extend(Ext.form.TextField,  {
 
     // private
     onRender : function(ct, position){
-        Ext.ux.FileUploadField.superclass.onRender.call(this, ct, position);
+        Ext.ux.form.FileUploadField.superclass.onRender.call(this, ct, position);
 
         this.wrap = this.el.wrap({cls:'x-form-field-wrap x-form-file-wrap'});
         this.el.addClass('x-form-file-text');
@@ -72,8 +72,7 @@ Ext.ux.FileUploadField = Ext.extend(Ext.form.TextField,  {
         });
         this.button = new Ext.Button(Ext.apply(btnCfg, {
             renderTo: this.wrap,
-            cls: 'x-form-file-btn' + (btnCfg.iconCls ? ' x-btn-icon' : ''),
-            iconCls : 'db-icn-upload'
+            cls: 'x-form-file-btn' + (btnCfg.iconCls ? ' x-btn-icon' : '')
         }));
 
         if(this.buttonOnly){
@@ -125,7 +124,7 @@ Ext.ux.FileUploadField = Ext.extend(Ext.form.TextField,  {
             this.createFileInput();
             this.bindListeners();
         }
-        Ext.ux.FileUploadField.superclass.reset.call(this);
+        Ext.ux.form.FileUploadField.superclass.reset.call(this);
     },
 
     // private
@@ -135,7 +134,7 @@ Ext.ux.FileUploadField = Ext.extend(Ext.form.TextField,  {
 
     // private
     onResize : function(w, h){
-        Ext.ux.FileUploadField.superclass.onResize.call(this, w, h);
+        Ext.ux.form.FileUploadField.superclass.onResize.call(this, w, h);
 
         this.wrap.setWidth(w);
 
@@ -147,17 +146,17 @@ Ext.ux.FileUploadField = Ext.extend(Ext.form.TextField,  {
 
     // private
     onDestroy: function(){
-        Ext.ux.FileUploadField.superclass.onDestroy.call(this);
+        Ext.ux.form.FileUploadField.superclass.onDestroy.call(this);
         Ext.destroy(this.fileInput, this.button, this.wrap);
     },
     
     onDisable: function(){
-        Ext.ux.FileUploadField.superclass.onDisable.call(this);
+        Ext.ux.form.FileUploadField.superclass.onDisable.call(this);
         this.doDisable(true);
     },
     
     onEnable: function(){
-        Ext.ux.FileUploadField.superclass.onEnable.call(this);
+        Ext.ux.form.FileUploadField.superclass.onEnable.call(this);
         this.doDisable(false);
 
     },
@@ -179,7 +178,7 @@ Ext.ux.FileUploadField = Ext.extend(Ext.form.TextField,  {
 
 });
 
-Ext.reg('fileuploadfield', Ext.ux.FileUploadField);
+Ext.reg('fileuploadfield', Ext.ux.form.FileUploadField);
 
 // backwards compat
-Ext.form.FileUploadField = Ext.ux.FileUploadField;
+Ext.form.FileUploadField = Ext.ux.form.FileUploadField;

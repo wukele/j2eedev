@@ -11,6 +11,7 @@
     
 	<link rel="stylesheet" type="text/css" href="./../resources/styles/icons.css" />
 	<link rel="stylesheet" type="text/css" href="./../resources/styles/index.css" />
+	<link rel="stylesheet" type="text/css" href="./../resources/styles/UploadDialog.css" />
 	<link rel="stylesheet" type="text/css" href="./../resources/styles/DateTimePicker.css" />
 	<script type="text/javascript" src="./../resources/scripts/ux/Ext.ux.TreeCombo.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/ux/ST.ux.util.js"></script>
@@ -21,6 +22,7 @@
 	<script type="text/javascript" src="./../resources/scripts/ux/DateTimePicker.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/ux/ST.ux.ViewGrid.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/ux/Ext.ux.FileUploadField.js"></script>
+	<script type="text/javascript" src="./../resources/scripts/ux/Ext.ux.UploadDialog.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/admin/base/ST.Base.Application.js"></script>
 	<script type="text/javascript">
 		Ext.onReady(function(){
