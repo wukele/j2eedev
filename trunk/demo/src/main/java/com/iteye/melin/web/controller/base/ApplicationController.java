@@ -206,8 +206,13 @@ public class ApplicationController extends BaseController {
 				fileName_snap[i] = uploadFile_snap[i].getName();
 				fileext_snap[i] = fileName_snap[i].substring(fileName_snap[i].lastIndexOf(".")+1);				
 				filename_snap[i] = UUID.randomUUID().toString();
-				savefile_snap[i]=new File(dir_snap + filename_snap[i] + "."
-						+ fileext_snap[i]);
+				if(snapIndex==i){
+					savefile_snap[i]=new File(dir_snap + filename_snap[i] + "__default."  //默认图片标识
+							+ fileext_snap[i]);
+				}else{
+					savefile_snap[i]=new File(dir_snap + filename_snap[i] + "."
+							+ fileext_snap[i]);	
+				}
 				uploadFile_snap[i].write(savefile_snap[i]);
 			}
 			/************************/
@@ -305,21 +310,30 @@ public class ApplicationController extends BaseController {
 			appFileService.deleteEntity(fileId);
 			return  "{success:false ,err:apk应用信息保存失败";
 		}
-		//新建截图
-		AppSnap newSnap = new AppSnap();
-		newSnap.setAppId(appId);
-		newSnap.setFileId(fileId);
-		newSnap.setSnapUrl("/resources/apk/snap/"+filename_snap[snapIndex]+"."+fileext_snap[snapIndex]);//保存设为默认的图片
-		appSnapService.insertEntity(newSnap);
-		Long snapId = newSnap.getId();
-		if(snapId == null){
-			logger.error("截图保存失败");
-			/* 清理垃圾文件 */
-			applicationService.clear(files);
-			/* 撤销文件记录*/
-			appFileService.deleteEntity(fileId);
-			return  "{success:false ,err:'截图保存失败'";
+		//保存截图
+		for(int i =0;i<filename_snap.length;i++){
+			AppSnap newSnap = new AppSnap();
+			newSnap.setAppId(appId);
+			newSnap.setFileId(fileId);
+			if(snapIndex==i){
+				//保存默认的图片
+				newSnap.setSnapUrl("/resources/apk/snap/"+filename_snap[i]+"__default"+"."+fileext_snap[i]);//__default
+			}else{
+				//保存非默认的图片
+				newSnap.setSnapUrl("/resources/apk/snap/"+filename_snap[i]+"."+fileext_snap[i]);
+			}
+			appSnapService.insertEntity(newSnap);
+			Long snapId = newSnap.getId();
+			if(snapId == null){
+				logger.error("截图保存失败");
+				/* 清理垃圾文件 */
+				applicationService.clear(files);
+				/* 撤销文件记录*/
+				appFileService.deleteEntity(fileId);
+				return  "{success:false ,err:'截图保存失败'";
+			}
 		}
+
 		//return ResponseData.SUCCESS_NO_DATA.toString();
 		return "{success:true}";
 	}
@@ -327,7 +341,28 @@ public class ApplicationController extends BaseController {
 	@RequestMapping(value = "/loadApplication", method = RequestMethod.POST)
 	@ResponseBody
 	public Application loadApplication(Long id) {
-		return applicationService.findEntity(id);
+		//设置默认截图/snapUrl_default/和其它非默认截图
+		Application app = applicationService.findEntity(id);		
+		List<AppSnap> listSnap = appSnapService.findByProperty("appId", id);
+		int i=1;
+		for(AppSnap o :listSnap){
+			if(o.getSnapUrl().contains("__default")){
+				app.setSnapUrl(o.getSnapUrl());
+			}else if(i==1){
+				app.setSnapUrl_1(o.getSnapUrl());
+				i++;
+			}else if(i==2){
+				app.setSnapUrl_2(o.getSnapUrl());
+				i++;
+			}else if(i==3){
+				app.setSnapUrl_3(o.getSnapUrl());
+				i++;
+			}else if(i==4){
+				app.setSnapUrl_4(o.getSnapUrl());
+				i++;
+			}
+		}
+		return app;
 	}
 
 	@RequestMapping(value = "/updateApplication", method = RequestMethod.POST)
