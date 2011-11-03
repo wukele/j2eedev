@@ -3,17 +3,26 @@ Ext.BLANK_AVATER_URL = "./../resources/images/icons/default_icon.png";
 Ext.namespace("ST.base");
 Ext.reg('appStateField', ST.ux.ExtField.ComboBox);
 
-//渲染色调
+// 清除截图及路径
+function clearImage(id_snap ,id_slot){
+	Ext.getCmp(id_snap).reset();
+	Ext.get(id_slot).dom.src = Ext.BLANK_AVATER_URL;
+}
+// 截图设置默认
+function setDefaultImage(val){
+	Ext.getCmp('snapIndex').setRawValue(val);
+}
+// 渲染色调
 function colorfunc(value, p, record){
 	return value == '未发布'? String.format("<b><font color=green>未发布</font></b>"):String.format("<b><font color=red>已发布</font></b>");
 }
 
-//获取ICON信息
+// 获取ICON信息
 function appIconfunc(value, p, record){
 	return  '<img src="..'+record.data.iconUrl+'" width="100" height="50">';
 }
 
-//下载次数++
+// 下载次数++
 function Ajax4Accumulator(appId){
 	 Ext.Ajax.request({
 			url : 'updateAppDownTimes.json',
@@ -35,6 +44,7 @@ function dlClientfunc(value, p, record){
 		return '<a href="..'+record.data.dlClient+'" onclick="setTimeout(function(){Ajax4Accumulator('+record.data.id+')},1000)"><b><font color=#00ff00 size=3>点此下载</font></b></a>';
 	}
 }
+
 ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
 	id : 'id_app_Grid',
 	dlgWidth: 828,
@@ -54,10 +64,10 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
     enablebbar : false,   // 激活top bar
     autoExpandColumn: 2,
 	girdColumns: [
-				{header: 'ID', width: 60, dataIndex: 'id', hideGrid: true, hideForm: 'add', readOnly: true ,hidden : true, colspan:4},
-	            {header: '应用名称', width: 110, dataIndex: 'appName', allowBlank:false , name:'appName',colspan:2},
+				{header: 'ID', width: 60, dataIndex: 'id', hideGrid: true, hideForm: 'add', readOnly: true ,hidden : true, colspan:10},
+	            {header: '应用名称', width: 110, dataIndex: 'appName', allowBlank:false , name:'appName',colspan:5},
 	            {header: "ICON图标", width: 140, dataIndex: 'iconUrl', hideForm:'all',renderer: appIconfunc}, 
-	            {header: '应用分类', width: 120, dataIndex: 'typeId' , hiddenName: 'typeId', allowBlank:false, fieldtype:'appStateField', hideGrid:true,name:'typeId',colspan:2,
+	            {header: '应用分类', width: 120, dataIndex: 'typeId' , hiddenName: 'typeId', allowBlank:false, fieldtype:'appStateField', hideGrid:true,name:'typeId',colspan:5,
 	                valueField  :'id',
 	                displayField:'typeName',
 	                mode  :'remote', 
@@ -68,44 +78,20 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
 	             	listeners: {}
 	            },
 	            {header: '应用分类', width: 120,  dataIndex: 'typeId_Name', hideForm: 'all'},
-	            {header: '发布状态', width: 120,  dataIndex: 'appState' ,hideGrid: true, hiddenName: 'appState',dictTypeId: '10009', allowBlank:false, fieldtype:'appStateField',name:'appState',colspan:2},
+	            {header: '发布状态', width: 120,  dataIndex: 'appState' ,hideGrid: true, hiddenName: 'appState',dictTypeId: '10009', allowBlank:false, fieldtype:'appStateField',name:'appState',colspan:5},
 	            {header: '发布状态', width: 120,  dataIndex: 'appState_Name', hideForm: 'all',renderer:colorfunc},
 	            {header: '下载次数', width: 120,  dataIndex: 'downTimes', hideForm: 'all'},
 	            {header: '创建时间', width: 120,  dataIndex: 'createTime',  hideForm:"all",allowBlank:false/**,renderer: Ext.util.Format.dateRenderer('m/d/Y')*/},	    
 	            {header: "客户端下载", width: 140,dataIndex: 'dlClient', hideForm:'all',renderer: dlClientfunc}, 
-	            {header: '关键字',     width: 120,  dataIndex: 'keyWords', hideGrid: true ,allowBlank:false , name:'keyWords',colspan:2},
-	            {header: '最低版本',width: 120,  dataIndex: 'minSdkVer', name:'minSdkVer',colspan:2},
-	            {header: '作者',  width: 120,   dataIndex: 'authorName',name:'authorName',colspan:2},
-            	{header: '应用摘要',  width: 120,   dataIndex: 'appSummary',name:'appSummary',autoScroll:true ,fieldtype:'textarea',colspan:2},
-            	{header: '应用描述',  width: 120,   dataIndex: 'appDesc',name:'appDesc',autoScroll:true ,fieldtype:'textarea',colspan:2},
-	            //icon
-	            {header: '上传图标', width:120, hideGrid: true, id:'id_app_icon', inputType:'file',width:100,allowBlank:false, name:'fIcon',colspan:2,
+	            {header: '关键字',     width: 120,  dataIndex: 'keyWords', hideGrid: true ,allowBlank:false , name:'keyWords',colspan:5},
+	            {header: '最低版本',width: 120,  dataIndex: 'minSdkVer', name:'minSdkVer',colspan:5},
+	            {header: '作者',  width: 120,   dataIndex: 'authorName',name:'authorName',colspan:5},
+            	{header: '应用摘要',  width: 120,   dataIndex: 'appSummary',name:'appSummary',autoScroll:true ,colspan:5,fieldtype:'textarea'},
+            	{header: '应用描述',  width: 120,   dataIndex: 'appDesc',name:'appDesc',autoScroll:true ,colspan:5,fieldtype:'textarea'},
+	            {header: '上传图标', width:150, hideGrid: true, id_slot:'id_app_slot0', id:'id_app_icon',width:100, allowBlank:false, name:'fIcon',colspan:5,fieldtype:'snapfield'},
+            	{header: '上传apk', width:120, hideGrid: true,inputType:'file', id:'id_app_apk',name:'fApk',colspan:5, fieldtype:'field',
+            		//validate
 	            	listeners : {
-	            		'render':function(){
-	            			var img_reg = /\.([jJ][pP][gG]){1}$|\.([jJ][pP][eE][gG]){1}$|\.([gG][iI][fF]){1}$|\.([pP][nN][gG]){1}$|\.([bB][mM][pP]){1}$/;
-	            			var iconFileCmp = Ext.get('id_app_icon');
-	            			iconFileCmp.on('change',function(field,newValue,oldValue){
-	            			         var picPath = iconFileCmp.getValue();
-	            			         var url = 'file:///' + picPath;
-	            			         if(img_reg.test(url)){  //格式验证
-	            			        	  if(Ext.isIE){
-	    	                                  var image = Ext.get('id_app_pic').dom;  
-		            				          image.src = Ext.BLANK_IMAGE_URL;
-		            				          image.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = url; 
-		            			         }else{
-		            				          //仅支持ff7.0+
-		            			        	  Ext.get('id_app_pic').dom.src = window.URL.createObjectURL(Ext.get('id_app_icon').dom.files.item(0));
-		            			         }
-	            			         }else{
-	            			        	 console.info(field);
-	            			        	 Ext.MessageBox.alert('提示','文件格式只能是.jpg|.jpeg|.png|.bmp|.gif');
-	            			         }
-            		        },this);
-            	         }
-	            	}
-	            },
-            	{header: '上传apk', width:120, hideGrid: true, hideForm:'edit', hideGrid:true, inputType:'file', id:'id_app_apk',allowBlank:false,name:'fApk', fieldtype:'field',colspan:2,
-            		listeners : {
             			'render':function(){
             				var apk_reg = /\.([aA][pP][kK]){1}$/;
             				var apkFileCmp = Ext.get('id_app_apk');
@@ -113,170 +99,69 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
             					 var apkPath = apkFileCmp.getValue();
             			         var url = 'file:///' + apkPath;
             					if(!apk_reg.test(url)){
-            						Ext.MessageBox.alert('提示','文件格式只能是.apk|.APK');       						
+            						Ext.MessageBox.alert('提示','格式不正确 ， 仅支持.apk');   
+            						this.reset(); //reset 
             					}
             				},this);
             			}
-            		}
+            		},
+            	allowBlank:false
+            	//vtype:"",//
             	//regex:/\.([aA][pP][kK]){1}$/
             	},
-	            //-----icon
-            	{header: '预览图标', width: 50, hideGrid:true ,fieldtype:'box',colspan:4,
-	            	id : 'id_app_pic',
-	            	height : 120,
-	            	boxMaxWidth: 125,
-	            	autoEl : {
-	            	    tag : 'img',
-	            	    src : Ext.BLANK_AVATER_URL,  
-	            	    style : 'filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale);'
-            	}},
-	            //-----snap1
-	            {header: '截图1', width:5, hideGrid: true, id:'id_app_snap1', inputType:'file',allowBlank:false, name:'fsnap1',
-	            	listeners : {
-	            		'render':function(){
-	            			var img_reg = /\.([jJ][pP][gG]){1}$|\.([jJ][pP][eE][gG]){1}$|\.([gG][iI][fF]){1}$|\.([pP][nN][gG]){1}$|\.([bB][mM][pP]){1}$/;
-	            			var iconFileCmp = Ext.get('id_app_snap1');
-	            			iconFileCmp.on('change',function(field,newValue,oldValue){
-	            			         var picPath = iconFileCmp.getValue();
-	            			         var url = 'file:///' + picPath;
-	            			         if(img_reg.test(url)){  //格式验证
-	            			        	  if(Ext.isIE){
-	    	                                  var image = Ext.get('id_app_slot1').dom;  
-		            				          image.src = Ext.BLANK_IMAGE_URL;
-		            				          image.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = url; 
-		            			         }else{
-		            				          //仅支持ff7.0+
-		            			        	  Ext.get('id_app_slot1').dom.src = window.URL.createObjectURL(Ext.get('id_app_snap1').dom.files.item(0));
-		            			         }
-	            			         }else{
-	            			        	 Ext.MessageBox.alert('提示','文件格式只能是.jpg|.jpeg|.png|.bmp|.gif');
-	            			         }
-            		        },this);
-            	         }
-	            	}
-	            },
+	            //0
+            	{header: '预览' ,width: 40 ,hideGrid:true , id : 'id_app_slot0' ,colspan:5 ,fieldtype:'slotfield'},
+            	//后台默认截图 value =1/2/3/4/5
+            	{header:'默认图索引',colspan:5,value:0,name:'snapIndex' ,id:'snapIndex',hidden : true},// 隐藏域---记录默认截图的索引，传送给后台
+	            //1--- snapshot
+	            {header: '上传截图',hideGrid: true, id_slot:'id_app_slot1',id:'id_app_snap0',fieldtype:'snapfield',colspan:2},
 	            //2
-	            {header: '截图2', width:5, hideGrid: true, id:'id_app_snap2', inputType:'file',allowBlank:false, name:'fsnap2',autoScroll:false,
-	            	listeners : {
-	            		'render':function(){
-	            			var img_reg = /\.([jJ][pP][gG]){1}$|\.([jJ][pP][eE][gG]){1}$|\.([gG][iI][fF]){1}$|\.([pP][nN][gG]){1}$|\.([bB][mM][pP]){1}$/;
-	            			var iconFileCmp = Ext.get('id_app_snap2');
-	            			iconFileCmp.on('change',function(field,newValue,oldValue){
-	            			         var picPath = iconFileCmp.getValue();
-	            			         var url = 'file:///' + picPath;
-	            			         if(img_reg.test(url)){  //格式验证
-	            			        	  if(Ext.isIE){
-	    	                                  var image = Ext.get('id_app_slot2').dom;  
-		            				          image.src = Ext.BLANK_IMAGE_URL;
-		            				          image.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = url; 
-		            			         }else{
-		            				          //仅支持ff7.0+
-		            			        	  Ext.get('id_app_slot2').dom.src = window.URL.createObjectURL(Ext.get('id_app_snap2').dom.files.item(0));
-		            			         }
-	            			         }else{
-	            			        	 console.info(field);
-	            			        	 Ext.MessageBox.alert('提示','文件格式只能是.jpg|.jpeg|.png|.bmp|.gif');
-	            			         }
-            		        },this);
-            	         }
-	            	}
-	            },
+	            {header: '上传截图',hideGrid: true, id_slot:'id_app_slot2',id:'id_app_snap1',fieldtype:'snapfield',colspan:2},
 	            //3
-	            {header: '截图3', width:5, hideGrid: true, id:'id_app_snap3', inputType:'file',allowBlank:false, name:'fsnap3',autoScroll:false,
-	            	listeners : {
-	            		'render':function(){
-	            			var img_reg = /\.([jJ][pP][gG]){1}$|\.([jJ][pP][eE][gG]){1}$|\.([gG][iI][fF]){1}$|\.([pP][nN][gG]){1}$|\.([bB][mM][pP]){1}$/;
-	            			var iconFileCmp = Ext.get('id_app_snap3');
-	            			iconFileCmp.on('change',function(field,newValue,oldValue){
-	            			         var picPath = iconFileCmp.getValue();
-	            			         var url = 'file:///' + picPath;
-	            			         if(img_reg.test(url)){  //格式验证
-	            			        	  if(Ext.isIE){
-	    	                                  var image = Ext.get('id_app_slot').dom;  
-		            				          image.src = Ext.BLANK_IMAGE_URL;
-		            				          image.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = url; 
-		            			         }else{
-		            				          //仅支持ff7.0+
-		            			        	  Ext.get('id_app_slot3').dom.src = window.URL.createObjectURL(Ext.get('id_app_snap3').dom.files.item(0));
-		            			         }
-	            			         }else{
-	            			        	 console.info(field);
-	            			        	 Ext.MessageBox.alert('提示','文件格式只能是.jpg|.jpeg|.png|.bmp|.gif');
-	            			         }
-            		        },this);
-            	         }
-	            	}
-	            },
+	            {header: '上传截图',hideGrid: true, id_slot:'id_app_slot3',id:'id_app_snap2',fieldtype:'snapfield',colspan:2},
 	            //4
-	            {header: '截图4', width:5, hideGrid: true, id:'id_app_snap4', inputType:'file',allowBlank:false, name:'fsnap4',autoScroll:false,
-	            	listeners : {
-	            		'render':function(){
-	            			var img_reg = /\.([jJ][pP][gG]){1}$|\.([jJ][pP][eE][gG]){1}$|\.([gG][iI][fF]){1}$|\.([pP][nN][gG]){1}$|\.([bB][mM][pP]){1}$/;
-	            			var iconFileCmp = Ext.get('id_app_snap4');
-	            			iconFileCmp.on('change',function(field,newValue,oldValue){
-	            			         var picPath = iconFileCmp.getValue();
-	            			         var url = 'file:///' + picPath;
-	            			         if(img_reg.test(url)){  //格式验证
-	            			        	  if(Ext.isIE){
-	    	                                  var image = Ext.get('id_app_slot4').dom;  
-		            				          image.src = Ext.BLANK_IMAGE_URL;
-		            				          image.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = url; 
-		            			         }else{
-		            				          //仅支持ff7.0+
-		            			        	  Ext.get('id_app_slot4').dom.src = window.URL.createObjectURL(Ext.get('id_app_snap4').dom.files.item(0));
-		            			         }
-	            			         }else{
-	            			        	 console.info(field);
-	            			        	 Ext.MessageBox.alert('提示','文件格式只能是.jpg|.jpeg|.png|.bmp|.gif');
-	            			         }
-            		        },this);
-            	         }
-	            	}
-	            },
-            	//--- snap1
-            	{header: '预览1', width: 40, hideGrid:true ,fieldtype:'box',
-	            	id : 'id_app_slot1',
-	            	height : 100,
-	            	boxMaxWidth: 125,
-	            	autoEl : {
-	            	    tag : 'img',
-	            	    src : Ext.BLANK_AVATER_URL,  
-	            	    style : 'filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale);'
-            	}},
+	            {header: '上传截图',hideGrid: true, id_slot:'id_app_slot4',id:'id_app_snap3',fieldtype:'snapfield',colspan:2},
+	            //5
+	            {header: '上传截图',hideGrid: true, id_slot:'id_app_slot5',id:'id_app_snap4',fieldtype:'snapfield',colspan:2},
+            	//1---preview
+            	{header: '预览',  hideGrid:true ,id : 'id_app_slot1' ,fieldtype:'slotfield',colspan:2},
             	//2
-            	{header: '预览2', width: 40, hideGrid:true ,fieldtype:'box',
-	            	id : 'id_app_slot2',
-	            	height : 100,
-	            	boxMaxWidth: 125,
-	            	autoEl : {
-	            	    tag : 'img',
-	            	    src : Ext.BLANK_AVATER_URL,  
-	            	    style : 'filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale);'
-            	}},
+            	{header: '预览', hideGrid:true ,id : 'id_app_slot2' ,fieldtype:'slotfield',colspan:2},
             	//3
-            	{header: '预览3', width: 40, hideGrid:true ,fieldtype:'box',
-	            	id : 'id_app_slot3',
-	            	height : 100,
-	            	boxMaxWidth: 125,
-	            	autoEl : {
-	            	    tag : 'img',
-	            	    src : Ext.BLANK_AVATER_URL,  
-	            	    style : 'filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale);',
-	            	    alt:'暂无预览'
-            	}},
+            	{header: '预览', hideGrid:true ,id : 'id_app_slot3' ,fieldtype:'slotfield',colspan:2},
             	//4
-            	{header: '预览4', width: 40, hideGrid:true ,fieldtype:'box',
-	            	id : 'id_app_slot4',
-	            	height : 100,
-	            	boxMaxWidth: 125,
-	            	autoEl : {
-	            	    tag : 'img',
-	            	    src : Ext.BLANK_AVATER_URL,  
-	            	    style : 'filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale);',
-	            	    alt :'暂无预览'
-            	}},
+            	{header: '预览', hideGrid:true ,id : 'id_app_slot4' ,fieldtype:'slotfield',colspan:2},
+            	//5
+            	{header: '预览', hideGrid:true ,id : 'id_app_slot5' ,fieldtype:'slotfield',colspan:2},
+            	//clear && setDefault
+            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true, pressed:true,iconCls:'accept',
+            		toggleHandler: function(btn, pressed){
+            			setDefaultImage(0); 
+            		}},
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap0','id_app_slot1');},iconCls:'cancel'},
+            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',
+            		toggleHandler: function(btn, pressed){
+            			setDefaultImage(1);
+            		}},
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap1','id_app_slot2');},iconCls:'cancel'},
+            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',
+            		toggleHandler: function(btn, pressed){
+            			setDefaultImage(2);
+            		}},
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap2','id_app_slot3');},iconCls:'cancel'},
+            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',
+            		toggleHandler: function(btn, pressed){
+            			setDefaultImage(3);
+            		}},
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap3','id_app_slot4');},iconCls:'cancel'},
+            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',
+            		toggleHandler: function(btn, pressed){
+            			setDefaultImage(4);
+            		}},
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap4','id_app_slot5');},iconCls:'cancel'}
 	        ],
-	
+    
+ 
 	queryFormItms: [{ 
 				layout: 'tableform',
 	            layoutConfig: {
@@ -291,9 +176,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
 		            	    valueField  :'id',
 			                displayField:'typeName',
 			                emptyText:'  请选择应用分类',
-			                listAlign:'center',
 			                mode  :'remote', 
-			                align : 'center',
 			                store : new Ext.data.JsonStore({
 			                	url : "./../apptype/queryAllAppType.json",
 			                	fields : new Ext.data.Record.create( ['id', 'typeName'])
@@ -320,7 +203,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
 	        			}}
 	        ]});
     	bar.insertButton(index++,new Ext.Button({text:"发布",iconCls: 'btn-onlineUser',
-    		id:'distEntity',scope: this, disabled: this.authOperations[3],
+    		id:'distEntity',scope: this, disabled: true ,//this.authOperations[3],//点击gridrow方可激活
 		    		handler: function() {
 					   	this.distOper();
 					}}));
@@ -329,9 +212,29 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
     	bar.insertButton(index++,{iconCls: 'oper', menu: menu,disabled: this.authOperations[4] ,scope: this});
     },
     
+    onRowClickFn : function(grid,rowIndex,event){
+    	var rec = grid.getSelectionModel().getSelected();  
+    	if(rec == undefined || rec.data.appState == 1){   //已发布
+    		Ext.getCmp('distEntity').disable();
+    	}else{
+    		Ext.getCmp('distEntity').enable();
+    	}
+    },
+    
    //发布
    distOper : function(){
-	   alert('undeveloped');
+	   var rec = this.grid.getSelectionModel().getSelected();  
+	   Ext.Ajax.request({
+			url : 'distApp.json',
+			success : function(response,options){
+				Ext.getCmp('distEntity').disable();
+				Ext.getCmp('id_app_Grid').store.reload();
+			},
+			failure : function(response,options){
+				console.info('error msg:',response);
+			},
+			params:{appId:rec.data.id}
+		});	 
    },
    
    //推荐

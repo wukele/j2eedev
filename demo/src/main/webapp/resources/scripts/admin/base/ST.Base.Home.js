@@ -108,8 +108,7 @@ var HomePage = Ext.extend(Ext.Viewport, {
 	                title: 'Main',
 	                closable: false,
 	                iconCls: 'home',
-	                autoScroll: true,
-	                
+	                autoScroll: true,	                
                   	frame:true,  
                   	html:''  
 	            }],
