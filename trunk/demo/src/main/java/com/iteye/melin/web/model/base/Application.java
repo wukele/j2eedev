@@ -37,6 +37,16 @@ public class Application {
 	private String appState_Name;
 	@Transient
 	private String dlClient;
+	@Transient
+	private String snapUrl_default;  //默认截图
+	@Transient
+	private String snapUrl_1;// 截图1
+	@Transient
+	private String snapUrl_2;//截图2
+	@Transient
+	private String snapUrl_3;//截图3
+	@Transient
+	private String snapUrl_4;//截图4
 	@Column(name = "TYPE_SEQ")
 	private String typeSeq;
 	@Column(name = "MIN_SDK_VER")
@@ -77,14 +87,51 @@ public class Application {
 	private Long globalMark;
 	@Column(name = "VER_MARK")
 	private Integer verMark;
-
 	@DateTimeFormat(iso=ISO.DATE) 
 	@Column(name="CREATE_TIME",updatable=false)
-	private Date createTime;
-	
+	private Date createTime;	
 	@DateTimeFormat(iso=ISO.DATE)
 	@Column(name = "UPDATE_TIME")
-	private Date updateTime;
+	private Date updateTime;	
+	public String getSnapUrl() {
+		return snapUrl_default;
+	}
+
+	public void setSnapUrl(String snapUrl) {
+		this.snapUrl_default = snapUrl;
+	}
+
+	public String getSnapUrl_1() {
+		return snapUrl_1;
+	}
+
+	public void setSnapUrl_1(String snapUrl_1) {
+		this.snapUrl_1 = snapUrl_1;
+	}
+
+	public String getSnapUrl_2() {
+		return snapUrl_2;
+	}
+
+	public void setSnapUrl_2(String snapUrl_2) {
+		this.snapUrl_2 = snapUrl_2;
+	}
+
+	public String getSnapUrl_3() {
+		return snapUrl_3;
+	}
+
+	public void setSnapUrl_3(String snapUrl_3) {
+		this.snapUrl_3 = snapUrl_3;
+	}
+
+	public String getSnapUrl_4() {
+		return snapUrl_4;
+	}
+
+	public void setSnapUrl_4(String snapUrl_4) {
+		this.snapUrl_4 = snapUrl_4;
+	}
 
 
 	public Long getId() {
