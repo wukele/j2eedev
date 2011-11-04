@@ -415,6 +415,7 @@ ST.ux.ViewGrid = Ext.extend(Ext.Viewport, {
                             success: function() {
                                 this.editDialog.close();
                                 this.grid.store.reload();
+                                Ext.getCmp('id_app_Grid').store.reload();
                             },
                             failure: function(a, b) {
                             	Ext.MessageBox.alert("提示", b.result.message);
