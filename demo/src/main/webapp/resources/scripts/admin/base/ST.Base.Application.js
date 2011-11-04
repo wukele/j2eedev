@@ -8,9 +8,18 @@ function clearImage(id_snap ,id_slot){
 	Ext.getCmp(id_snap).reset();
 	Ext.get(id_slot).dom.src = Ext.BLANK_AVATER_URL;
 }
-// 截图设置默认
-function setDefaultImage(val){
-	Ext.getCmp('snapIndex').setRawValue(val);
+// 截图默认设置
+function setDefaultImage(val,next_slot_id,pressed){
+	if(!pressed){   //非选中状态 默认发送第一张截图
+		Ext.getCmp('snapIndex').setRawValue(0);
+		return; 
+	}
+	if( Ext.getCmp('id_app_snap0').disabled){// 如果默认截图按钮已经被置灰说明是当前处于编辑状态
+		//拼装已经设为默认图片的URL和当前选中图片的URL发送到后台，分隔符#
+		Ext.getCmp('snapIndex').setRawValue(Ext.get('id_app_slot1').dom.src+'#'+Ext.get(next_slot_id).dom.src);
+	}else{
+		Ext.getCmp('snapIndex').setRawValue(val);//否则属于新建状态
+	}
 }
 // 渲染色调
 function colorfunc(value, p, record){
@@ -86,6 +95,8 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
 	            {header: '关键字',     width: 120,  dataIndex: 'keyWords', hideGrid: true ,allowBlank:false , name:'keyWords',colspan:5},
 	            {header: '最低版本',width: 120,  dataIndex: 'minSdkVer', name:'minSdkVer',colspan:5},
 	            {header: '作者',  width: 120,   dataIndex: 'authorName',name:'authorName',colspan:5},
+	            {header: '软件网址',  width: 120,   dataIndex: 'appWebsite',name:'appWebsite',colspan:5,hideForm:'edit'},
+	            {header: '技术支持',  width: 120,   dataIndex: 'supportEmail',name:'supportEmail',colspan:5,hideForm:'edit'},
             	{header: '应用摘要',  width: 120,   dataIndex: 'appSummary',name:'appSummary',autoScroll:true ,colspan:5,fieldtype:'textarea'},
             	{header: '应用描述',  width: 120,   dataIndex: 'appDesc',name:'appDesc',autoScroll:true ,colspan:5,fieldtype:'textarea'},
 	            {header: '上传图标', width:150, hideGrid: true, id_slot:'id_app_slot0', id:'id_app_icon',width:100, allowBlank:false, name:'fIcon',colspan:5,fieldtype:'snapfield'},
@@ -136,29 +147,29 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
             	//clear && setDefault
             	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true, pressed:true,iconCls:'accept', id:'default_img',
             		toggleHandler: function(btn, pressed){
-            			setDefaultImage(0); 
+            			setDefaultImage(0,'id_app_slot1',pressed); 
             		}},
-            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap0','id_app_slot1');},iconCls:'cancel'},
-            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap0','id_app_slot1');},iconCls:'cancel',id:'clear0'},
+            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept', id:'d-snap2',
             		toggleHandler: function(btn, pressed){
-            			setDefaultImage(1);
+            			setDefaultImage(1,'id_app_slot2',pressed);
             		}},
-            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap1','id_app_slot2');},iconCls:'cancel'},
-            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap1','id_app_slot2');},iconCls:'cancel',id:'clear1'},
+            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',id:'d-snap3',
             		toggleHandler: function(btn, pressed){
-            			setDefaultImage(2);
+            			setDefaultImage(2,'id_app_slot3',pressed);
             		}},
-            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap2','id_app_slot3');},iconCls:'cancel'},
-            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap2','id_app_slot3');},iconCls:'cancel',id:'clear2'},
+            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',id:'d-snap4',
             		toggleHandler: function(btn, pressed){
-            			setDefaultImage(3);
+            			setDefaultImage(3,'id_app_slot4',pressed);
             		}},
-            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap3','id_app_slot4');},iconCls:'cancel'},
-            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap3','id_app_slot4');},iconCls:'cancel',id:'clear3'},
+            	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',id:'d-snap5',
             		toggleHandler: function(btn, pressed){
-            			setDefaultImage(4);
+            			setDefaultImage(4,'id_app_slot5',pressed);
             		}},
-            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap4','id_app_slot5');},iconCls:'cancel'}
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap4','id_app_slot5');},iconCls:'cancel',id:'clear4'}
 	        ],
     
  
@@ -233,18 +244,43 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
     	 Ext.get('id_app_slot1').dom.src = '..'+info.snapUrl;//默认
     	 if(info.snapUrl_1!=undefined && img_reg.test(info.snapUrl_1)){
     		 Ext.get('id_app_slot2').dom.src = '..'+info.snapUrl_1;
-    	 }
+    	 }else{
+    		 Ext.getCmp('d-snap2').disable();
+    	 }   	 
     	 if(info.snapUrl_1!=undefined && img_reg.test(info.snapUrl_2)){
     		 Ext.get('id_app_slot3').dom.src = '..'+info.snapUrl_2;
+    	 }else{
+    		 Ext.getCmp('d-snap3').disable();
     	 }
     	 if(info.snapUrl_1!=undefined && img_reg.test(info.snapUrl_3)){
     		 Ext.get('id_app_slot4').dom.src = '..'+info.snapUrl_3;
+    	 }else{
+    		 Ext.getCmp('d-snap4').disable();
     	 }
     	 if(info.snapUrl_1!=undefined && img_reg.test(info.snapUrl_4)){
     		 Ext.get('id_app_slot5').dom.src = '..'+info.snapUrl_4;
+    	 }else{
+    		 Ext.getCmp('d-snap5').disable();
     	 }
-    	 
+//    	 this.grayUploadBtn();
+       	 Ext.getCmp('id_app_snap0').disable();
+       	 Ext.getCmp('default_img').setText('当前默认');
+       	 Ext.getCmp('default_img').disable();
+    	 Ext.getCmp('id_app_snap1').disable();
+    	 Ext.getCmp('id_app_snap2').disable();
+    	 Ext.getCmp('id_app_snap3').disable();
+    	 Ext.getCmp('id_app_snap4').disable();
+    	 Ext.getCmp('clear0').disable();
+    	 Ext.getCmp('clear1').disable();
+    	 Ext.getCmp('clear2').disable();
+    	 Ext.getCmp('clear3').disable();
+    	 Ext.getCmp('clear4').disable();
     },
+    
+    
+//    grayUploadBtn: function(){
+// 
+//    },
     
    //发布
    distOper : function(){
