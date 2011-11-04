@@ -77,6 +77,7 @@ public class GetInfo {
 	 * @param apkpath  文件路径
 	 */
 	public static List<String> getApkInfo(String apkpath) {
+		listAPKInfo=new ArrayList<ArrayList<String>>();  
 		List<String> info = new ArrayList<String>();
 		try {
 			zFile = new ZipFile(apkpath);
