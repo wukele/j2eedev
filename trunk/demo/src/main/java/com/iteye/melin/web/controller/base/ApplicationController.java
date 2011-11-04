@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.ServletContextAware;
 
 import com.iteye.melin.core.page.Page;
 import com.iteye.melin.core.page.PageRequest;
@@ -49,7 +51,7 @@ import com.iteye.melin.web.service.support.AppTypeService;
  */
 @Controller
 @RequestMapping("/application")
-public class ApplicationController extends BaseController {
+public class ApplicationController extends BaseController implements ServletContextAware{
 	// ~ Instance fields
 	// ================================================================================================
 	@Autowired
@@ -60,6 +62,7 @@ public class ApplicationController extends BaseController {
 	private AppFileService appFileService;
 	@Autowired
 	private AppSnapService appSnapService;
+	private ServletContext servletContext;  //获取ctx路径
 	// ~ Methods
 	// ========================================================================================================
 	@RequestMapping("/index")
@@ -386,7 +389,7 @@ public class ApplicationController extends BaseController {
 	/************************************************
 	 * ①更新app基本信息
 	 * ②图片文件路径没有变化
-	 * ③apk文件根据新上传的文件的版本号进行判断
+	 * ③apk文件Ver_Mark根据新上传的文件的版本号进行判断
 	 * ④图标文件如果重新上传会删除之前保留的，用新上传的图标，否则保留原先的图标
 	 * ⑤软件截图只可以选择新建时上传的五张图之一作为默认图片
 	 * ***********************************************
@@ -554,16 +557,38 @@ public class ApplicationController extends BaseController {
 	
 	/************************************************
 	 * ①删除app基本信息
-	 * ②删除apk文件、图标、截图
+	 * ②删除apk文件、图标、截图等
 	 * ③删除 APP_E_FILE、APP_J_SCREENSHOT、APP_E_APP表中残余信息
 	 * ***********************************************
 	 * @throws ServletException
-	 * @throws IOException
+	 * @throws IOException   文件id不存在、图标id不存在
 	 */
 	@RequestMapping(value = "/deleteApplication", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseData deleteApplication(Long id) {
-		//TODO:未开发
+		Application app = applicationService.findEntity(id);
+		String folder = this.servletContext.getRealPath("/");
+		//del file
+		String app_file = appFileService.findEntity(app.getFileId()).getFilepath();
+		File appfile = new File(folder+app_file);
+		if(appfile.exists()){
+			appfile.delete();	
+		}
+		appFileService.deleteEntity(app.getFileId());
+		//del icon
+		File appIcon = new File(folder+app.getIconUrl());
+		if(appIcon.exists()){
+			appIcon.delete();
+		}
+		//del snaps
+		List<AppSnap> snapList = appSnapService.findByProperty("appId", id);
+		for(AppSnap o : snapList){
+			File aFile = new File(folder+o.getSnapUrl());
+			if(aFile.exists()){
+				aFile.delete();
+			}
+			appSnapService.deleteEntity(o.getId());
+		}		
 		applicationService.deleteEntity(id);
 		return ResponseData.SUCCESS_NO_DATA;
 	}
@@ -586,6 +611,11 @@ public class ApplicationController extends BaseController {
 		app.setAppState((short)1);
 		applicationService.createOrUpdate(app);
 		return ResponseData.SUCCESS_NO_DATA.toString();
+	}
+
+	@Override
+	public void setServletContext(ServletContext servletContext) {
+		this.servletContext = servletContext; 
 	}
 	
 }
