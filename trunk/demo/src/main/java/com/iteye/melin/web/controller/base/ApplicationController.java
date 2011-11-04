@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -134,9 +135,9 @@ public class ApplicationController extends BaseController {
 		ServletFileUpload upload = new ServletFileUpload(fac);
 		upload.setHeaderEncoding("utf-8");
 	    File savefile_apk = null  , savefile_icon =null;
-		String appName /*名称*/ , appState /*状态*/, keyWords /*关键字*/, typeId /*分类*/,appPackage /*包名*/ = "",verMark = null,/*版本*/
+		String appName /*名称*/ , appState /*状态*/, keyWords /*关键字*/, typeId /*分类*/,appPackage /*包名*/ = "",appVer= null,/*版本*/
 		filename_apk /*apk路径 */,fileext_apk /*扩展名*/,filename_icon /*icon路径 */,fileext_icon ,/*扩展名*/
-		app_sdk_ver /*sdk版本*/,app_author /*作者*/,app_summary /*摘要*/,app_desc/*描述*/;
+		app_sdk_ver /*sdk版本*/,app_author /*作者*/,app_summary /*摘要*/,app_desc,/*描述*/appWebsite/*软件网址*/,supportEmail/*技术支持email*/;
 		int snapIndex =0;/*默认截图*/
 		String[] filename_snap = new String[5];	//截图保存后的名称
 		String[] fileext_snap  = new String[5]; //获取截图扩展名
@@ -192,6 +193,8 @@ public class ApplicationController extends BaseController {
 			app_author=(String)fields.get("authorName");
 			app_summary = (String)fields.get("appSummary");
 			app_desc = (String)fields.get("appDesc");
+			appWebsite = (String)fields.get("appWebsite");
+			supportEmail = (String)fields.get("supportEmail");
 			/* 获取表单的上传文件 */
 			FileItem uploadFile_apk = (FileItem) fields.get("id_app_apk");
 			FileItem uploadFile_icon = (FileItem) fields.get("id_app_icon");
@@ -204,16 +207,20 @@ public class ApplicationController extends BaseController {
 				}
 				uploadFile_snap[i] = (FileItem)fields.get("id_app_snap"+i);
 				fileName_snap[i] = uploadFile_snap[i].getName();
-				fileext_snap[i] = fileName_snap[i].substring(fileName_snap[i].lastIndexOf(".")+1);				
+				fileext_snap[i] = fileName_snap[i].substring(fileName_snap[i].lastIndexOf(".")+1);		//验证		
 				filename_snap[i] = UUID.randomUUID().toString();
 				if(snapIndex==i){
 					savefile_snap[i]=new File(dir_snap + filename_snap[i] + "__default."  //默认图片标识
 							+ fileext_snap[i]);
+					uploadFile_snap[i].write(savefile_snap[i]);
 				}else{
-					savefile_snap[i]=new File(dir_snap + filename_snap[i] + "."
-							+ fileext_snap[i]);	
+					//排除空图片（无扩展名）
+					if(StringUtils.hasText(fileext_snap[i])){
+						savefile_snap[i]=new File(dir_snap + filename_snap[i] + "."
+								+ fileext_snap[i]);	
+						uploadFile_snap[i].write(savefile_snap[i]);	
+					}
 				}
-				uploadFile_snap[i].write(savefile_snap[i]);
 			}
 			/************************/
 			/* 获取文件上传的路径名称*/
@@ -229,12 +236,7 @@ public class ApplicationController extends BaseController {
 					fileext_apk, uploadFile_apk);
 			String checkresult_icon = applicationService.fileVertify(
 					fileext_icon, uploadFile_icon);
-//			String checkresult_snap = applicationService.fileVertify(
-//					fileext_snap, uploadFile_snap);
 			if (!checkresult_apk.equals("pass") || !checkresult_icon.equals("pass")) {
-//				return checkresult_apk.equals("pass") ? "{success:false ,err:"
-//						+ checkresult_icon + "}" :(checkresult_icon.equals("pass") ?"{success:false, err:"+checkresult_snap: "{success:false ,err:"
-//							+ checkresult_apk + "}");
 				return "{success:false , err: '异常'}";
 			}
 			/* 重命名文件 */
@@ -256,11 +258,13 @@ public class ApplicationController extends BaseController {
 			return "{success:false ,err:文件信息保存失败";
 		}
 		//==========================以下是入库操作===========================================
+		/*分类SEQ*/
+		String typeSeq = appTypeService.findEntity(Long.parseLong(typeId)).getTypeSeq();
 		/* 保存成功后读取apk包信息 */
 		List<String> apkInfos = applicationService.readApkInfo(savefile_apk);
 		if(!apkInfos.isEmpty()){
 			appPackage = apkInfos.get(1);
-			verMark = apkInfos.get(2);
+			appVer = apkInfos.get(2);
 		}
 		/* 新建应用文件 */
 		AppFile newAppfile = new AppFile();
@@ -285,20 +289,24 @@ public class ApplicationController extends BaseController {
 		newApp.setFileSize(new Float(filesize_app));
 		newApp.setAppName(appName);
 		newApp.setAppState(Short.valueOf(appState));
-		newApp.setTypeId(Integer.valueOf(typeId));
+		newApp.setTypeId(Integer.valueOf(typeId)); //分类
+		newApp.setTypeSeq(typeSeq); //分类SEQ
 		newApp.setKeyWords(keyWords);
+		newApp.setAppWebsite(appWebsite);
+		newApp.setSupportEmail(supportEmail);
 		newApp.setDownTimes(0);
 		newApp.setIconUrl("/resources/apk/images/"+filename_icon+"."+fileext_icon);
 		newApp.setFileId(fileId);
 		newApp.setAppPackage(appPackage);
+		newApp.setVerMark(0); //版本标识
 		newApp.setGlobalMark(UUID.randomUUID().getLeastSignificantBits());  //yy全局标识
 		newApp.setCommentTimes(0);
 		newApp.setSoftLevel((short)0);
 		Date d = new Date();
 		newApp.setCreateTime(d);
 		newApp.setUpdateTime(d);
-		if(verMark!=null){
-			newApp.setVerMark(Integer.parseInt(verMark));	
+		if(appVer!=null){  //应用版本--取自apk-xml文件
+			newApp.setVerMark(Integer.parseInt(appVer));	
 		}
 		applicationService.insertEntity(newApp);
 		Long appId = newApp.getId();
@@ -312,6 +320,8 @@ public class ApplicationController extends BaseController {
 		}
 		//保存截图
 		for(int i =0;i<filename_snap.length;i++){
+			if(StringUtils.hasText(fileext_snap[i]))
+				continue;
 			AppSnap newSnap = new AppSnap();
 			newSnap.setAppId(appId);
 			newSnap.setFileId(fileId);
@@ -319,8 +329,8 @@ public class ApplicationController extends BaseController {
 				//保存默认的图片
 				newSnap.setSnapUrl("/resources/apk/snap/"+filename_snap[i]+"__default"+"."+fileext_snap[i]);//__default
 			}else{
-				//保存非默认的图片
-				newSnap.setSnapUrl("/resources/apk/snap/"+filename_snap[i]+"."+fileext_snap[i]);
+				//保存非默认的图片				
+				newSnap.setSnapUrl("/resources/apk/snap/"+filename_snap[i]+"."+fileext_snap[i]);				
 			}
 			appSnapService.insertEntity(newSnap);
 			Long snapId = newSnap.getId();
@@ -333,11 +343,17 @@ public class ApplicationController extends BaseController {
 				return  "{success:false ,err:'截图保存失败'";
 			}
 		}
-
-		//return ResponseData.SUCCESS_NO_DATA.toString();
 		return "{success:true}";
 	}
 
+	
+	/************************************************
+	 * ①加载app基本信息
+	 * ②默认截图放在首位，其他截图往后排
+	 * ***********************************************
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	@RequestMapping(value = "/loadApplication", method = RequestMethod.POST)
 	@ResponseBody
 	public Application loadApplication(Long id) {
@@ -346,6 +362,8 @@ public class ApplicationController extends BaseController {
 		List<AppSnap> listSnap = appSnapService.findByProperty("appId", id);
 		int i=1;
 		for(AppSnap o :listSnap){
+			if(o.getSnapUrl()==null)
+				continue;
 			if(o.getSnapUrl().contains("__default")){
 				app.setSnapUrl(o.getSnapUrl());
 			}else if(i==1){
@@ -359,22 +377,193 @@ public class ApplicationController extends BaseController {
 				i++;
 			}else if(i==4){
 				app.setSnapUrl_4(o.getSnapUrl());
-				i++;
 			}
 		}
 		return app;
 	}
-
+	
+	
+	/************************************************
+	 * ①更新app基本信息
+	 * ②图片文件路径没有变化
+	 * ③apk文件根据新上传的文件的版本号进行判断
+	 * ④图标文件如果重新上传会删除之前保留的，用新上传的图标，否则保留原先的图标
+	 * ⑤软件截图只可以选择新建时上传的五张图之一作为默认图片
+	 * ***********************************************
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/updateApplication", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseData updateApplication(Application application) {
-		applicationService.updateEntity(application);
-		return ResponseData.SUCCESS_NO_DATA;
+	public String updateApplication(HttpServletRequest request,
+			HttpServletResponse response )throws ServletException, IOException {
+		DiskFileItemFactory fac = new DiskFileItemFactory();
+		ServletFileUpload upload = new ServletFileUpload(fac);
+		upload.setHeaderEncoding("utf-8");
+	    File savefile_apk = null  , savefile_icon =null;
+		String id /*主键*/,appName /*名称*/ , appState /*状态*/, keyWords /*关键字*/, typeId /*分类*/,appPackage /*包名*/ = "",appVer= null,/*版本*/
+		filename_apk /*apk路径 */ = null,fileext_apk /*扩展名*/ = null,filename_icon /*icon路径 */ = null,fileext_icon = null ,/*扩展名*/dir_snap,/*截图目录*/
+		app_sdk_ver /*sdk版本*/,app_author /*作者*/,app_summary /*摘要*/,app_desc,/*描述*/folder/*文件目录*/;
+		String snapIndexUrl ="0";/*默认截图*/
+		boolean b_apk_update =false, b_icon_update=false; /*apk和图标是否发生改变的标志位*/
+		long filesize_app = 0 ; //文件大小
+		/*定义文件数组*/
+		List<File> files = new ArrayList<File>();
+		files.add(savefile_apk);
+		files.add(savefile_icon);
+		try {
+			List<FileItem> items = upload.parseRequest(request);
+			Map<String, Serializable> fields = new HashMap<String, Serializable>();
+			Iterator<FileItem> iter = items.iterator();
+			while (iter.hasNext()) {
+				FileItem item = (FileItem) iter.next();
+				if (item.isFormField())
+					fields.put(item.getFieldName(), item.getString());
+				else
+					fields.put(item.getFieldName(), item);
+			}
+			/*文件存储在目录中的绝对路径 */
+			folder = request.getSession().getServletContext()
+					.getRealPath("/");
+			String dir_apk = folder + File.separator + "resources\\apk\\upload"
+					+ File.separator;
+			String dir_img = folder + File.separator + "resources\\apk\\images"
+					+ File.separator;
+			dir_snap = folder + File.separator + "resources\\apk\\snap"
+					+ File.separator;
+			/*抽取表单必填信息 */
+			id = (String)fields.get("id");  //主键
+			appName = (String)fields.get("appName");
+			appState = (String)fields.get("appState");
+			keyWords = (String)fields.get("keyWords");
+			typeId	= (String)fields.get("typeId");
+			snapIndexUrl = (String)fields.get("snapIndex"); //获取默认截图索引
+			/*非必填信息*/
+			app_sdk_ver =(String)fields.get("minSdkVer");
+			app_author=(String)fields.get("authorName");
+			app_summary = (String)fields.get("appSummary");
+			app_desc = (String)fields.get("appDesc");
+			
+			/*处理apk文件*/
+			FileItem uploadFile_apk = (FileItem)fields.get("id_app_apk");
+			String fileName_apk = uploadFile_apk.getName();
+			if(StringUtils.hasText(fileName_apk)){
+				b_apk_update = true;
+			    fileext_apk = fileName_apk.substring(fileName_apk
+						.lastIndexOf(".") + 1);
+				/* 重命名文件 */
+				filename_apk = UUID.randomUUID().toString();
+				savefile_apk = new File(dir_apk + filename_apk + "."
+						+ fileext_apk);
+				/* 获取文件大 小*/
+				filesize_app = uploadFile_apk.getSize();
+				/* 存储上传文件 */
+				uploadFile_apk.write(savefile_apk);
+			}
+			
+			FileItem uploadFile_icon = (FileItem) fields.get("id_app_icon");
+			String fileName_icon = uploadFile_icon.getName();
+			if(StringUtils.hasText(fileName_icon)){
+				System.out.println();
+				b_icon_update=true;  //更新				
+				fileext_icon = fileName_icon.substring(fileName_icon
+						.lastIndexOf(".") + 1);	
+				filename_icon = UUID.randomUUID().toString();
+				savefile_icon = new File(dir_img + filename_icon + "."
+						+ fileext_icon);
+				uploadFile_icon.write(savefile_icon);	
+			}			
+		} catch (Exception ex) {
+			/* 清理垃圾文件 */
+			applicationService.clear(files);
+			logger.error("=err==" + ex.getMessage());
+			return "{success:false ,err:文件信息保存失败";
+		}
+		//==========================以下是更新时入库操作===========================================
+		/*分类SEQ*/
+		String typeSeq = appTypeService.findEntity(Long.parseLong(typeId)).getTypeSeq();
+		//TODO:更新默认截图，文件名不变，文件内容交换即可
+		if(!snapIndexUrl.equals("0")){
+			String[] arr = StringUtils.split(snapIndexUrl, "#");
+			String oldUri = dir_snap+arr[0].substring(arr[0].lastIndexOf("/")+1);
+			String newUri = dir_snap+arr[1].substring(arr[1].lastIndexOf("/")+1);
+			String temp = dir_snap+File.separator+"temp"+".jpg";
+			File ftemp = new File(temp);
+			File fold= new File(oldUri);
+			File fnew = new File(newUri);
+			FileUtils.copyFile(fold, ftemp);
+			FileUtils.copyFile(fnew,fold);
+			FileUtils.copyFile(ftemp, fnew);
+			FileUtils.forceDelete(ftemp);
+		}
+		/* 保存成功后读取apk包信息 */
+		if(b_apk_update){
+			List<String> apkInfos = applicationService.readApkInfo(savefile_apk);
+			if(!apkInfos.isEmpty()){
+				appPackage = apkInfos.get(1);
+				appVer = apkInfos.get(2);
+			}	
+		}
+		/*更新应用包*/
+		Application updateApp = applicationService.findEntity(Long.parseLong(id));
+		Long appFileId = updateApp.getFileId();
+		/*更新应用文件 */
+		if(b_apk_update){
+			AppFile updateAppfile =appFileService.findEntity(appFileId);
+			String oldapk = folder+updateAppfile.getFilepath();
+			updateAppfile.setFileName(filename_apk+"."+fileext_apk);
+			updateAppfile.setFilesize(new Integer((int)filesize_app));
+			updateApp.setFileSize(new Float(filesize_app));		
+			updateApp.setAppPackage(appPackage);	
+			updateApp.setAppVer(appVer);
+			//删除旧的apk文件
+			File old = new File(oldapk);
+			if(old.delete()){
+				updateAppfile.setFilepath("/resources/apk/upload/"+filename_apk+"."+fileext_apk);
+			}
+			appFileService.updateEntity(updateAppfile);
+		}
+		/*更新应用软件*/
+		updateApp.setMinSdkVer(app_sdk_ver);
+		updateApp.setAuthorName(app_author);
+		updateApp.setAppSummary(app_summary);
+		updateApp.setAppDesc(app_desc);
+		updateApp.setAppName(appName);
+		updateApp.setAppState(Short.valueOf(appState));
+		updateApp.setTypeId(Integer.valueOf(typeId));
+		updateApp.setTypeSeq(typeSeq);
+		updateApp.setKeyWords(keyWords);
+		if(b_icon_update){ //图片更新时
+			//删除旧图标
+			String originalIconUrl = folder+updateApp.getIconUrl();
+			File file = new File(originalIconUrl);
+			if(file.exists()){
+				if(file.delete())
+					updateApp.setIconUrl("/resources/apk/images/"+filename_icon+"."+fileext_icon);
+			}
+		}
+		updateApp.setCommentTimes(0);
+		updateApp.setSoftLevel((short)0);
+		Date d = new Date();
+		updateApp.setUpdateTime(d);
+		applicationService.updateEntity(updateApp);
+		return "{success:true}";
 	}
 
+	
+	/************************************************
+	 * ①删除app基本信息
+	 * ②删除apk文件、图标、截图
+	 * ③删除 APP_E_FILE、APP_J_SCREENSHOT、APP_E_APP表中残余信息
+	 * ***********************************************
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	@RequestMapping(value = "/deleteApplication", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseData deleteUser(Long id) {
+	public ResponseData deleteApplication(Long id) {
+		//TODO:未开发
 		applicationService.deleteEntity(id);
 		return ResponseData.SUCCESS_NO_DATA;
 	}
