@@ -16,7 +16,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "app_c_type")
 public class AppType {
-	private Integer id;
+	private Long id;
 	private String typeName;
 	private Integer parentT;
 	private String typeSeq;
@@ -29,11 +29,11 @@ public class AppType {
 	@Id
 	@GeneratedValue(generator = "generator")
 	@Column(name = "TYPE_ID")
-	public Integer getId() {
+	public Long getId() {
 		return this.id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	
