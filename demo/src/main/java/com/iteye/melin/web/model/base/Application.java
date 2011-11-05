@@ -30,7 +30,7 @@ public class Application {
 	@Column(name = "APP_VER")
 	private String appVer;
 	@Column(name = "TYPE_ID")
-	private Integer typeId;
+	private Long typeId;
 	@Transient
 	private String typeId_Name;
 	@Transient
@@ -159,11 +159,11 @@ public class Application {
 		this.appVer = appVer;
 	}
 
-	public Integer getTypeId() {
+	public Long getTypeId() {
 		return this.typeId;
 	}
 
-	public void setTypeId(Integer typeId) {
+	public void setTypeId(Long typeId) {
 		this.typeId = typeId;
 	}
 

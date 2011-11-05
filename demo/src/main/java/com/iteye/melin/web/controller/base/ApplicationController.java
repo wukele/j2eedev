@@ -292,7 +292,7 @@ public class ApplicationController extends BaseController implements ServletCont
 		newApp.setFileSize(new Float(filesize_app));
 		newApp.setAppName(appName);
 		newApp.setAppState(Short.valueOf(appState));
-		newApp.setTypeId(Integer.valueOf(typeId)); //分类
+		newApp.setTypeId(Long.parseLong(typeId)); //分类
 		newApp.setTypeSeq(typeSeq); //分类SEQ
 		newApp.setKeyWords(keyWords);
 		newApp.setAppWebsite(appWebsite);
@@ -534,7 +534,7 @@ public class ApplicationController extends BaseController implements ServletCont
 		updateApp.setAppDesc(app_desc);
 		updateApp.setAppName(appName);
 		updateApp.setAppState(Short.valueOf(appState));
-		updateApp.setTypeId(Integer.valueOf(typeId));
+		updateApp.setTypeId(Long.parseLong(typeId));
 		updateApp.setTypeSeq(typeSeq);
 		updateApp.setKeyWords(keyWords);
 		if(b_icon_update){ //图片更新时
