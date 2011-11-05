@@ -309,7 +309,7 @@ public class ApplicationController extends BaseController implements ServletCont
 		newApp.setCreateTime(d);
 		newApp.setUpdateTime(d);
 		if(appVer!=null){  //应用版本--取自apk-xml文件
-			newApp.setVerMark(Integer.parseInt(appVer));	
+			newApp.setAppVer(appVer);	
 		}
 		applicationService.insertEntity(newApp);
 		Long appId = newApp.getId();
@@ -323,7 +323,7 @@ public class ApplicationController extends BaseController implements ServletCont
 		}
 		//保存截图
 		for(int i =0;i<filename_snap.length;i++){
-			if(StringUtils.hasText(fileext_snap[i]))
+			if(!StringUtils.hasText(fileext_snap[i]))
 				continue;
 			AppSnap newSnap = new AppSnap();
 			newSnap.setAppId(appId);
