@@ -247,7 +247,7 @@ ST.ux.ViewApp = Ext.extend(Ext.Viewport, {
     	this.queryForm.getForm().reset();
     },
     
-    // 检测至少选择一个
+    // 检测必须选择一个
     checkOne: function() {
         var selections = this.grid.getSelectionModel().selections;
         if (selections.length == 0) {
@@ -260,7 +260,7 @@ ST.ux.ViewApp = Ext.extend(Ext.Viewport, {
         return true;
     },
     
-    // 检测必须选择一个
+    // 检测至少选择一个
     checkMany: function() {
         var selections = this.grid.getSelectionModel().selections;
         if (selections.length == 0) {

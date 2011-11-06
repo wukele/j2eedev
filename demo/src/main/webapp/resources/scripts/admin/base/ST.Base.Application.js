@@ -3,6 +3,29 @@ Ext.BLANK_AVATER_URL = "./../resources/images/icons/default_icon.png";
 Ext.namespace("ST.base");
 Ext.reg('appStateField', ST.ux.ExtField.ComboBox);
 
+//推荐列表
+var recommendList = new Ext.extend(ST.ux.ExtField.ComboBox, {
+	valueField  :'id',
+    displayField:'name',
+    mode  :'remote', 
+ 	emptyText:'推荐列表',
+ 	store:new Ext.data.Store({
+		proxy  : new Ext.data.HttpProxy({url: './../recommend/pageQueryRecommends.json'}),
+	    reader : new Ext.data.JsonReader({
+	        root          : "result",
+	        totalProperty : "totalCount",
+	        idProperty    : "id",
+	        fields        : [
+	        	{name: 'id'},
+		        {name: 'name'},
+		    ]
+	    }),
+	    baseParams:{start:0, limit:10}
+	}),
+  	listeners: {}
+});
+Ext.reg('listRecommend', recommendList);
+
 // 清除截图及路径
 function clearImage(id_snap ,id_slot){
 	Ext.getCmp(id_snap).reset();
@@ -201,7 +224,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 		               }]
 		    }],
 	
-		  
+		    	
     addButtonOnToolbar:function(bar,index){
     	var menu = new Ext.menu.Menu({
 	        items: [{text:"推荐",iconCls: 'recommend', id:'recomEntity',scope: this,
@@ -220,6 +243,8 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 					}}));
     	bar.insertButton(index++,'-');
     	bar.insertButton(index++,'推荐选择 ');
+    	//推荐类型选择
+    	bar.insertButton(index++,{xtype:'listRecommend',id:'list-recommand'});
     	bar.insertButton(index++,{iconCls: 'oper', menu: menu,disabled: this.authOperations[4] ,scope: this});
     },
     
@@ -231,6 +256,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
     	}else{
     		Ext.getCmp('distEntity').enable();
     	}
+    	
     },
     
     //修改编辑时的图片预览
@@ -302,13 +328,46 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
    
    //推荐
    recommendOper : function(){
-	   //选中列会显示已推荐或未推荐状态
-	   alert('undeveloped');
+	   if(this.checkOne()){
+		   //选择推荐类型
+		   var val = Ext.getCmp('list-recommand').getValue();
+		   if(val==''){
+			   Ext.MessageBox.alert('提醒','请选择推荐名称');
+		   }else{
+			   var rec = this.grid.getSelectionModel().getSelected();  
+			   Ext.Ajax.request({
+					url : 'recommandOper.json',
+					success : function(response,options){
+					    this.grid.store.reload();
+					    this.grid.getSelectionModel().selectRecords([rec]);
+					},
+					failure : function(response,options){
+						console.info('error msg:',response);
+					},
+					params:{appId:rec.data.id,recoId:val},
+					scope:this
+				});	 
+		   }
+	   }
    },
    
    //取消推荐
    cancelRecommOper : function(){
-	   alert('undeveloped');
+		if(this.checkOne()){
+			   var rec = this.grid.getSelectionModel().getSelected();  
+			   Ext.Ajax.request({
+					url : 'recommandOper.json',
+					success : function(response,options){
+					    this.grid.store.reload();
+					    this.grid.getSelectionModel().selectRecords([rec]);
+					},
+					failure : function(response,options){
+						console.info('error msg:',response);
+					},
+					params:{appId:rec.data.id},
+					scope:this
+				});	 		   	   
+	   }	
    },
 
 	constructor: function() {

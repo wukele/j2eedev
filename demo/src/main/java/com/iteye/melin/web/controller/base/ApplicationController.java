@@ -36,10 +36,12 @@ import com.iteye.melin.core.util.ResponseData;
 import com.iteye.melin.core.web.controller.BaseController;
 import com.iteye.melin.web.model.base.Application;
 import com.iteye.melin.web.model.support.AppFile;
+import com.iteye.melin.web.model.support.AppRecoRs;
 import com.iteye.melin.web.model.support.AppSnap;
 import com.iteye.melin.web.model.support.AppType;
 import com.iteye.melin.web.service.base.ApplicationService;
 import com.iteye.melin.web.service.support.AppFileService;
+import com.iteye.melin.web.service.support.AppRecoRsService;
 import com.iteye.melin.web.service.support.AppSnapService;
 import com.iteye.melin.web.service.support.AppTypeService;
 
@@ -62,6 +64,9 @@ public class ApplicationController extends BaseController implements ServletCont
 	private AppFileService appFileService;
 	@Autowired
 	private AppSnapService appSnapService;
+	@Autowired
+	private AppRecoRsService appRecoRsService;
+	
 	private ServletContext servletContext;  //获取ctx路径
 	// ~ Methods
 	// ========================================================================================================
@@ -86,7 +91,7 @@ public class ApplicationController extends BaseController implements ServletCont
 		Map<String, String> likeFilters = pageRequest.getLikeFilters();
 		Map<String, Object> fliters = pageRequest.getFilters();
 		/* 按分类 【全部分类除外】*/
-		if (application.getTypeId() != null && application.getTypeId() != 1) {
+		if (application.getTypeId() != null && application.getTypeId() != 1L) {
 			fliters.put("typeId", application.getTypeId());
 		}
 		/* 按名称 */
@@ -308,7 +313,7 @@ public class ApplicationController extends BaseController implements ServletCont
 		Date d = new Date();
 		newApp.setCreateTime(d);
 		newApp.setUpdateTime(d);
-		if(appVer!=null){  //应用版本--取自apk-xml文件
+		if(appVer!=null){  //应用版本--来自AndriodManifest.xml文件
 			newApp.setAppVer(appVer);	
 		}
 		applicationService.insertEntity(newApp);
@@ -612,7 +617,43 @@ public class ApplicationController extends BaseController implements ServletCont
 		applicationService.createOrUpdate(app);
 		return ResponseData.SUCCESS_NO_DATA.toString();
 	}
+	
+	 
+	//应用推荐或取消推荐
+	@RequestMapping(value = "/recommandOper", method = RequestMethod.POST)
+	@ResponseBody
+	public String recommandOper(AppRecoRs apprecors) {
+		if(apprecors.getRecoId()==null){
+			//取消推荐
+			List<AppRecoRs> list = 	appRecoRsService.findByProperty("appId",apprecors.getAppId());
+			if(!list.isEmpty()){
+				for(AppRecoRs o : list){
+					appRecoRsService.deleteEntity(o.getId());
+				}	
+			}
+		}else{
+			//推荐
+			Application app = applicationService.findEntity(apprecors.getAppId());
+			apprecors.setGlobalMark(app.getGlobalMark());
+			apprecors.setCreateTime(app.getCreateTime());
+			apprecors.setUpdateTime(app.getUpdateTime());
+			//apprecors.setOrderNum(orderNum); //顺序 ?
+			appRecoRsService.insertEntity(apprecors);	
+		}
+		return ResponseData.SUCCESS_NO_DATA.toString();
+	}
 
+	//是否已经被推荐
+	@RequestMapping(value = "/alrdybeReco", method = RequestMethod.POST)
+	@ResponseBody
+	public String alrdybeReco(Long appId) {		
+		if(appRecoRsService.findByProperty("appId",appId).isEmpty()){			
+			return new ResponseData(true, false).toString();
+		}else{
+			return new ResponseData(true, true).toString();
+		}
+	}
+	
 	@Override
 	public void setServletContext(ServletContext servletContext) {
 		this.servletContext = servletContext; 
