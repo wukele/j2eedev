@@ -91,6 +91,11 @@ ST.ux.ScreenCutUploadField = Ext.extend(Ext.form.Field,{
 	        },this);
          }
 	}
+//	onRender : function(ct, position){
+//		ST.ux.ScreenCutUploadField.superclass.onRender.call(this, ct, position);
+//		 this.wrap = this.el.wrap();
+//		 //this.el.setWidth(2);
+//	}
 });
 Ext.reg('snapfield', ST.ux.ScreenCutUploadField);
 
