@@ -118,8 +118,12 @@ public class ApplicationController extends BaseController implements ServletCont
 			for (AppFile f : fileList) {
 				if (f.getId().equals(o.getFileId())) {
 					o.setDlClient(f.getFilepath());
+					break;
 				}
 			}
+			/*设置推荐状态*/
+			if(applicationService.alrdybeReco(o.getId()))
+				o.setHasAlrdyReco(true);
 		}
 		return page;
 	}
@@ -641,17 +645,6 @@ public class ApplicationController extends BaseController implements ServletCont
 			appRecoRsService.insertEntity(apprecors);	
 		}
 		return ResponseData.SUCCESS_NO_DATA.toString();
-	}
-
-	//是否已经被推荐
-	@RequestMapping(value = "/alrdybeReco", method = RequestMethod.POST)
-	@ResponseBody
-	public String alrdybeReco(Long appId) {		
-		if(appRecoRsService.findByProperty("appId",appId).isEmpty()){			
-			return new ResponseData(true, false).toString();
-		}else{
-			return new ResponseData(true, true).toString();
-		}
 	}
 	
 	@Override
