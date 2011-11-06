@@ -54,7 +54,7 @@ function dlClientfunc(value, p, record){
 	}
 }
 
-ST.base.applicationView = Ext.extend(ST.ux.ViewGrid, {
+ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 	id : 'id_app_Grid',
 	dlgWidth: 828,
 	dlgHeight: 548,
