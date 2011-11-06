@@ -97,6 +97,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
     autoExpandColumn: 2,
 	girdColumns: [
 				{header: 'ID', width: 60, dataIndex: 'id', hideGrid: true, hideForm: 'add', readOnly: true ,hidden : true, colspan:10},
+				{header: '推荐状态', width: 60, dataIndex: 'hasAlrdyReco', hideGrid: true, hideForm: 'all', readOnly: true ,hidden : true},
 	            {header: '应用名称', width: 110, dataIndex: 'appName', allowBlank:false , name:'appName',colspan:5},
 	            {header: "ICON图标", width: 140, dataIndex: 'iconUrl', hideForm:'all',renderer: appIconfunc}, 
 	            {header: '应用分类', width: 120, dataIndex: 'typeId' , hiddenName: 'typeId', allowBlank:false, fieldtype:'appStateField', hideGrid:true,name:'typeId',colspan:5,
@@ -248,13 +249,21 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
     	bar.insertButton(index++,{iconCls: 'oper', menu: menu,disabled: this.authOperations[4] ,scope: this});
     },
     
-    //发布状态变更
+    //发布和推荐状态变更 
     onRowClickFn : function(grid,rowIndex,event){
     	var rec = grid.getSelectionModel().getSelected();  
     	if(rec == undefined || rec.data.appState == 1){   //已发布
     		Ext.getCmp('distEntity').disable();
     	}else{
     		Ext.getCmp('distEntity').enable();
+    	}
+    	
+    	if(rec == undefined || !rec.data.hasAlrdyReco){   //可推荐
+    		Ext.getCmp('recomEntity').enable();
+    		Ext.getCmp('cancelRecomEntity').disable();
+    	}else{
+    		Ext.getCmp('recomEntity').disable();
+    		Ext.getCmp('cancelRecomEntity').enable();
     	}
     	
     },
@@ -340,6 +349,8 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 					success : function(response,options){
 					    this.grid.store.reload();
 					    this.grid.getSelectionModel().selectRecords([rec]);
+					    Ext.getCmp('recomEntity').disable();
+			    		Ext.getCmp('cancelRecomEntity').enable();
 					},
 					failure : function(response,options){
 						console.info('error msg:',response);
@@ -360,6 +371,8 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 					success : function(response,options){
 					    this.grid.store.reload();
 					    this.grid.getSelectionModel().selectRecords([rec]);
+					    Ext.getCmp('recomEntity').enable();
+			    		Ext.getCmp('cancelRecomEntity').disable();
 					},
 					failure : function(response,options){
 						console.info('error msg:',response);

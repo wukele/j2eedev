@@ -47,6 +47,8 @@ public class Application {
 	private String snapUrl_3;//截图3
 	@Transient
 	private String snapUrl_4;//截图4
+	@Transient
+	private boolean hasAlrdyReco; //是否被推荐
 	@Column(name = "TYPE_SEQ")
 	private String typeSeq;
 	@Column(name = "MIN_SDK_VER")
@@ -365,6 +367,14 @@ public class Application {
 
 	public String getDlClient() {
 		return dlClient;
+	}
+
+	public void setHasAlrdyReco(boolean hasAlrdyReco) {
+		this.hasAlrdyReco = hasAlrdyReco;
+	}
+
+	public boolean isHasAlrdyReco() {
+		return hasAlrdyReco;
 	}
 	
 }

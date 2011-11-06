@@ -14,6 +14,7 @@ import com.iteye.melin.core.web.service.BaseServiceImpl;
 import com.iteye.melin.web.dao.base.ApplicationDao;
 import com.iteye.melin.web.model.base.Application;
 import com.iteye.melin.web.service.base.ApplicationService;
+import com.iteye.melin.web.service.support.AppRecoRsService;
 
 /**
  *
@@ -25,6 +26,8 @@ public class ApplicationServiceImpl extends BaseServiceImpl<Application, Long> i
 	//~ Instance fields ================================================================================================
 	@Autowired
 	private ApplicationDao applicationDao;
+	@Autowired
+	private AppRecoRsService appRecoRsService;
 
 	//~ Constructors ===================================================================================================
 	
@@ -69,5 +72,14 @@ public class ApplicationServiceImpl extends BaseServiceImpl<Application, Long> i
 	public List<String> readApkInfo(File apk) {
 		return  GetInfo.getApkInfo(apk.getAbsolutePath());
 	}	
+	
+	@Override
+	public boolean alrdybeReco(Long appId) {		
+		if(appRecoRsService.findByProperty("appId",appId).isEmpty()){			
+			return false;
+		}else{
+			return true;
+		}
+	}
 	
 }

@@ -35,4 +35,12 @@ public interface ApplicationService extends BaseService<Application, Long> {
      * @return index  1-path 2-package 3-version
      */
     public  List<String> readApkInfo(File apk);
+    
+    /**
+     * 判断推荐状态
+     * @param appId
+     * @return true 已经被推荐
+     *         false 尚未被推荐
+     */
+    public boolean alrdybeReco(Long appId);
 }
