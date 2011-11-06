@@ -18,9 +18,8 @@
 	<script type="text/javascript" src="./../resources/scripts/ux/ST.ux.ExtField.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/ux/Ext.ux.PagePlugins.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/ux/ST.ux.PlainGrid.js"></script>
-	<script type="text/javascript" src="./../resources/scripts/ux/ST.ux.ViewGrid.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/ux/DateTimePicker.js"></script>
-	<script type="text/javascript" src="./../resources/scripts/ux/ST.ux.ViewGrid.js"></script>
+	<script type="text/javascript" src="./../resources/scripts/ux/ST.ux.ViewApp.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/ux/Ext.ux.FileUploadField.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/ux/Ext.ux.UploadDialog.js"></script>
 	<script type="text/javascript" src="./../resources/scripts/admin/base/ST.Base.Application.js"></script>
