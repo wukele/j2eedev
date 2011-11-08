@@ -200,11 +200,12 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 	queryFormItms: [{ 
 				layout: 'tableform',
 	            layoutConfig: {
-	           		columns: 4,
-	            	columnWidths: [.15,.25,.25], 
+	           		columns: 6,
+	            	columnWidths: [.25,.25,.25,.25], 
 	            	bodyStyle:'padding:90px'
-	            },           
-		        items:[{html : '<pre>       </pre>'}, 
+	            },      
+	            labelWidth : 40,
+		        items:[{html : '<pre>  </pre>'},
 		               {xtype:'textfield',  fieldLabel: '名称', name: 'appName', id: 'appName'},
 		               {xtype:'textfield',  fieldLabel: '关键词', name: 'keywords', id: 'keywords'},
 		               {xtype:'appStateField',  fieldLabel: '分类', hiddenName: 'typeId',
@@ -222,7 +223,32 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 			             	           combo.setRawValue('全部应用');
 			             	         }  
 			             	}
-		               }]
+		               },{xtype:'appStateField',  fieldLabel: '专题', hiddenName: 'special',//TODO:明天开发
+		            	    valueField  :'id',
+			                displayField:'name',
+			                emptyText:'无专题',
+			                mode  :'remote', 
+			                allowBlank : true,
+			             	store:new Ext.data.Store({
+			            		proxy  : new Ext.data.HttpProxy({url:  "./../recommend/pageQueryRecommends.json"}),
+			            	    reader : new Ext.data.JsonReader({
+			            	        root          : "result",
+			            	        totalProperty : "totalCount",
+			            	        idProperty    : "id",
+			            	        fields        : [
+			            	        	{name: 'id'},
+			            		        {name: 'name'},
+			            		    ]
+			            	    }),
+			            	    baseParams:{start:0, limit:10, type:4}
+			            	}),
+			             	listeners: {   //初始化
+			             		afterRender: function(combo) {
+			             	           combo.setValue(-1);               
+			             	           combo.setRawValue('无专题');
+			             		}  
+			             	}
+		               },{html : '<pre>  </pre>'}]
 		    }],
 	
 		    	

@@ -73,6 +73,14 @@ public class RecommendController extends BaseController {
 
 		Page<Recommend> page = recommendService.findAllForPage(pageRequest);
 		DictionaryHolder.transfercoder(page.getResult(), 10008L, "getType");
+		//查询全部专题
+		if(recommend.getType()==4){
+			Recommend r = new Recommend();
+			r.setId(new Long(-2));
+			r.setName("全部专题");
+			r.setType(4);
+			page.getResult().add(r);
+		}
 		return page;
 	}
 	

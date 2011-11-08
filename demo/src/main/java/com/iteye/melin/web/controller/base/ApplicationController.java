@@ -35,11 +35,13 @@ import com.iteye.melin.core.util.DictionaryHolder;
 import com.iteye.melin.core.util.ResponseData;
 import com.iteye.melin.core.web.controller.BaseController;
 import com.iteye.melin.web.model.base.Application;
+import com.iteye.melin.web.model.base.Recommend;
 import com.iteye.melin.web.model.support.AppFile;
 import com.iteye.melin.web.model.support.AppRecoRs;
 import com.iteye.melin.web.model.support.AppSnap;
 import com.iteye.melin.web.model.support.AppType;
 import com.iteye.melin.web.service.base.ApplicationService;
+import com.iteye.melin.web.service.base.RecommendService;
 import com.iteye.melin.web.service.support.AppFileService;
 import com.iteye.melin.web.service.support.AppRecoRsService;
 import com.iteye.melin.web.service.support.AppSnapService;
@@ -64,6 +66,8 @@ public class ApplicationController extends BaseController implements ServletCont
 	private AppFileService appFileService;
 	@Autowired
 	private AppSnapService appSnapService;
+	@Autowired
+	private RecommendService recommendService;
 	@Autowired
 	private AppRecoRsService appRecoRsService;
 	
@@ -101,29 +105,63 @@ public class ApplicationController extends BaseController implements ServletCont
 		/* 按关键字 【后台以逗号分隔写入关键字】*/
 		if (StringUtils.hasText(application.getKeyWords()))
 			likeFilters.put("keyWords", application.getKeyWords());
-
+		
+		/* 按专题查询：  -1和null表无专题 ，-2表全部专题，其他表指定专题*/
+		List<AppRecoRs> specialList = null;
+		if(application.getSpecial()!=null && application.getSpecial()!= -1){
+			if(application.getSpecial()!= -2){
+				//查询指定专题
+				logger.info("当前查询的专题是---"+application.getSpecial());
+				specialList = appRecoRsService.findByProperty("recoId", application.getSpecial().longValue()); //指定专题
+			}else{
+				//查询全部专题
+				specialList  = new ArrayList<AppRecoRs>();
+				List<Recommend> specials = recommendService.findByProperty("type", 4); //所有专题
+				for(Recommend r : specials){
+					specialList.addAll(appRecoRsService.findByProperty("recoId", r.getId()));					
+				}
+			}
+		}
 		Page<Application> page = applicationService.findAllForPage(pageRequest);
 		DictionaryHolder.transfercoder(page.getResult(), 10009L, "getAppState");
 		List<AppType> typeList = appTypeService.findAllEntity();
 		List<AppFile> fileList = appFileService.findAllEntity();
-		for (Application o : page.getResult()) {
+		List<Application> applist = page.getResult();
+		for (int i=0;i<applist.size();i++) {
+			/* special 专题*/
+			boolean isExist = false;  //false---不符合专题的app ， true---符合专题的app
+			if(specialList!=null && !specialList.isEmpty()){
+				//移除非专题的application
+				for(AppRecoRs s : specialList){
+					if(s.getGlobalMark()== applist.get(i).getGlobalMark()){
+						isExist = true;
+						break;
+					}
+				}
+			}
+			if(application.getSpecial()!=null && application.getSpecial()!= -1 && !isExist ) {//-1表无专题查询
+				//不存在或不符合该专题的都将从列表移去【注：做无专题查询除外】
+				applist.remove(i);
+				i--;
+				continue;
+			};
 			/* appType_Name 应用分类 */
 			for (AppType t : typeList) {
-				if (t.getId().equals(o.getTypeId())) {
-					o.setTypeId_Name(t.getTypeName());
+				if (t.getId().equals(applist.get(i).getTypeId())) {
+					applist.get(i).setTypeId_Name(t.getTypeName());
 					break;
 				}
 			}
 			/* download_Site 下载地址 */
 			for (AppFile f : fileList) {
-				if (f.getId().equals(o.getFileId())) {
-					o.setDlClient(f.getFilepath());
+				if (f.getId().equals(applist.get(i).getFileId())) {
+					applist.get(i).setDlClient(f.getFilepath());
 					break;
 				}
 			}
 			/*设置推荐状态*/
-			if(applicationService.alrdybeReco(o.getId()))
-				o.setHasAlrdyReco(true);
+			if(applicationService.alrdybeReco(applist.get(i).getId()))
+				applist.get(i).setHasAlrdyReco(true);
 		}
 		return page;
 	}
@@ -597,7 +635,14 @@ public class ApplicationController extends BaseController implements ServletCont
 				aFile.delete();
 			}
 			appSnapService.deleteEntity(o.getId());
-		}		
+		}			
+		//删除推荐关联信息		
+		List<AppRecoRs> list = 	appRecoRsService.findByProperty("appId",id);
+		if(!list.isEmpty()){
+			for(AppRecoRs o : list){
+				appRecoRsService.deleteEntity(o.getId());
+			}	
+		}
 		applicationService.deleteEntity(id);
 		return ResponseData.SUCCESS_NO_DATA;
 	}

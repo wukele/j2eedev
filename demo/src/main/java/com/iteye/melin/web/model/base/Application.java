@@ -38,7 +38,7 @@ public class Application {
 	@Transient
 	private String dlClient;
 	@Transient
-	private String snapUrl_default;  //默认截图
+	private String snapUrl_default;//默认截图
 	@Transient
 	private String snapUrl_1;// 截图1
 	@Transient
@@ -49,6 +49,8 @@ public class Application {
 	private String snapUrl_4;//截图4
 	@Transient
 	private boolean hasAlrdyReco; //是否被推荐
+	@Transient
+	private Integer special; //专题 recommandId ==4
 	@Column(name = "TYPE_SEQ")
 	private String typeSeq;
 	@Column(name = "MIN_SDK_VER")
@@ -375,6 +377,14 @@ public class Application {
 
 	public boolean isHasAlrdyReco() {
 		return hasAlrdyReco;
+	}
+
+	public void setSpecial(Integer special) {
+		this.special = special;
+	}
+
+	public Integer getSpecial() {
+		return special;
 	}
 	
 }
