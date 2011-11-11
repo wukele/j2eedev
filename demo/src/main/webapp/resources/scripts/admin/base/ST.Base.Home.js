@@ -58,8 +58,12 @@ var HomePage = Ext.extend(Ext.Viewport, {
                 action: "./notice/index",
                 leaf : true 
             },{  
-                text : "推荐管理",  
+                text : "图片管理",  
                 action: "./recommend/index",
+                leaf : true 
+            },{  
+                text : "专题管理",  
+                action: "./recommend/zhuanti",
                 leaf : true 
             },{  
                 text : "评论管理",  
