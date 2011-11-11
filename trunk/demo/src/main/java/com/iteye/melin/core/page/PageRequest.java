@@ -33,6 +33,8 @@ public class PageRequest<E> {
 	private Date endTime;
 	private String timeField;
 	
+	private String extraCondition;
+	
 	/**
 	 * 开始查询行索引
 	 */
@@ -116,7 +118,13 @@ public class PageRequest<E> {
 		return startIndex;
 	}
 	
-	
+	public String getExtraCondition() {
+		return extraCondition;
+	}
+
+	public void setExtraCondition(String extraCondition) {
+		this.extraCondition = extraCondition;
+	}
 
 	/**
 	 * 排序的列,可以同时多列,使用逗号分隔,如 username desc,age asc

@@ -275,7 +275,7 @@ public class GenericDaoImpl<E, PK extends Serializable> extends HibernateDaoSupp
 				}
 			}
 		}
-
+		
 		//添加排序字段
 		if(StringUtils.hasText(orderCol) &&  SQLOrderMode.NOSORT != orderMode)
 			buf.append(" ORDER BY ").append(orderCol).append(" ").append(orderMode.getMode());
@@ -380,6 +380,18 @@ public class GenericDaoImpl<E, PK extends Serializable> extends HibernateDaoSupp
 				queryString.append(timeField).append(" <= :endTime");
 				countQueryString.append(timeField).append(" <= :endTime");
 			}
+		}
+		if(pageRequest.getExtraCondition() != null) {
+			if(!hasWhere) {
+				queryString.append(" WHERE ");
+				countQueryString.append(" WHERE ");
+				hasWhere = true;
+			} else {
+				queryString.append(" AND ");
+				countQueryString.append(" AND ");
+			}
+			queryString.append(pageRequest.getExtraCondition());
+			countQueryString.append(pageRequest.getExtraCondition());
 		}
 
 		//排序字段
