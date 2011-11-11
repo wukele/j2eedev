@@ -47,6 +47,11 @@ public class RecommendController extends BaseController {
 		return "admin/base/recommend";
 	}
 	
+	@RequestMapping("/zhuanti")
+	public String zhuanti(){
+		return "admin/base/zhuanti";
+	}
+	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -71,16 +76,37 @@ public class RecommendController extends BaseController {
 		if(recommend.getType() > 0)
 			pageRequest.getFilters().put("type", recommend.getType());
 
+		pageRequest.setExtraCondition(" type in (1, 2)");
 		Page<Recommend> page = recommendService.findAllForPage(pageRequest);
 		DictionaryHolder.transfercoder(page.getResult(), 10008L, "getType");
-		//查询全部专题
+		/*//查询全部专题
 		if(recommend.getType()==4){
 			Recommend r = new Recommend();
 			r.setId(new Long(-2));
 			r.setName("全部专题");
 			r.setType(4);
 			page.getResult().add(r);
-		}
+		}*/
+		return page;
+	}
+	
+	@RequestMapping("/pageQueryRecommends1")
+	@ResponseBody
+	public Page<Recommend> pageQueryRecommends1(@RequestParam("start")int startIndex, 
+			@RequestParam("limit")int pageSize, Recommend recommend, @RequestParam(required = false)String sort, 
+			@RequestParam(required = false)String dir) {
+		PageRequest<Recommend> pageRequest = new PageRequest<Recommend>(startIndex, pageSize);
+		
+		if(StringUtils.hasText(sort) && StringUtils.hasText(dir))
+			pageRequest.setSortColumns(sort + " " + dir);
+		
+		Map<String, String> likeFilters = pageRequest.getLikeFilters();
+		if(StringUtils.hasText(recommend.getName()))
+			likeFilters.put("name", recommend.getName());
+		
+		pageRequest.getFilters().put("type", 4);
+
+		Page<Recommend> page = recommendService.findAllForPage(pageRequest);
 		return page;
 	}
 	
@@ -94,6 +120,15 @@ public class RecommendController extends BaseController {
 			FileUtils.copyInputStreamToFile(file.getInputStream(), new File(path));
 			recommend.setPosterUrl(path);
 		}
+        recommendService.insertEntity(recommend);
+		return ResponseData.SUCCESS_NO_DATA;
+	}
+	
+	@RequestMapping(value="/insertRecommend1", method=RequestMethod.POST)
+	@ResponseBody
+	public ResponseData insertRecommend1(Recommend recommend) throws IOException {
+		recommend.setCreateTime(new Date());
+		recommend.setType(4);
         recommendService.insertEntity(recommend);
 		return ResponseData.SUCCESS_NO_DATA;
 	}
@@ -120,10 +155,20 @@ public class RecommendController extends BaseController {
 		recommendService.updateEntity(tmp);
 		return ResponseData.SUCCESS_NO_DATA;
 	}
+	
+	@RequestMapping(value="/updateRecommend1", method=RequestMethod.POST)
+	@ResponseBody
+	public ResponseData updateRecommend1(Recommend recommend) throws IOException {
+		recommend.setUpdateTime(new Date());
+		recommend.setType(4);
+
+		recommendService.updateEntity(recommend);
+		return ResponseData.SUCCESS_NO_DATA;
+	}
 
 	@RequestMapping(value="/deleteRecommend", method=RequestMethod.POST)
 	@ResponseBody
-	public ResponseData deleteUser(Long id) {
+	public ResponseData deleteRecommend(Long id) {
 		recommendService.deleteEntity(id);
 		return ResponseData.SUCCESS_NO_DATA;
 	}

@@ -40,10 +40,10 @@ public class Recommend {
 	@Column(name="RECOMMEND_DESC")
 	private String desc;
 	
-	@Column(name="CREATE_TIME")
+	@Column(name="CREATE_TIME", updatable=false)
 	private Date createTime;
 	
-	@Column(name="UPDATE_TIME")
+	@Column(name="UPDATE_TIME", insertable=false)
 	private Date updateTime;
 
 	public Long getId() {
