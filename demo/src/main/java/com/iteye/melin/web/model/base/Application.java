@@ -51,6 +51,8 @@ public class Application {
 	private boolean hasAlrdyReco; //是否被推荐
 	@Transient
 	private Integer special; //专题 recommandId ==4
+	@Transient
+	private String special_Name; //专题名称
 	@Column(name = "TYPE_SEQ")
 	private String typeSeq;
 	@Column(name = "MIN_SDK_VER")
@@ -385,6 +387,14 @@ public class Application {
 
 	public Integer getSpecial() {
 		return special;
+	}
+
+	public void setSpecial_Name(String special_Name) {
+		this.special_Name = special_Name;
+	}
+
+	public String getSpecial_Name() {
+		return special_Name;
 	}
 	
 }
