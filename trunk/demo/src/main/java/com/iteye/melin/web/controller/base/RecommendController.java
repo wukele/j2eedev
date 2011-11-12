@@ -105,8 +105,20 @@ public class RecommendController extends BaseController {
 			likeFilters.put("name", recommend.getName());
 		
 		pageRequest.getFilters().put("type", 4);
-
 		Page<Recommend> page = recommendService.findAllForPage(pageRequest);
+		//查询全部专题{{
+			Recommend r = new Recommend();
+			r.setId(new Long(-2));
+			r.setName("全部专题");
+			r.setType(4);
+			page.getResult().add(r);
+		//查询无专题{{
+			Recommend r2 = new Recommend();
+			r2.setId(new Long(-1));
+			r2.setName("无专题");
+			r2.setType(4);
+			page.getResult().add(r2);
+		//}}
 		return page;
 	}
 	

@@ -129,12 +129,14 @@ public class ApplicationController extends BaseController implements ServletCont
 		List<Application> applist = page.getResult();
 		for (int i=0;i<applist.size();i++) {
 			/* special 专题*/
+			Long special = null;
 			boolean isExist = false;  //false---不符合专题的app ， true---符合专题的app
 			if(specialList!=null && !specialList.isEmpty()){
 				//移除非专题的application
 				for(AppRecoRs s : specialList){
 					if(s.getGlobalMark()== applist.get(i).getGlobalMark()){
 						isExist = true;
+						special = s.getRecoId();
 						break;
 					}
 				}
@@ -158,7 +160,12 @@ public class ApplicationController extends BaseController implements ServletCont
 					applist.get(i).setDlClient(f.getFilepath());
 					break;
 				}
-			}
+			}			
+			/* app专题 名称 */
+			if(special!=null){			
+				String special_Name = recommendService.findEntity(special).getName();
+				applist.get(i).setSpecial_Name(special_Name);
+			}			
 			/*设置推荐状态*/
 			if(applicationService.alrdybeReco(applist.get(i).getId()))
 				applist.get(i).setHasAlrdyReco(true);
@@ -455,9 +462,10 @@ public class ApplicationController extends BaseController implements ServletCont
 		String id /*主键*/,appName /*名称*/ , appState /*状态*/, keyWords /*关键字*/, typeId /*分类*/,appPackage /*包名*/ = "",appVer= null,/*版本*/
 		filename_apk /*apk路径 */ = null,fileext_apk /*扩展名*/ = null,filename_icon /*icon路径 */ = null,fileext_icon = null ,/*扩展名*/dir_snap,/*截图目录*/
 		app_sdk_ver /*sdk版本*/,app_author /*作者*/,app_summary /*摘要*/,app_desc,/*描述*/folder/*文件目录*/;
-		String snapIndexUrl ="0";/*默认截图*/
+		String snapIndexUrl;/*默认截图初始化*/
 		boolean b_apk_update =false, b_icon_update=false; /*apk和图标是否发生改变的标志位*/
 		long filesize_app = 0 ; //文件大小
+		String[] arr2;
 		/*定义文件数组*/
 		List<File> files = new ArrayList<File>();
 		files.add(savefile_apk);
@@ -488,7 +496,7 @@ public class ApplicationController extends BaseController implements ServletCont
 			appState = (String)fields.get("appState");
 			keyWords = (String)fields.get("keyWords");
 			typeId	= (String)fields.get("typeId");
-			snapIndexUrl = (String)fields.get("snapIndex"); //获取默认截图索引
+			snapIndexUrl = (String)fields.get("snapIndex"); //获取默认截图拼装信息
 			/*非必填信息*/
 			app_sdk_ver =(String)fields.get("minSdkVer");
 			app_author=(String)fields.get("authorName");
@@ -511,11 +519,10 @@ public class ApplicationController extends BaseController implements ServletCont
 				/* 存储上传文件 */
 				uploadFile_apk.write(savefile_apk);
 			}
-			
+			/*处理图标*/
 			FileItem uploadFile_icon = (FileItem) fields.get("id_app_icon");
 			String fileName_icon = uploadFile_icon.getName();
 			if(StringUtils.hasText(fileName_icon)){
-				System.out.println();
 				b_icon_update=true;  //更新				
 				fileext_icon = fileName_icon.substring(fileName_icon
 						.lastIndexOf(".") + 1);	
@@ -524,6 +531,32 @@ public class ApplicationController extends BaseController implements ServletCont
 						+ fileext_icon);
 				uploadFile_icon.write(savefile_icon);	
 			}			
+			/*处理截图*/
+			FileItem[] uploadFile_snap =new FileItem[5]; 	//获取截图文件
+			String[] fileName_snap = new String[5]; 		//获取截图路径名
+			String[] fileext_snap  = new String[5]; //获取截图扩展名
+			File[] savefile_snap =  new File[5];
+			arr2 = snapIndexUrl.split("#");
+			for(int i=0;i<5 ;i++){
+				if(fields.get("id_app_snap"+i)==null){  
+					continue;
+				}
+				uploadFile_snap[i] = (FileItem)fields.get("id_app_snap"+i);
+				fileName_snap[i] = uploadFile_snap[i].getName();
+				fileext_snap[i] = fileName_snap[i].substring(fileName_snap[i].lastIndexOf(".")+1);	
+				
+				if(StringUtils.hasText(fileext_snap[i])){
+					String newUri = dir_snap+arr2[i+2].substring(arr2[i+2].lastIndexOf("/")+1);
+					savefile_snap[i]= new File(newUri); //i+2表示的是交换前各截图实际位置的索引，i=0和i=1表示的是要交换截图位置的索引
+					arr2[1]=arr2[i+2];
+					uploadFile_snap[i].write(savefile_snap[i]);	
+				}else if(fileName_snap[i].contains("undefined")){
+					//新上传的截图（空白截图）
+					//...
+				}
+			}
+			/////////////////////////////////
+			
 		} catch (Exception ex) {
 			/* 清理垃圾文件 */
 			applicationService.clear(files);
@@ -533,11 +566,15 @@ public class ApplicationController extends BaseController implements ServletCont
 		//==========================以下是更新时入库操作===========================================
 		/*分类SEQ*/
 		String typeSeq = appTypeService.findEntity(Long.parseLong(typeId)).getTypeSeq();
+		//TODO:增加新截图时，uri不变，改变截图的内容即可
+		
+		
+		
 		//TODO:更新默认截图，文件名不变，文件内容交换即可
-		if(!snapIndexUrl.equals("0")){
-			String[] arr = StringUtils.split(snapIndexUrl, "#");
-			String oldUri = dir_snap+arr[0].substring(arr[0].lastIndexOf("/")+1);
-			String newUri = dir_snap+arr[1].substring(arr[1].lastIndexOf("/")+1);
+		if(!snapIndexUrl.contains("DEFAULT_NOT_CHANGE")){
+			//String[] arr = snapIndexUrl.split("#");
+			String oldUri = dir_snap+arr2[0].substring(arr2[0].lastIndexOf("/")+1);
+			String newUri = dir_snap+arr2[1].substring(arr2[1].lastIndexOf("/")+1);
 			String temp = dir_snap+File.separator+"temp"+".jpg";
 			File ftemp = new File(temp);
 			File fold= new File(oldUri);
