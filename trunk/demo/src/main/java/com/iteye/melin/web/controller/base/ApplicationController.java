@@ -270,12 +270,14 @@ public class ApplicationController extends BaseController implements ServletCont
 					savefile_snap[i]=new File(dir_snap + filename_snap[i] + "__default."  //默认图片标识
 							+ fileext_snap[i]);
 					uploadFile_snap[i].write(savefile_snap[i]);
+					uploadFile_snap[i].delete();  ///close
 				}else{
 					//排除空图片（无扩展名）
 					if(StringUtils.hasText(fileext_snap[i])){
 						savefile_snap[i]=new File(dir_snap + filename_snap[i] + "."
 								+ fileext_snap[i]);	
 						uploadFile_snap[i].write(savefile_snap[i]);	
+						uploadFile_snap[i].delete(); ////close
 					}
 				}
 			}
@@ -307,7 +309,9 @@ public class ApplicationController extends BaseController implements ServletCont
 			filesize_app = uploadFile_apk.getSize();
 			/* 存储上传文件 */
 			uploadFile_apk.write(savefile_apk);
+			uploadFile_apk.delete(); ///close
 			uploadFile_icon.write(savefile_icon);
+			uploadFile_icon.delete(); ///close
 		} catch (Exception ex) {
 			/* 清理垃圾文件 */
 			applicationService.clear(files);
@@ -354,9 +358,19 @@ public class ApplicationController extends BaseController implements ServletCont
 		newApp.setDownTimes(0);
 		newApp.setIconUrl("/resources/apk/images/"+filename_icon+"."+fileext_icon);
 		newApp.setFileId(fileId);
-		newApp.setAppPackage(appPackage);
-		newApp.setVerMark(0); //版本标识
-		newApp.setGlobalMark(UUID.randomUUID().getLeastSignificantBits());  //yy全局标识
+		/*APP_PACKAGE相同则认为是同一软件不同版本，GLOBAL_MARK相同*/
+		List<Application> apps = applicationService.findByProperty("appPackage", appPackage);		
+		if(!apps.isEmpty()){
+			//appPackage已经存在
+			newApp.setAppPackage(appPackage);
+			newApp.setGlobalMark(apps.get(0).getGlobalMark());
+			newApp.setVerMark(apps.size()); 
+		}else{
+			//appPackage不存在
+			newApp.setAppPackage(appPackage);
+			newApp.setVerMark(0); //版本标识
+			newApp.setGlobalMark(UUID.randomUUID().getLeastSignificantBits());  //yy全局标识	
+		}		
 		newApp.setCommentTimes(0);
 		newApp.setSoftLevel((short)0);
 		Date d = new Date();
@@ -518,6 +532,7 @@ public class ApplicationController extends BaseController implements ServletCont
 				filesize_app = uploadFile_apk.getSize();
 				/* 存储上传文件 */
 				uploadFile_apk.write(savefile_apk);
+				uploadFile_apk.delete();///close
 			}
 			/*处理图标*/
 			FileItem uploadFile_icon = (FileItem) fields.get("id_app_icon");
@@ -530,6 +545,7 @@ public class ApplicationController extends BaseController implements ServletCont
 				savefile_icon = new File(dir_img + filename_icon + "."
 						+ fileext_icon);
 				uploadFile_icon.write(savefile_icon);	
+				uploadFile_icon.delete();///close
 			}			
 			/*处理截图*/
 			FileItem[] uploadFile_snap =new FileItem[5]; 	//获取截图文件
@@ -546,13 +562,40 @@ public class ApplicationController extends BaseController implements ServletCont
 				fileext_snap[i] = fileName_snap[i].substring(fileName_snap[i].lastIndexOf(".")+1);	
 				
 				if(StringUtils.hasText(fileext_snap[i])){
-					String newUri = dir_snap+arr2[i+2].substring(arr2[i+2].lastIndexOf("/")+1);
-					savefile_snap[i]= new File(newUri); //i+2表示的是交换前各截图实际位置的索引，i=0和i=1表示的是要交换截图位置的索引
-					arr2[1]=arr2[i+2];
-					uploadFile_snap[i].write(savefile_snap[i]);	
-				}else if(fileName_snap[i].contains("undefined")){
-					//新上传的截图（空白截图）
-					//...
+					if(arr2[i+2].contains("undefined")){//undefined表示截图原先不存在
+						/***处理更新时新上传的截图****/
+						String fileanme =  UUID.randomUUID().toString();
+						savefile_snap[i]=new File(dir_snap + fileanme + "."
+								+ fileext_snap[i]);	
+						arr2[1]=arr2[i+2]; //arr2[1]是交换的位置
+						uploadFile_snap[i].write(savefile_snap[i]);	
+						uploadFile_snap[i].delete();///close
+						//保存操作
+						AppSnap newSnap = new AppSnap();
+						Application updateApp = applicationService.findEntity(Long.parseLong(id));
+						Long appId = updateApp.getId();
+						Long fileId = updateApp.getFileId();
+						newSnap.setAppId(appId);
+						newSnap.setFileId(fileId);
+						newSnap.setSnapUrl("/resources/apk/snap/"+fileanme+"."+fileext_snap[i]);				
+						appSnapService.insertEntity(newSnap);
+						Long snapId = newSnap.getId();
+						if(snapId == null){
+							logger.error("截图保存失败");
+							/* 清理垃圾文件 */
+							applicationService.clear(files);
+							/* 撤销文件记录*/
+							appFileService.deleteEntity(fileId);
+							return  "{success:false ,err:'截图保存失败'";
+						}
+					}else{
+						/****处理更新时已经上传存在的截图*****/
+						String newUri = dir_snap+arr2[i+2].substring(arr2[i+2].lastIndexOf("/")+1);
+						savefile_snap[i]= new File(newUri); //i+2表示的是交换前各截图实际位置的索引，i=0和i=1表示的是要交换截图位置的索引
+						arr2[1]=arr2[i+2]; //arr2[1]是交换的位置
+						uploadFile_snap[i].write(savefile_snap[i]);		
+						uploadFile_snap[i].delete();///close
+					}
 				}
 			}
 			/////////////////////////////////
@@ -565,11 +608,7 @@ public class ApplicationController extends BaseController implements ServletCont
 		}
 		//==========================以下是更新时入库操作===========================================
 		/*分类SEQ*/
-		String typeSeq = appTypeService.findEntity(Long.parseLong(typeId)).getTypeSeq();
-		//TODO:增加新截图时，uri不变，改变截图的内容即可
-		
-		
-		
+		String typeSeq = appTypeService.findEntity(Long.parseLong(typeId)).getTypeSeq();		
 		//TODO:更新默认截图，文件名不变，文件内容交换即可
 		if(!snapIndexUrl.contains("DEFAULT_NOT_CHANGE")){
 			//String[] arr = snapIndexUrl.split("#");
@@ -602,8 +641,22 @@ public class ApplicationController extends BaseController implements ServletCont
 			updateAppfile.setFileName(filename_apk+"."+fileext_apk);
 			updateAppfile.setFilesize(new Integer((int)filesize_app));
 			updateApp.setFileSize(new Float(filesize_app));		
-			updateApp.setAppPackage(appPackage);	
-			updateApp.setAppVer(appVer);
+			/*APP_PACKAGE相同则认为是同一软件不同版本，GLOBAL_MARK相同，更新时GLOBAL_MARK不变*/
+			List<Application> apps = applicationService.findByProperty("appPackage", appPackage);		
+			if(!apps.isEmpty()){
+				//appPackage已经存在
+				updateApp.setAppPackage(appPackage);
+				updateApp.setGlobalMark(apps.get(0).getGlobalMark());
+				updateApp.setVerMark(apps.size()); 
+			}else{
+				//appPackage不存在
+				updateApp.setAppPackage(appPackage);
+				updateApp.setVerMark(0); //版本标识
+				updateApp.setGlobalMark(UUID.randomUUID().getLeastSignificantBits());  //yy全局标识	
+			}	
+			if(appVer!=null){  //应用版本--来自AndriodManifest.xml文件
+				updateApp.setAppVer(appVer);	
+			}
 			//删除旧的apk文件
 			File old = new File(oldapk);
 			if(old.delete()){
