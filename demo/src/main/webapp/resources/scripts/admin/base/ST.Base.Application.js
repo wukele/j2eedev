@@ -414,7 +414,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 			   //选择专题类型
 			   var val = Ext.getCmp('special-recommand').getValue();
 			   if(val==''){
-				   Ext.MessageBox.alert('提醒','请选择推荐名称');
+				   Ext.MessageBox.alert('提醒','请选择专题名称');
 			   }else{
 				   var rec = this.grid.getSelectionModel().getSelected();  
 				   Ext.Ajax.request({
