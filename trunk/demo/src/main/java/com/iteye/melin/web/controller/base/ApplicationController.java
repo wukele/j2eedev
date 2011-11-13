@@ -121,6 +121,13 @@ public class ApplicationController extends BaseController implements ServletCont
 					specialList.addAll(appRecoRsService.findByProperty("recoId", r.getId()));					
 				}
 			}
+		}else{
+			///////全部查询，包括专题与非专题///////
+			specialList  = new ArrayList<AppRecoRs>();
+			List<Recommend> specials = recommendService.findByProperty("type", 4); //所有专题
+			for(Recommend r : specials){
+				specialList.addAll(appRecoRsService.findByProperty("recoId", r.getId()));					
+			}
 		}
 		Page<Application> page = applicationService.findAllForPage(pageRequest);
 		DictionaryHolder.transfercoder(page.getResult(), 10009L, "getAppState");
@@ -130,7 +137,7 @@ public class ApplicationController extends BaseController implements ServletCont
 		for (int i=0;i<applist.size();i++) {
 			/* special 专题*/
 			Long special = null;
-			boolean isExist = false;  //false---不符合专题的app ， true---符合专题的app
+			boolean isExist = false;  //false---有专题的app ， true---没有专题的app
 			if(specialList!=null && !specialList.isEmpty()){
 				//移除非专题的application
 				for(AppRecoRs s : specialList){

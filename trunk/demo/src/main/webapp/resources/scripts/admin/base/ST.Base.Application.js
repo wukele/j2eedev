@@ -3,12 +3,12 @@ Ext.BLANK_AVATER_URL = "./../resources/images/icons/default_icon.png";
 Ext.namespace("ST.base");
 Ext.reg('appStateField', ST.ux.ExtField.ComboBox);
 
-//推荐列表
-var recommendList = new Ext.extend(ST.ux.ExtField.ComboBox, {
+//专题列表
+var specialList = new Ext.extend(ST.ux.ExtField.ComboBox, {
 	valueField  :'id',
     displayField:'name',
     mode  :'remote', 
- 	emptyText:'推荐列表',
+ 	emptyText:'专题列表',
  	store:new Ext.data.Store({
 		proxy  : new Ext.data.HttpProxy({url: './../recommend/pageQueryRecommends1.json'}),
 	    reader : new Ext.data.JsonReader({
@@ -20,11 +20,36 @@ var recommendList = new Ext.extend(ST.ux.ExtField.ComboBox, {
 		        {name: 'name'},
 		    ]
 	    }),
-	    baseParams:{start:0, limit:10}
+	    baseParams:{start:0, limit:10 }//只查询指定专题列表
+	}),
+  	listeners: {}
+});
+Ext.reg('listSpecial', specialList);
+
+//推荐列表
+var recommendList = new Ext.extend(ST.ux.ExtField.ComboBox, {
+	valueField  :'id',
+    displayField:'type_Name',
+    mode  :'remote', 
+ 	emptyText:'推荐列表',
+ 	store:new Ext.data.Store({
+		proxy  : new Ext.data.HttpProxy({url: './../recommend/pageQueryRecommends.json'}),
+	    reader : new Ext.data.JsonReader({
+	        root          : "result",
+	        totalProperty : "totalCount",
+	        idProperty    : "id",
+	        fields        : [
+	        	{name: 'id'},
+		        {name: 'type_Name'},
+		    ]
+	    }),
+	    baseParams:{start:0, limit:10 , special:false} //查询非专题列表
 	}),
   	listeners: {}
 });
 Ext.reg('listRecommend', recommendList);
+
+
 
 // 清除截图及路径
 function clearImage(id_snap ,id_slot){
@@ -251,7 +276,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 			            		        {name: 'name'},
 			            		    ]
 			            	    }),
-			            	    baseParams:{start:0, limit:10, type:4}
+			            	    baseParams:{start:0, limit:10, type:4 , special : false}
 			            	}),
 			             	listeners: {   //初始化
 			             		afterRender: function(combo) {
@@ -264,14 +289,26 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 	
 		    	
     addButtonOnToolbar:function(bar,index){
+    	//推荐
     	var menu = new Ext.menu.Menu({
 	        items: [{text:"推荐",iconCls: 'recommend', id:'recomEntity',scope: this,
 			        	handler: function() {
-			        		this.recommendOper();
+			        		this.recommendOper(false);
 					}}, 
 	                {text:"取消推荐",iconCls: 'cancelRecomm', id:'cancelRecomEntity',scope: this,
 	                	handler: function() {
-	        			   	this.cancelRecommOper();
+	        			   	this.cancelRecommOper(false);
+	        			}}
+	        ]});
+    	//专题推荐
+    	var menu1 = new Ext.menu.Menu({
+	        items: [{text:"推荐",iconCls: 'recommend', id:'recomEntity-special',scope: this,
+			        	handler: function() {
+			        		this.recommendOper(true);
+					}}, 
+	                {text:"取消推荐",iconCls: 'cancelRecomm', id:'cancelRecomEntity-special',scope: this,
+	                	handler: function() {
+	        			   	this.cancelRecommOper(true);
 	        			}}
 	        ]});
     	bar.insertButton(index++,new Ext.Button({text:"发布",iconCls: 'btn-onlineUser',
@@ -279,11 +316,19 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 		    		handler: function() {
 					   	this.distOper();
 					}}));
+    	/**推荐选择***/
     	bar.insertButton(index++,'-');
     	bar.insertButton(index++,'推荐选择 ');
     	//推荐类型选择
     	bar.insertButton(index++,{xtype:'listRecommend',id:'list-recommand'});
     	bar.insertButton(index++,{iconCls: 'oper', menu: menu,disabled: this.authOperations[4] ,scope: this});
+    	/**推荐专题***/
+    	bar.insertButton(index++,'-');
+    	bar.insertButton(index++,'专题推荐 ');
+    	bar.insertButton(index++,{xtype:'listSpecial',id:'special-recommand'});
+    	bar.insertButton(index++,{iconCls: 'oper', menu: menu1,disabled: this.authOperations[5] ,scope: this});
+    	
+    	
     },
     
     //发布和推荐状态变更 
@@ -358,52 +403,106 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 		});	 
    },
    
-   //推荐
-   recommendOper : function(){
-	   if(this.checkOne()){
-		   //选择推荐类型
-		   var val = Ext.getCmp('list-recommand').getValue();
-		   if(val==''){
-			   Ext.MessageBox.alert('提醒','请选择推荐名称');
-		   }else{
-			   var rec = this.grid.getSelectionModel().getSelected();  
-			   Ext.Ajax.request({
-					url : 'recommandOper.json',
-					success : function(response,options){
-					    this.grid.store.reload();
-					    this.grid.getSelectionModel().selectRecords([rec]);
-					    Ext.getCmp('recomEntity').disable();
-			    		Ext.getCmp('cancelRecomEntity').enable();
-					},
-					failure : function(response,options){
-						console.info('error msg:',response);
-					},
-					params:{appId:rec.data.id,recoId:val},
-					scope:this
-				});	 
+   /**
+    * 推荐
+    * @param isSpecial 是否专题
+    */ 
+   recommendOper : function(isSpecial){
+	   alert(isSpecial);
+	   if(isSpecial){
+		   if(this.checkOne()){
+			   //选择专题类型
+			   var val = Ext.getCmp('special-recommand').getValue();
+			   if(val==''){
+				   Ext.MessageBox.alert('提醒','请选择推荐名称');
+			   }else{
+				   var rec = this.grid.getSelectionModel().getSelected();  
+				   Ext.Ajax.request({
+						url : 'recommandOper.json',
+						success : function(response,options){
+						    this.grid.store.reload();
+						    this.grid.getSelectionModel().selectRecords([rec]);
+						    Ext.getCmp('recomEntity-special').disable();
+				    		Ext.getCmp('cancelRecomEntity-special').enable();
+						},
+						failure : function(response,options){
+							console.info('error msg:',response);
+						},
+						params:{appId:rec.data.id,recoId:val},
+						scope:this
+					});	 
+			   }
+		   }
+	   }else{
+		   if(this.checkOne()){
+			   //选择推荐类型
+			   var val = Ext.getCmp('list-recommand').getValue();
+			   alert(val);
+			   if(val==''){
+				   Ext.MessageBox.alert('提醒','请选择推荐名称');
+			   }else{
+				   var rec = this.grid.getSelectionModel().getSelected();  
+				   Ext.Ajax.request({
+						url : 'recommandOper.json',
+						success : function(response,options){
+						    this.grid.store.reload();
+						    this.grid.getSelectionModel().selectRecords([rec]);
+						    Ext.getCmp('recomEntity').disable();
+				    		Ext.getCmp('cancelRecomEntity').enable();
+						},
+						failure : function(response,options){
+							console.info('error msg:',response);
+						},
+						params:{appId:rec.data.id,recoId:val},
+						scope:this
+					});	 
+			   }
 		   }
 	   }
    },
    
-   //取消推荐
-   cancelRecommOper : function(){
-		if(this.checkOne()){
-			   var rec = this.grid.getSelectionModel().getSelected();  
-			   Ext.Ajax.request({
-					url : 'recommandOper.json',
-					success : function(response,options){
-					    this.grid.store.reload();
-					    this.grid.getSelectionModel().selectRecords([rec]);
-					    Ext.getCmp('recomEntity').enable();
-			    		Ext.getCmp('cancelRecomEntity').disable();
-					},
-					failure : function(response,options){
-						console.info('error msg:',response);
-					},
-					params:{appId:rec.data.id},
-					scope:this
-				});	 		   	   
-	   }	
+   /**
+    * 取消推荐
+    * @param isSpecial 是否专题
+    */
+   cancelRecommOper : function(isSpecial){
+	   if(isSpecial){
+			if(this.checkOne()){
+				   var rec = this.grid.getSelectionModel().getSelected();  
+				   Ext.Ajax.request({
+						url : 'recommandOper.json',
+						success : function(response,options){
+						    this.grid.store.reload();
+						    this.grid.getSelectionModel().selectRecords([rec]);
+						    Ext.getCmp('recomEntity-special').enable();
+				    		Ext.getCmp('cancelRecomEntity-special').disable();
+						},
+						failure : function(response,options){
+							console.info('error msg:',response);
+						},
+						params:{appId:rec.data.id},
+						scope:this
+					});	 		   	   
+		   }	
+	   }else{
+			if(this.checkOne()){
+				   var rec = this.grid.getSelectionModel().getSelected();  
+				   Ext.Ajax.request({
+						url : 'recommandOper.json',
+						success : function(response,options){
+						    this.grid.store.reload();
+						    this.grid.getSelectionModel().selectRecords([rec]);
+						    Ext.getCmp('recomEntity').enable();
+				    		Ext.getCmp('cancelRecomEntity').disable();
+						},
+						failure : function(response,options){
+							console.info('error msg:',response);
+						},
+						params:{appId:rec.data.id},
+						scope:this
+					});	 		   	   
+		   }	   
+	   }
    },
 
 	constructor: function() {

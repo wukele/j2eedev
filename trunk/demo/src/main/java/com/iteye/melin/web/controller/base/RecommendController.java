@@ -94,7 +94,7 @@ public class RecommendController extends BaseController {
 	@ResponseBody
 	public Page<Recommend> pageQueryRecommends1(@RequestParam("start")int startIndex, 
 			@RequestParam("limit")int pageSize, Recommend recommend, @RequestParam(required = false)String sort, 
-			@RequestParam(required = false)String dir) {
+			@RequestParam(required = false)String dir , @RequestParam(defaultValue = "true",required = false )boolean special) {
 		PageRequest<Recommend> pageRequest = new PageRequest<Recommend>(startIndex, pageSize);
 		
 		if(StringUtils.hasText(sort) && StringUtils.hasText(dir))
@@ -106,7 +106,8 @@ public class RecommendController extends BaseController {
 		
 		pageRequest.getFilters().put("type", 4);
 		Page<Recommend> page = recommendService.findAllForPage(pageRequest);
-		//查询全部专题{{
+		if(!special){
+			//查询全部专题{{
 			Recommend r = new Recommend();
 			r.setId(new Long(-2));
 			r.setName("全部专题");
@@ -118,7 +119,8 @@ public class RecommendController extends BaseController {
 			r2.setName("无专题");
 			r2.setType(4);
 			page.getResult().add(r2);
-		//}}
+		//}}	
+		}
 		return page;
 	}
 	
