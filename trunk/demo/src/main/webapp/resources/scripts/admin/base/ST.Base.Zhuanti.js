@@ -20,7 +20,7 @@ ST.base.zhuantiView = Ext.extend(ST.ux.ViewGrid, {
 				{header: 'ID', width: 60, dataIndex: 'id', hideGrid: true, hideForm: 'add', readOnly: true},
 	            {header: '专题', width: 180, dataIndex: 'name', allowBlank:false},
 	            {header: '创建时间', width: 130, dataIndex: 'createTime', hideForm: 'all', allowBlank:false},
-	            {header: '创建时间', width: 130, dataIndex: 'updateTime', hideForm: 'all', allowBlank:false}
+	            {header: '更新时间', width: 130, dataIndex: 'updateTime', hideForm: 'all', allowBlank:false}
 	        ],
 	
 	queryFormItms: [{ 
