@@ -2,10 +2,19 @@ package com.iteye.melin.web.controller.base;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -17,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.iteye.melin.core.page.Page;
 import com.iteye.melin.core.page.PageRequest;
@@ -124,18 +132,57 @@ public class RecommendController extends BaseController {
 		return page;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value="/insertRecommend", method=RequestMethod.POST)
 	@ResponseBody
-	public ResponseData insertRecommend(@RequestParam MultipartFile file, Recommend recommend) throws IOException {
-		recommend.setCreateTime(new Date());
-		
-		if(!file.isEmpty()) {
-			String path = rootpath + file.getOriginalFilename();
-			FileUtils.copyInputStreamToFile(file.getInputStream(), new File(path));
-			recommend.setPosterUrl(path);
+	public String  insertRecommend(/*@RequestParam MultipartFile file, Recommend recommend*/HttpServletRequest request) throws IOException {
+//		recommend.setCreateTime(new Date());
+//		
+//		if(!file.isEmpty()) {
+//			String path = rootpath + file.getOriginalFilename();
+//			FileUtils.copyInputStreamToFile(file.getInputStream(), new File(path));
+//			recommend.setPosterUrl(path);
+//		}
+//        recommendService.insertEntity(recommend);
+		try {
+			DiskFileItemFactory fac = new DiskFileItemFactory();
+			ServletFileUpload upload = new ServletFileUpload(fac);
+			upload.setHeaderEncoding("utf-8");
+			List<FileItem> items = upload.parseRequest(request);
+			Map<String, Serializable> fields = new HashMap<String, Serializable>();
+			Iterator<FileItem> iter = items.iterator();
+			while (iter.hasNext()) {
+				FileItem item = (FileItem) iter.next();
+				if (item.isFormField())
+					fields.put(item.getFieldName(), item.getString());
+				else
+					fields.put(item.getFieldName(), item);
+			}
+			FileItem file = (FileItem)fields.get("file");
+			String path = rootpath + file.getName();
+			File updateFile = new File(path);	
+			boolean filecreated = true;
+			if(!updateFile.exists()){
+				filecreated = updateFile.createNewFile();
+			}
+			if(filecreated){
+				FileUtils.copyInputStreamToFile(file.getInputStream(), new File(path));
+				file.delete();
+				String linkUrl = (String)fields.get("linkUrl");
+				String type = (String)fields.get("type");
+				Recommend recommend = new Recommend();
+				recommend.setCreateTime(new Date());
+				recommend.setUpdateTime(new Date());
+				recommend.setType(Integer.parseInt(type));				
+				recommend.setLinkUrl(linkUrl);
+				recommend.setPosterUrl(path);
+				recommendService.insertEntity(recommend);	
+			}			
+		} catch (Exception e) {
+			logger.error(e.getMessage());
 		}
-        recommendService.insertEntity(recommend);
-		return ResponseData.SUCCESS_NO_DATA;
+		
+		return "{success:true}";
 	}
 	
 	@RequestMapping(value="/insertRecommend1", method=RequestMethod.POST)
@@ -153,21 +200,56 @@ public class RecommendController extends BaseController {
 		return recommendService.findEntity(id);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value="/updateRecommend", method=RequestMethod.POST)
 	@ResponseBody
-	public ResponseData updateRecommend(@RequestParam MultipartFile file, Recommend recommend) throws IOException {
-		Recommend tmp = recommendService.findEntity(recommend.getId());
-		tmp.setUpdateTime(new Date());
-		tmp.setLinkUrl(recommend.getLinkUrl());
+	public String updateRecommend(/*@RequestParam MultipartFile file, Recommend recommend*/HttpServletRequest request) throws IOException {
+//		Recommend tmp = recommendService.findEntity(recommend.getId());
+//		tmp.setUpdateTime(new Date());
+//		tmp.setLinkUrl(recommend.getLinkUrl());
 		
-		if(!file.isEmpty()) {
-			String path = rootpath + file.getOriginalFilename();
-			FileUtils.copyInputStreamToFile(file.getInputStream(), new File(path));
-			tmp.setPosterUrl(path);
+//	if(!file.isEmpty()) {
+//		String path = rootpath + file.getOriginalFilename();
+//		FileUtils.copyInputStreamToFile(file.getInputStream(), new File(path));
+//		tmp.setPosterUrl(path);
+//	}
+		try {
+			DiskFileItemFactory fac = new DiskFileItemFactory();
+			ServletFileUpload upload = new ServletFileUpload(fac);
+			upload.setHeaderEncoding("utf-8");
+			List<FileItem> items = upload.parseRequest(request);
+			Map<String, Serializable> fields = new HashMap<String, Serializable>();
+			Iterator<FileItem> iter = items.iterator();
+			while (iter.hasNext()) {
+				FileItem item = (FileItem) iter.next();
+				if (item.isFormField())
+					fields.put(item.getFieldName(), item.getString());
+				else
+					fields.put(item.getFieldName(), item);
+			}
+			FileItem file = (FileItem)fields.get("file");
+			String path = rootpath + file.getName();
+			File updateFile = new File(path);	
+			boolean filecreated = true;
+			if(!updateFile.exists()){
+				filecreated = updateFile.createNewFile();
+			}
+			if(filecreated){
+				//file.write(new File(path));
+				FileUtils.copyInputStreamToFile(file.getInputStream(), new File(path));
+				file.delete();  //删除临时文件
+				String id = (String)fields.get("id");
+				String linkUrl = (String)fields.get("linkUrl");
+				Recommend tmp = recommendService.findEntity(Long.parseLong(id));
+				tmp.setUpdateTime(new Date());
+				tmp.setLinkUrl(linkUrl);
+				tmp.setPosterUrl(path);
+				recommendService.updateEntity(tmp);	
+			}			
+		} catch (Exception e) {
+			logger.error(e.getMessage());
 		}
-		
-		recommendService.updateEntity(tmp);
-		return ResponseData.SUCCESS_NO_DATA;
+		return "{success:true}";
 	}
 	
 	@RequestMapping(value="/updateRecommend1", method=RequestMethod.POST)

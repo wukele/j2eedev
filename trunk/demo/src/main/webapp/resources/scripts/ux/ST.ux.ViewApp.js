@@ -37,7 +37,8 @@ ST.ux.ViewApp = Ext.extend(Ext.Viewport, {
                      !ST.util.isAuthOperation('core.update'),
                      !ST.util.isAuthOperation('core.remove'),
                      !ST.util.isAuthOperation('core.distibute'),
-                     !ST.util.isAuthOperation('core.recommand')],
+                     !ST.util.isAuthOperation('core.recommand'),
+                     !ST.util.isAuthOperation('core.special')],
     
     eastWidth: 250,
     eastGridTitle: '',

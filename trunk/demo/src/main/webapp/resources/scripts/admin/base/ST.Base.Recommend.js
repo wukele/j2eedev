@@ -22,7 +22,7 @@ ST.base.recommendView = Ext.extend(ST.ux.ViewGrid, {
 	            {header: '链接地址', width: 180, dataIndex: 'linkUrl', allowBlank:false},
 	            {header: '图片类型', width: 180, hideGrid: true, dataIndex: 'type', hiddenName: 'type',dictTypeId: '10008', allowBlank:false, fieldtype:'recommendTypeField'},
 	            {header: '图片类型', width: 180, dataIndex: 'type_Name', hideForm: 'all'},
-	            {header: '图片', width: 300, dataIndex: 'file', allowBlank:true, inputType:"file", hideGrid: true},
+	            {header: '图片', width: 300, dataIndex: 'file', id:'file', allowBlank:true, inputType:"file", hideGrid: true},
 	            {header: '图片地址', width: 300, dataIndex: 'posterUrl', hideForm: 'all'},
 	            {header: '创建时间', width: 130, dataIndex: 'createTime', hideForm: 'all', allowBlank:false},
 	            {header: '创建时间', width: 130, dataIndex: 'updateTime', hideForm: 'all', allowBlank:false}
