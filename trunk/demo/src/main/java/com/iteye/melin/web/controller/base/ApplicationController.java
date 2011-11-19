@@ -523,7 +523,6 @@ public class ApplicationController extends BaseController implements ServletCont
 			app_sdk_ver =(String)fields.get("minSdkVer");
 			app_author=(String)fields.get("authorName");
 			app_summary = (String)fields.get("appSummary");
-			System.out.println(app_summary);
 			app_desc = (String)fields.get("appDesc");
 			
 			/*处理apk文件*/
