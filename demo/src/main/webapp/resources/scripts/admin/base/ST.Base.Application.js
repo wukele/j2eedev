@@ -408,7 +408,6 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
     * @param isSpecial 是否专题
     */ 
    recommendOper : function(isSpecial){
-	   alert(isSpecial);
 	   if(isSpecial){
 		   if(this.checkOne()){
 			   //选择专题类型
@@ -437,7 +436,6 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 		   if(this.checkOne()){
 			   //选择推荐类型
 			   var val = Ext.getCmp('list-recommand').getValue();
-			   alert(val);
 			   if(val==''){
 				   Ext.MessageBox.alert('提醒','请选择推荐名称');
 			   }else{
