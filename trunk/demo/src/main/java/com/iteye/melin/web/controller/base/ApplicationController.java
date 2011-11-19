@@ -3,6 +3,7 @@ package com.iteye.melin.web.controller.base;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -88,7 +89,7 @@ public class ApplicationController extends BaseController implements ServletCont
 			@RequestParam(required = false) String dir) {
 		PageRequest<Application> pageRequest = new PageRequest<Application>(
 				startIndex, pageSize);
-
+		
 		if (StringUtils.hasText(sort) && StringUtils.hasText(dir))
 			pageRequest.setSortColumns(sort + " " + dir);
 
@@ -475,7 +476,7 @@ public class ApplicationController extends BaseController implements ServletCont
 	@RequestMapping(value = "/updateApplication", method = RequestMethod.POST)
 	@ResponseBody
 	public String updateApplication(HttpServletRequest request,
-			HttpServletResponse response )throws ServletException, IOException {
+			HttpServletResponse response)throws ServletException, IOException {
 		DiskFileItemFactory fac = new DiskFileItemFactory();
 		ServletFileUpload upload = new ServletFileUpload(fac);
 		upload.setHeaderEncoding("utf-8");
@@ -498,7 +499,7 @@ public class ApplicationController extends BaseController implements ServletCont
 			while (iter.hasNext()) {
 				FileItem item = (FileItem) iter.next();
 				if (item.isFormField())
-					fields.put(item.getFieldName(), item.getString());
+					fields.put(item.getFieldName(), new String(item.getString().getBytes("ISO-8859-1"), "UTF-8"));
 				else
 					fields.put(item.getFieldName(), item);
 			}
@@ -522,6 +523,7 @@ public class ApplicationController extends BaseController implements ServletCont
 			app_sdk_ver =(String)fields.get("minSdkVer");
 			app_author=(String)fields.get("authorName");
 			app_summary = (String)fields.get("appSummary");
+			System.out.println(app_summary);
 			app_desc = (String)fields.get("appDesc");
 			
 			/*处理apk文件*/
