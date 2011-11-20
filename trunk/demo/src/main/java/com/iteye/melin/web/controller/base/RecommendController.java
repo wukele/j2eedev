@@ -154,7 +154,7 @@ public class RecommendController extends BaseController {
 			while (iter.hasNext()) {
 				FileItem item = (FileItem) iter.next();
 				if (item.isFormField())
-					fields.put(item.getFieldName(), item.getString());
+					fields.put(item.getFieldName(), new String(item.getString().getBytes("ISO8859_1"), "UTF-8"));
 				else
 					fields.put(item.getFieldName(), item);
 			}
@@ -223,7 +223,7 @@ public class RecommendController extends BaseController {
 			while (iter.hasNext()) {
 				FileItem item = (FileItem) iter.next();
 				if (item.isFormField())
-					fields.put(item.getFieldName(), item.getString());
+					fields.put(item.getFieldName(), new String(item.getString().getBytes("ISO-8859-1"), "UTF-8"));
 				else
 					fields.put(item.getFieldName(), item);
 			}
