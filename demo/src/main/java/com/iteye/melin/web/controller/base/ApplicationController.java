@@ -3,7 +3,6 @@ package com.iteye.melin.web.controller.base;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -222,7 +221,7 @@ public class ApplicationController extends BaseController implements ServletCont
 			while (iter.hasNext()) {
 				FileItem item = (FileItem) iter.next();
 				if (item.isFormField())
-					fields.put(item.getFieldName(), item.getString());
+					fields.put(item.getFieldName(),  new String(item.getString().getBytes("ISO8859_1"), "UTF-8"));
 				else
 					fields.put(item.getFieldName(), item);
 			}
