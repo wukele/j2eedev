@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -159,26 +160,20 @@ public class RecommendController extends BaseController {
 					fields.put(item.getFieldName(), item);
 			}
 			FileItem file = (FileItem)fields.get("file");
-			System.out.println(RecommendController.class.getClassLoader().getResource(".").getPath());
-			String path = rootpath + file.getName();
-			File updateFile = new File(path);	
-			boolean filecreated = true;
-			if(!updateFile.exists()){
-				filecreated = updateFile.createNewFile();
-			}
-			if(filecreated){
-				FileUtils.copyInputStreamToFile(file.getInputStream(), new File(path));
-				file.delete();
-				String linkUrl = (String)fields.get("linkUrl");
-				String type = (String)fields.get("type");
-				Recommend recommend = new Recommend();
-				recommend.setCreateTime(new Date());
-				recommend.setUpdateTime(new Date());
-				recommend.setType(Integer.parseInt(type));				
-				recommend.setLinkUrl(linkUrl);
-				recommend.setPosterUrl(path);
-				recommendService.insertEntity(recommend);	
-			}			
+			String fileName = UUID.randomUUID().toString();
+			String path = rootpath + fileName;
+			
+			FileUtils.copyInputStreamToFile(file.getInputStream(), new File(path));
+			file.delete();
+			String linkUrl = (String)fields.get("linkUrl");
+			String type = (String)fields.get("type");
+			Recommend recommend = new Recommend();
+			recommend.setCreateTime(new Date());
+			recommend.setUpdateTime(new Date());
+			recommend.setType(Integer.parseInt(type));				
+			recommend.setLinkUrl(linkUrl);
+			recommend.setPosterUrl("/resources/images/recommend/" + fileName);
+			recommendService.insertEntity(recommend);			
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
