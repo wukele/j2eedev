@@ -47,7 +47,7 @@ public class RecommendController extends BaseController {
 	//~ Instance fields ================================================================================================
 	@Autowired
 	private RecommendService recommendService;
-	private String rootpath = "C:/images/";
+	private String rootpath = RecommendController.class.getClassLoader().getResource(".").getPath() + "resources/images/recommend/";
 	
 	//~ Methods ========================================================================================================
 	@RequestMapping("/index")
@@ -159,6 +159,7 @@ public class RecommendController extends BaseController {
 					fields.put(item.getFieldName(), item);
 			}
 			FileItem file = (FileItem)fields.get("file");
+			System.out.println(RecommendController.class.getClassLoader().getResource(".").getPath());
 			String path = rootpath + file.getName();
 			File updateFile = new File(path);	
 			boolean filecreated = true;
