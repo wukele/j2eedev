@@ -94,7 +94,9 @@ public class UserController extends BaseController {
 	@RequestMapping(value="/loadUser", method=RequestMethod.POST)
 	@ResponseBody
 	public User loadUser(Long id) {
-		return userService.findEntity(id);
+		User user = userService.findEntity(id);
+		user.setPassword(null);
+		return user;
 	}
 	
 	/**
