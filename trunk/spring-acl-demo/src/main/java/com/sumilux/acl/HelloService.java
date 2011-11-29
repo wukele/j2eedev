@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +20,7 @@ public class HelloService implements IHelloService {
 	/* (non-Javadoc)
 	 * @see com.sumilux.acl.IHelloService#findContacts()
 	 */
+	@PostFilter("hasPermission(filterObject, 'WRITE')")
 	public List<Contact> findContacts() {
 		return list;
 	}
