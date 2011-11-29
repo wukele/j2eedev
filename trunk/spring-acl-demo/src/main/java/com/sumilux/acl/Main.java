@@ -15,7 +15,7 @@ public class Main {
 		securityManager.authenticate("melin", "000000");
 		
 		Contact contact = new Contact();
-		contact.setId("asdfsd");
+		contact.setContactId("asdfsd");
 		contact.setName("libinsong");
 		
 		permissionService.create(contact);
