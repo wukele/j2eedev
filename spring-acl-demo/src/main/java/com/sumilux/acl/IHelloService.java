@@ -12,7 +12,9 @@ public interface IHelloService {
 	
 	public Boolean edit(Contact contact);
 
-	public Boolean delete(Contact contact);
+	public Boolean delete(String id);
+	
+	public Contact find(String id);
 	
 	public void deleteAcl(Contact contact, boolean deleteChildren);
 

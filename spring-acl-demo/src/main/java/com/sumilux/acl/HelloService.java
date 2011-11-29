@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.model.Permission;
@@ -38,9 +39,17 @@ public class HelloService implements IHelloService {
 		// TODO Auto-generated method stub
 		return true;
 	}
+	
+	@PostAuthorize("hasPermission(returnObject, 'WRITE')")
+	public Contact find(String id) {
+		Contact contact1 = new Contact();
+		contact1.setContactId(id);
+		contact1.setName("libinsong");
+		return contact1;
+	}
 
-	@PreAuthorize("hasPermission(#contact, 'WRITE')")
-	public Boolean delete(Contact contact) {
+	@PreAuthorize("hasPermission(#id, 'com.sumilux.acl.Contact', 'WRITE')")
+	public Boolean delete(String id) {
 		// TODO Auto-generated method stub
 		return true;
 	}

@@ -1,15 +1,19 @@
 package com.sumilux.acl;
 
 public class Contact {
-	private String id;
+	private String contactId;
 	private String name;
 	
 	public String getId() {
-		return id;
+		return contactId;
+	}
+	
+	public String getContactId() {
+		return contactId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setContactId(String contactId) {
+		this.contactId = contactId;
 	}
 
 	public String getName() {

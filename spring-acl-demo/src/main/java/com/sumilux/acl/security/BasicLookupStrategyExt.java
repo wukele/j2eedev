@@ -41,6 +41,11 @@ import org.springframework.security.acls.model.UnloadedSidException;
 import org.springframework.security.util.FieldUtils;
 import org.springframework.util.Assert;
 
+/**
+ * 
+ * @author binsongl
+ *
+ */
 public class BasicLookupStrategyExt implements LookupStrategy {
 
     public final static String DEFAULT_SELECT_CLAUSE = "select acl_object_identity.object_id_identity, "
