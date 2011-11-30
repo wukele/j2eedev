@@ -15,9 +15,23 @@
 	   		">
 	<context:component-scan base-package="com.sumilux.acl" />
 	
-	<security:global-method-security pre-post-annotations="enabled">
+	<security:global-method-security pre-post-annotations="enabled" access-decision-manager-ref="businessAccessDecisionManager">
 		<security:expression-handler ref="expressionHandler" />
 	</security:global-method-security>
+	
+	<bean id="businessAccessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+      	<property name="decisionVoters">
+         	<list>
+            	<bean class="org.springframework.security.access.prepost.PreInvocationAuthorizationAdviceVoter">
+            		<constructor-arg index="0">
+            			<bean class="org.springframework.security.access.expression.method.ExpressionBasedPreInvocationAdvice">
+            				<property name="expressionHandler" ref="expressionHandler" />
+            			</bean>
+            		</constructor-arg>
+            	</bean>
+         	</list>
+      	</property>
+   	</bean>
 	
 	<bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler"
 		p:permissionEvaluator-ref="permissionEvaluator" />
@@ -83,22 +97,12 @@
  
     <bean id="auditLogger" class="org.springframework.security.acls.domain.ConsoleAuditLogger"/>
     
-    
     <bean id="authenticationManager" class="org.springframework.security.authentication.ProviderManager">
 		<property name="providers">
 			<list>
-				<ref local="daoAuthenticationProvider"/>
+				<ref local="oauthAuthenticationProvider"/>
 			</list>
 		</property>
 	</bean>
-	<bean id="daoAuthenticationProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
-		<property name="userDetailsService" ref="userDetailsService" />
-		<!-- User not found，throw UsernameNotFoundException -->
-		<property name="hideUserNotFoundExceptions" value="false" />
-	</bean>
- 	<security:user-service id="userDetailsService">
-    	<security:user name="melin" password="000000" authorities="ROLE_ADMIN, ROLE_USER, ROLE_VISITOR" />
-    	<security:user name="libinsong" password="000000" authorities="ROLE_USER, ROLE_VISITOR" />
-    	<security:user name="bsli" password="00000" authorities="ROLE_VISITOR" />
-  	</security:user-service>
+	<bean id="oauthAuthenticationProvider" class="com.sumilux.acl.security.oauth.OauthAuthenticationProvider" />
 </beans>
