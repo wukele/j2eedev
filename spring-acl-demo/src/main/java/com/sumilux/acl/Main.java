@@ -12,7 +12,7 @@ public class Main {
 		
 		ContactPermissionService permissionService = applicationContext.getBean(ContactPermissionService.class);
 		SpringSecurityManager securityManager = applicationContext.getBean(SpringSecurityManager.class);
-		securityManager.authenticate("melin", "000000");
+		securityManager.authenticate("melin");
 		
 		Contact contact = new Contact();
 		contact.setContactId("asdfsd");

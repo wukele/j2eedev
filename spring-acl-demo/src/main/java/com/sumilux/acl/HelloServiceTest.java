@@ -13,11 +13,9 @@ public class HelloServiceTest {
 		
 		IHelloService helloService = applicationContext.getBean(IHelloService.class);
 		SpringSecurityManager securityManager = applicationContext.getBean(SpringSecurityManager.class);
-		securityManager.authenticate("melin", "000000");
+		securityManager.authenticate("melin");
 		
-		Contact contact1 = new Contact();
-		contact1.setContactId("asdfsd");
-		contact1.setName("libinsong");
+		Contact contact1 = new Contact("asdfsd", "libinsong");
 		helloService.addContact(contact1, BasePermission.READ);
 		try {
 			helloService.edit(contact1);
@@ -35,9 +33,7 @@ public class HelloServiceTest {
 			e.printStackTrace();
 		}
 		
-		Contact contact2 = new Contact();
-		contact2.setContactId("123");
-		contact2.setName("melin");
+		Contact contact2 = new Contact("123", "melin");
 		helloService.addContact(contact2, BasePermission.WRITE);
 		helloService.edit(contact2);
 		helloService.delete("123");

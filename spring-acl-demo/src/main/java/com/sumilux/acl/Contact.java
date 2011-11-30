@@ -3,7 +3,16 @@ package com.sumilux.acl;
 public class Contact {
 	private String contactId;
 	private String name;
+	private String parentId;
 	
+	public Contact() {
+	}
+
+	public Contact(String contactId, String name) {
+		this.contactId = contactId;
+		this.name = name;
+	}
+
 	public String getId() {
 		return contactId;
 	}
@@ -23,4 +32,13 @@ public class Contact {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	public String getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
+	}
+	
 }

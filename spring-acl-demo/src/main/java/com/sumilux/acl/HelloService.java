@@ -40,7 +40,7 @@ public class HelloService implements IHelloService {
 		return true;
 	}
 	
-	@PostAuthorize("hasPermission(returnObject, 'WRITE')")
+	@PostAuthorize("hasPermission(returnObject, 'WRITE') or hasPermission(returnObject, 'READ')")
 	public Contact find(String id) {
 		Contact contact1 = new Contact();
 		contact1.setContactId(id);
