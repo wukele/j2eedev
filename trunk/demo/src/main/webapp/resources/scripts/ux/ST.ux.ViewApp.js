@@ -69,7 +69,9 @@ ST.ux.ViewApp = Ext.extend(Ext.Viewport, {
 				handler: this.queryData,
 				scope: this,
 				margin:'20px auto'
-			},{html : '<pre>     </pre>'},{   //距离感调整
+			},'&nbsp;','&nbsp;',
+			  '&nbsp;','&nbsp;',
+			  '&nbsp;','&nbsp;',{   //距离感调整
 				text: '重置', 
 				type:'reset', 
 				id:'clear', 
@@ -77,7 +79,7 @@ ST.ux.ViewApp = Ext.extend(Ext.Viewport, {
 				handler: this.reset,
 				scope: this,
 				margin:'20px auto'
-			},{html : '<pre>           </pre>'}]  //距离感调整
+			}]  //距离感调整
 		});
 	},
 	// 初始化ColumnModel
