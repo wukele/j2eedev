@@ -133,8 +133,8 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
     enablebbar : false,   // 激活top bar
     autoExpandColumn: 2,
 	girdColumns: [
-				{header: 'ID', width: 60, dataIndex: 'id', hideGrid: true, hideForm: 'add', readOnly: true ,hidden : true, colspan:10},
-				{header: '推荐状态', width: 60, dataIndex: 'hasAlrdyReco', hideGrid: true, hideForm: 'all', readOnly: true ,hidden : true},
+				{header: 'ID', width: 60, dataIndex: 'id', hideGrid: true, hideForm: 'add', readOnly: true ,hidden : true, colspan:10 },
+				{header: '推荐状态', width: 60, dataIndex: 'hasAlrdyReco', hideGrid: true, hideForm: 'all', readOnly: true ,hidden : true },
 	            {header: '应用名称', width: 110, dataIndex: 'appName', allowBlank:false , name:'appName',colspan:5},
 	            {header: "ICON图标", width: 140, dataIndex: 'iconUrl', hideForm:'all',renderer: appIconfunc}, 
 	            {header: '应用分类', width: 120, dataIndex: 'typeId' , hiddenName: 'typeId', allowBlank:false, fieldtype:'appStateField', hideGrid:true,name:'typeId',colspan:5,
@@ -185,7 +185,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 	            //0
             	{header: '预览' ,width: 40 ,hideGrid:true , id : 'id_app_slot0' ,colspan:5 ,fieldtype:'slotfield'}, 
             	//后台默认截图 value =1/2/3/4/5
-            	{header:'默认截图索引',colspan:5,value:0,name:'snapIndex' ,id:'snapIndex',hidden : true},// 隐藏域，记录默认截图的索引，传送给后台
+            	{header:'默认截图索引',colspan:5,value:0,name:'snapIndex' ,id:'snapIndex',hidden: true,hideGrid: true},// 隐藏域，记录默认截图的索引，传送给后台
 	            //1--- snapshot
 	            {header: '上传截图',hideGrid: true, id_slot:'id_app_slot1',id:'id_app_snap0',fieldtype:'snapfield',colspan:2},
 	            //2
@@ -210,28 +210,28 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
             	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true, pressed:true,iconCls:'accept', id:'default_img', update:false,
             		toggleHandler: function(btn, pressed){
             			setDefaultImage(0,'id_app_slot1',pressed,btn.update); 
-            		}},
+            		},hideGrid: true},
             	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap0','id_app_slot1');},iconCls:'cancel',id:'clear0' },
             	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept', id:'d-snap2',update:false,
             		toggleHandler: function(btn, pressed){
             			setDefaultImage(1,'id_app_slot2',pressed,btn.update);
-            		}},
-            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap1','id_app_slot2');},iconCls:'cancel',id:'clear1'},
+            		},hideGrid: true},
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap1','id_app_slot2');},iconCls:'cancel',id:'clear1',hideGrid: true},
             	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',id:'d-snap3',update:false,
             		toggleHandler: function(btn, pressed){
             			setDefaultImage(2,'id_app_slot3',pressed,btn.update);
-            		}},
-            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap2','id_app_slot3');},iconCls:'cancel',id:'clear2'},
+            		},hideGrid: true},
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap2','id_app_slot3');},iconCls:'cancel',id:'clear2',hideGrid: true},
             	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',id:'d-snap4',update:false,
             		toggleHandler: function(btn, pressed){
             			setDefaultImage(3,'id_app_slot4',pressed,btn.update);
-            		}},
-            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap3','id_app_slot4');},iconCls:'cancel',id:'clear3'},
+            		},hideGrid: true},
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap3','id_app_slot4');},iconCls:'cancel',id:'clear3',hideGrid: true},
             	{header: '   ',fieldtype:'button' , text:'设为默认',toggleGroup:'tg-group',enableToggle:true,iconCls:'accept',id:'d-snap5',update:false,
             		toggleHandler: function(btn, pressed){
             			setDefaultImage(4,'id_app_slot5',pressed,btn.update);
-            		}},
-            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap4','id_app_slot5');},iconCls:'cancel',id:'clear4'}
+            		},hideGrid: true},
+            	{fieldtype:'button' , text:'清除', handler:function(){clearImage('id_app_snap4','id_app_slot5');},iconCls:'cancel',id:'clear4',hideGrid: true}
 	        ],
     
  
@@ -243,7 +243,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 	            	bodyStyle:'padding:90px'
 	            },      
 	            labelWidth : 40,
-		        items:[{html : '<pre>  </pre>'},
+		        items:[
 		               {xtype:'textfield',  fieldLabel: '名称', name: 'appName', id: 'appName'},
 		               {xtype:'textfield',  fieldLabel: '关键词', name: 'keywords', id: 'keywords'},
 		               {xtype:'appStateField',  fieldLabel: '分类', hiddenName: 'typeId',
@@ -285,7 +285,7 @@ ST.base.applicationView = Ext.extend(ST.ux.ViewApp, {
 			             	           combo.setRawValue('无专题');
 			             		}  
 			             	}
-		               },{html : '<pre>  </pre>'}]
+		               }]
 		    }],
 	
 		    	
