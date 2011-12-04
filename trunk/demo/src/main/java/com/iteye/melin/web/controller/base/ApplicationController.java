@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -32,6 +31,7 @@ import org.springframework.web.context.ServletContextAware;
 import com.iteye.melin.core.page.Page;
 import com.iteye.melin.core.page.PageRequest;
 import com.iteye.melin.core.util.DictionaryHolder;
+import com.iteye.melin.core.util.RandomUtil;
 import com.iteye.melin.core.util.ResponseData;
 import com.iteye.melin.core.web.controller.BaseController;
 import com.iteye.melin.web.model.base.Application;
@@ -198,15 +198,16 @@ public class ApplicationController extends BaseController implements ServletCont
 		DiskFileItemFactory fac = new DiskFileItemFactory();
 		ServletFileUpload upload = new ServletFileUpload(fac);
 		upload.setHeaderEncoding("utf-8");
+		upload.setFileSizeMax(50000000);
 	    File savefile_apk = null  , savefile_icon =null;
 		String appName /*名称*/ , appState /*状态*/, keyWords /*关键字*/, typeId /*分类*/,appPackage /*包名*/ = "",appVer= null,/*版本*/
-		filename_apk /*apk路径 */,fileext_apk /*扩展名*/,filename_icon /*icon路径 */,fileext_icon ,/*扩展名*/
+		filename_apk /*apk路径 */ = null,fileext_apk /*扩展名*/ = null,filename_icon /*icon路径 */ = null,fileext_icon = null ,/*扩展名*/
 		app_sdk_ver /*sdk版本*/,app_author /*作者*/,app_summary /*摘要*/,app_desc,/*描述*/appWebsite/*软件网址*/,supportEmail/*技术支持email*/;
 		int snapIndex =0;/*默认截图*/
 		String[] filename_snap = new String[5];	//截图保存后的名称
 		String[] fileext_snap  = new String[5]; //获取截图扩展名
 		File[] savefile_snap = new File[5];  	//保存后文件的路径名
-		long filesize_app ; //文件大小
+		long filesize_app = 0L ; //文件大小
 		/*定义文件数组*/
 		List<File> files = new ArrayList<File>();
 		files.add(savefile_apk);
@@ -221,7 +222,7 @@ public class ApplicationController extends BaseController implements ServletCont
 			while (iter.hasNext()) {
 				FileItem item = (FileItem) iter.next();
 				if (item.isFormField())
-					fields.put(item.getFieldName(),  new String(item.getString().getBytes("ISO8859_1"), "UTF-8"));
+					fields.put(item.getFieldName(), new String(item.getString().getBytes("ISO-8859-1"), "UTF-8"));
 				else
 					fields.put(item.getFieldName(), item);
 			}
@@ -272,7 +273,7 @@ public class ApplicationController extends BaseController implements ServletCont
 				uploadFile_snap[i] = (FileItem)fields.get("id_app_snap"+i);
 				fileName_snap[i] = uploadFile_snap[i].getName();
 				fileext_snap[i] = fileName_snap[i].substring(fileName_snap[i].lastIndexOf(".")+1);		//验证		
-				filename_snap[i] = UUID.randomUUID().toString();
+				filename_snap[i] = RandomUtil.getString();
 				if(snapIndex==i){
 					savefile_snap[i]=new File(dir_snap + filename_snap[i] + "__default."  //默认图片标识
 							+ fileext_snap[i]);
@@ -289,36 +290,32 @@ public class ApplicationController extends BaseController implements ServletCont
 				}
 			}
 			/************************/
-			/* 获取文件上传的路径名称*/
-			String fileName_apk = uploadFile_apk.getName();
-			String fileName_icon = uploadFile_icon.getName();
-			/* 获取文件扩展名 */
-		    fileext_apk = fileName_apk.substring(fileName_apk
-					.lastIndexOf(".") + 1);
-			fileext_icon = fileName_icon.substring(fileName_icon
-					.lastIndexOf(".") + 1);
-			/* 文件校检 */
-			String checkresult_apk = applicationService.fileVertify(
-					fileext_apk, uploadFile_apk);
-			String checkresult_icon = applicationService.fileVertify(
-					fileext_icon, uploadFile_icon);
-			if (!checkresult_apk.equals("pass") || !checkresult_icon.equals("pass")) {
-				return "{success:false , err: '异常'}";
+			if(uploadFile_apk != null){
+				/* 获取文件上传的路径名称*/
+				String fileName_apk = uploadFile_apk.getName();
+				/* 获取文件扩展名 */
+			    fileext_apk = fileName_apk.substring(fileName_apk
+						.lastIndexOf(".") + 1);
+				/* 重命名文件 */
+				filename_apk = RandomUtil.getString();
+				savefile_apk = new File(dir_apk + filename_apk + "."
+						+ fileext_apk);
+				/* 获取文件大 小 (M)*/
+				filesize_app = uploadFile_apk.getSize();
+				/* 存储上传文件 */
+				uploadFile_apk.write(savefile_apk);
+				uploadFile_apk.delete(); ///close	
 			}
-			/* 重命名文件 */
-			filename_apk = UUID.randomUUID().toString();
-			filename_icon = UUID.randomUUID().toString();
-			savefile_apk = new File(dir_apk + filename_apk + "."
-					+ fileext_apk);
-			savefile_icon = new File(dir_img + filename_icon + "."
-					+ fileext_icon);
-			/* 获取文件大 小*/
-			filesize_app = uploadFile_apk.getSize();
-			/* 存储上传文件 */
-			uploadFile_apk.write(savefile_apk);
-			uploadFile_apk.delete(); ///close
-			uploadFile_icon.write(savefile_icon);
-			uploadFile_icon.delete(); ///close
+			if(uploadFile_icon != null){
+				String fileName_icon = uploadFile_icon.getName();
+				fileext_icon = fileName_icon.substring(fileName_icon
+						.lastIndexOf(".") + 1);
+				filename_icon = RandomUtil.getString();
+				savefile_icon = new File(dir_img + filename_icon + "."
+						+ fileext_icon);
+				uploadFile_icon.write(savefile_icon);
+				uploadFile_icon.delete(); ///close	
+			}
 		} catch (Exception ex) {
 			/* 清理垃圾文件 */
 			applicationService.clear(files);
@@ -336,9 +333,11 @@ public class ApplicationController extends BaseController implements ServletCont
 		}
 		/* 新建应用文件 */
 		AppFile newAppfile = new AppFile();
-		newAppfile.setFileName(filename_apk+"."+fileext_apk);
-		newAppfile.setFilepath("/resources/apk/upload/"+filename_apk+"."+fileext_apk);
-		newAppfile.setFilesize(new Integer((int)filesize_app));
+		if(filename_apk!=null && fileext_apk!=null){
+			newAppfile.setFileName(filename_apk+"."+fileext_apk);
+			newAppfile.setFilepath("/resources/apk/upload/"+filename_apk+"."+fileext_apk);
+			newAppfile.setFilesize(((float)filesize_app)/(1024*1024));	
+		}
 		appFileService.insertEntity(newAppfile);
 		Long fileId = newAppfile.getId();
 		if(fileId == null){
@@ -354,7 +353,7 @@ public class ApplicationController extends BaseController implements ServletCont
 		newApp.setAuthorName(app_author);
 		newApp.setAppSummary(app_summary);
 		newApp.setAppDesc(app_desc);
-		newApp.setFileSize(new Float(filesize_app));
+		newApp.setFileSize(((float)filesize_app)/(1024*1024));
 		newApp.setAppName(appName);
 		newApp.setAppState(Short.valueOf(appState));
 		newApp.setTypeId(Long.parseLong(typeId)); //分类
@@ -363,7 +362,9 @@ public class ApplicationController extends BaseController implements ServletCont
 		newApp.setAppWebsite(appWebsite);
 		newApp.setSupportEmail(supportEmail);
 		newApp.setDownTimes(0);
-		newApp.setIconUrl("/resources/apk/images/"+filename_icon+"."+fileext_icon);
+		if(filename_icon!=null && fileext_icon!=null){
+			newApp.setIconUrl("/resources/apk/images/"+filename_icon+"."+fileext_icon);	
+		}
 		newApp.setFileId(fileId);
 		/*APP_PACKAGE相同则认为是同一软件不同版本，GLOBAL_MARK相同*/
 		List<Application> apps = applicationService.findByProperty("appPackage", appPackage);		
@@ -376,7 +377,7 @@ public class ApplicationController extends BaseController implements ServletCont
 			//appPackage不存在
 			newApp.setAppPackage(appPackage);
 			newApp.setVerMark(0); //版本标识
-			newApp.setGlobalMark(UUID.randomUUID().getLeastSignificantBits());  //yy全局标识	
+			newApp.setGlobalMark(RandomUtil.getLong());  //yy全局标识	
 		}		
 		newApp.setCommentTimes(0);
 		newApp.setSoftLevel((short)0);
@@ -386,7 +387,7 @@ public class ApplicationController extends BaseController implements ServletCont
 		if(appVer!=null){  //应用版本--来自AndriodManifest.xml文件
 			newApp.setAppVer(appVer);	
 		}
-		applicationService.insertEntity(newApp);
+		applicationService.createOrUpdate(newApp);
 		Long appId = newApp.getId();
 		if(appId == null){
 			logger.error("apk应用信息保存失败");
@@ -479,6 +480,7 @@ public class ApplicationController extends BaseController implements ServletCont
 		DiskFileItemFactory fac = new DiskFileItemFactory();
 		ServletFileUpload upload = new ServletFileUpload(fac);
 		upload.setHeaderEncoding("utf-8");
+		upload.setFileSizeMax(50000000); //设置文件上传最大
 	    File savefile_apk = null  , savefile_icon =null;
 		String id /*主键*/,appName /*名称*/ , appState /*状态*/, keyWords /*关键字*/, typeId /*分类*/,appPackage /*包名*/ = "",appVer= null,/*版本*/
 		filename_apk /*apk路径 */ = null,fileext_apk /*扩展名*/ = null,filename_icon /*icon路径 */ = null,fileext_icon = null ,/*扩展名*/dir_snap,/*截图目录*/
@@ -532,7 +534,7 @@ public class ApplicationController extends BaseController implements ServletCont
 			    fileext_apk = fileName_apk.substring(fileName_apk
 						.lastIndexOf(".") + 1);
 				/* 重命名文件 */
-				filename_apk = UUID.randomUUID().toString();
+				filename_apk = RandomUtil.getString();
 				savefile_apk = new File(dir_apk + filename_apk + "."
 						+ fileext_apk);
 				/* 获取文件大 小*/
@@ -548,7 +550,7 @@ public class ApplicationController extends BaseController implements ServletCont
 				b_icon_update=true;  //更新				
 				fileext_icon = fileName_icon.substring(fileName_icon
 						.lastIndexOf(".") + 1);	
-				filename_icon = UUID.randomUUID().toString();
+				filename_icon = RandomUtil.getString();
 				savefile_icon = new File(dir_img + filename_icon + "."
 						+ fileext_icon);
 				uploadFile_icon.write(savefile_icon);	
@@ -571,7 +573,7 @@ public class ApplicationController extends BaseController implements ServletCont
 				if(StringUtils.hasText(fileext_snap[i])){
 					if(arr2[i+2].contains("undefined")){//undefined表示截图原先不存在
 						/***处理更新时新上传的截图****/
-						String fileanme =  UUID.randomUUID().toString();
+						String fileanme =  RandomUtil.getString();
 						savefile_snap[i]=new File(dir_snap + fileanme + "."
 								+ fileext_snap[i]);	
 						arr2[1]=arr2[i+2]; //arr2[1]是交换的位置
@@ -646,8 +648,8 @@ public class ApplicationController extends BaseController implements ServletCont
 			AppFile updateAppfile =appFileService.findEntity(appFileId);
 			String oldapk = folder+updateAppfile.getFilepath();
 			updateAppfile.setFileName(filename_apk+"."+fileext_apk);
-			updateAppfile.setFilesize(new Integer((int)filesize_app));
-			updateApp.setFileSize(new Float(filesize_app));		
+			updateAppfile.setFilesize(((float)filesize_app)/(1024*1024));
+			updateApp.setFileSize(((float)filesize_app)/(1024*1024));		
 			/*APP_PACKAGE相同则认为是同一软件不同版本，GLOBAL_MARK相同，更新时GLOBAL_MARK不变*/
 			List<Application> apps = applicationService.findByProperty("appPackage", appPackage);		
 			if(!apps.isEmpty()){
@@ -659,7 +661,7 @@ public class ApplicationController extends BaseController implements ServletCont
 				//appPackage不存在
 				updateApp.setAppPackage(appPackage);
 				updateApp.setVerMark(0); //版本标识
-				updateApp.setGlobalMark(UUID.randomUUID().getLeastSignificantBits());  //yy全局标识	
+				updateApp.setGlobalMark(RandomUtil.getLong());  //yy全局标识	
 			}	
 			if(appVer!=null){  //应用版本--来自AndriodManifest.xml文件
 				updateApp.setAppVer(appVer);	
