@@ -26,7 +26,7 @@ public class AppFile {
 	@Column(name = "ABSOLUTEPATH")
 	private String filepath;
 	@Column(name = "FILE_SIZE")
-	private Integer filesize;
+	private Float filesize;
 	@Column(name = "FILE_TYPE")
 	private String filetype;
 	@Column(name = "CREATE_TIME")
@@ -62,11 +62,11 @@ public class AppFile {
 		this.filepath = filepath;
 	}
 
-	public Integer getFilesize() {
+	public Float getFilesize() {
 		return filesize;
 	}
 
-	public void setFilesize(Integer filesize) {
+	public void setFilesize(Float filesize) {
 		this.filesize = filesize;
 	}
 
