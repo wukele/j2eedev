@@ -19,7 +19,7 @@
 		<security:expression-handler ref="expressionHandler" />
 	</security:global-method-security>
 	
-	<bean id="businessAccessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+	<bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
       	<property name="decisionVoters">
          	<list>
             	<bean class="org.springframework.security.access.prepost.PreInvocationAuthorizationAdviceVoter">
@@ -32,6 +32,40 @@
          	</list>
       	</property>
    	</bean>
+   	
+   	<bean class="org.springframework.security.access.prepost.PostInvocationAdviceProvider">
+		<constructor-arg>
+			<bean class="org.springframework.security.access.expression.method.ExpressionBasedPostInvocationAdvice">
+				<constructor-arg index="0" ref="expressionHandler" />
+			</bean>
+		</constructor-arg>
+	</bean>	
+   	
+   	<bean id="prePostAnnotationSecurityMetadataSource" class="org.springframework.security.access.prepost.PrePostAnnotationSecurityMetadataSource">
+   		<constructor-arg index="0">
+   			<bean class="org.springframework.security.access.expression.method.ExpressionBasedAnnotationAttributeFactory">
+   				<constructor-arg index="0" ref="expressionHandler" />
+   			</bean>
+   		</constructor-arg>
+   	</bean>
+   	
+   	<bean id="delegatingMethodSecurityMetadataSource" class="org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource">
+   		<property name="methodSecurityMetadataSources">
+       		<list>
+       			<ref bean="prePostAnnotationSecurityMetadataSource"/>
+  			</list>
+  		</property>
+    </bean>
+    
+    <bean id="aspectJSecurityInterceptor" class="org.springframework.security.access.intercept.aspectj.AspectJSecurityInterceptor">
+      	<property name="authenticationManager" ref="authenticationManager" />
+    	<property name="accessDecisionManager" ref="accessDecisionManager" />
+ 		<property name="securityMetadataSource" ref="delegatingMethodSecurityMetadataSource" />
+    </bean>
+    
+    <bean id="annotationSecuredAspect" class="org.springframework.security.access.intercept.aspectj.aspect.AnnotationSecurityAspect" factory-method="aspectOf">
+      	<property name="securityInterceptor" ref="aspectJSecurityInterceptor" />
+    </bean>
 	
 	<bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler"
 		p:permissionEvaluator-ref="permissionEvaluator" />
