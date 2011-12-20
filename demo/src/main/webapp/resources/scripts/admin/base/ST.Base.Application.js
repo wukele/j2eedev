@@ -82,7 +82,7 @@ function setDefaultImage(val,next_slot_id,pressed,isUpdate){
 }
 // 渲染色调
 function colorfunc(value, p, record){
-	return value == '未发布'? String.format("<b><font color=green>未发布</font></b>"):String.format("<b><font color=red>已发布</font></b>");
+	return value == '未发布'? String.format("<b>未发布</b>"):String.format("<b><font color=red>已发布</font></b>");
 }
 
 // 获取ICON信息
@@ -109,7 +109,7 @@ function dlClientfunc(value, p, record){
 	if(record.data.dlClient=='' || record.data.appState==2){
 		return '<b>占未发布</b>';
 	}else{  //setTimeout() 解决session并发问题,这里需要延迟发送请求
-		return '<a href="..'+record.data.dlClient+'" onclick="setTimeout(function(){Ajax4Accumulator('+record.data.id+')},1000)"><b><font color=#00ff00 size=3>点此下载</font></b></a>';
+		return '<a href="..'+record.data.dlClient+'" onclick="setTimeout(function(){Ajax4Accumulator('+record.data.id+')},1000)"><b>点此下载</b></a>';
 	}
 }
 
