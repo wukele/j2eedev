@@ -107,7 +107,7 @@ function Ajax4Accumulator(appId){
 //下载
 function dlClientfunc(value, p, record){
 	if(record.data.dlClient=='' || record.data.appState==2){
-		return '<b>占未发布</b>';
+		return '<b>未发布</b>';
 	}else{  //setTimeout() 解决session并发问题,这里需要延迟发送请求
 		return '<a href="..'+record.data.dlClient+'" onclick="setTimeout(function(){Ajax4Accumulator('+record.data.id+')},1000)"><b>点此下载</b></a>';
 	}
