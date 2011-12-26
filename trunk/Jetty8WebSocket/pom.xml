@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-websocket</artifactId>
-			<version>8.1.0.RC2</version>
+			<version>8.0.4.v20111024</version>
 		</dependency>
 		
 		<dependency>
@@ -42,17 +42,22 @@
 	 <build>
         <plugins>
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>8.1.0.RC2</version>
-                <configuration>
-                    <webApp>
-                        <contextPath>/</contextPath>
-                    </webApp>
-                    <stopPort>9966</stopPort>
-                    <stopKey>foo</stopKey>
-                </configuration>
-            </plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>8.0.4.v20111024</version>
+				<configuration>
+					<webAppConfig>
+						<contextPath>/html5chart</contextPath>
+					</webAppConfig>
+					<connectors>
+						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+							<port>8080</port>
+							<maxIdleTime>30000</maxIdleTime>
+						</connector>
+					</connectors>
+					<webAppSourceDirectory>src/main/webapp</webAppSourceDirectory>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
 </project>
